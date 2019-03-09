@@ -15,6 +15,10 @@
         <maven.source.skip>true</maven.source.skip>
         <maven.source.attach>false</maven.source.attach>
     </properties>
+    <scm>
+        <developerConnection>scm:git:https://github.com/MichalStehlikCz/provysobject.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
     <dependencyManagement>
         <dependencies>
             <dependency>
