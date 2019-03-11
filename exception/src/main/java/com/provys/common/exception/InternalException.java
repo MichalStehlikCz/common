@@ -18,15 +18,14 @@ public final class InternalException extends ProvysException {
 
     /**
      * Constructs a new PROVYS internal exception with the specified detail message, parameters and cause.
-     * <p>
-     * Note that the detail message associated with {@code cause} is <i>not</i>
-     * automatically incorporated in this runtime exception's detail message.
+     * Note that the detail message associated with {@code cause} is not automatically incorporated in this runtime
+     * exception's detail message.
      *
      * @param logger is logger for current class; exception is logger as error to logger
      * @param message the detail message; displayed to user if translations via database are not available. Message is
      *               prefixed with internal name
      * @param params is list of parameter and their values that can be embedded in error message
-     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt>
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A @{code null}
      *             value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
     public InternalException(Logger logger, String message, Map<String, String> params, @Nullable Throwable cause) {
@@ -48,14 +47,13 @@ public final class InternalException extends ProvysException {
 
     /**
      * Constructs a new PROVYS internal exception with the specified detail message and cause.
-     * <p>
-     * Note that the detail message associated with {@code cause} is <i>not</i>
+     * Note that the detail message associated with {@code cause} is not
      * automatically incorporated in this runtime exception's detail message.
      *
      * @param logger is logger for current class; exception is logger as error to logger
      * @param message the detail message; displayed to user if translations via database are not available. Message is
      *               prefixed with internal name
-     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt>
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A @{code null}
      *             value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
     public InternalException(Logger logger, String message, @Nullable Throwable cause) {
