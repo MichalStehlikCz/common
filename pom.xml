@@ -13,7 +13,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
     <scm>
-        <developerConnection>scm:git:git@github.com:MichalStehlikCz/common.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/MichalStehlikCz/common.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     <dependencyManagement>
