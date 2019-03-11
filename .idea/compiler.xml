@@ -6,11 +6,13 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="common-exception" />
         <module name="exception" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="common" target="1.5" />
+      <module name="common-exception" target="11" />
       <module name="exception" target="11" />
     </bytecodeTargetLevel>
   </component>
