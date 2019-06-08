@@ -8,12 +8,14 @@
         <outputRelativeToContentRoot value="true" />
         <module name="common-exception" />
         <module name="exception" />
+        <module name="xsd" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="common" target="1.5" />
       <module name="common-exception" target="11" />
       <module name="exception" target="11" />
+      <module name="xsd" target="11" />
     </bytecodeTargetLevel>
   </component>
 </project>
