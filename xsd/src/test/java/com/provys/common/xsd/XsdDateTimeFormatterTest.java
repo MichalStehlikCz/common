@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class CellAddressIntTest {
+class XsdDateTimeFormatterTest {
 
     @Nonnull
     static Stream<Object[]> getStrictPatternTest() {

@@ -18,18 +18,26 @@ import static java.time.temporal.ChronoField.*;
  * Class provides formatter for parsing / formatting xs:dateTime values and their conversion to LocalDateTime used by
  * PROVYS system
  */
-public class XsdDateTimeFormatter {
+public final class XsdDateTimeFormatter {
 
     private static final String XSD_TZ_OFFSET_PATTERN_STRICT = "+HH:MM";
     private static final String XSD_TZ_OFFSET_PATTERN_LENIENT = "+HH:mm";
 
+    /**
+     * Class only contains static methods and properties
+     */
     private XsdDateTimeFormatter() {}
+
+    /**
+     * String defining format, accepted by STRICT formatter
+     */
+    public static final String STRICT_REGEX = XsdDateFormatter.STRICT_REGEX +
+            "T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,9})?(?:Z|(?:[-+][0-2][0-9]:[0-5][0-9]))?";
 
     /**
      * Pattern that corresponds to strings, accepted by STRICT formatter
      */
-    public static final Pattern STRICT_PATTERN = Pattern.compile(
-            "[-][0-9]{2,4}-[0-1][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,9})?(?:Z|(?:[-+][0-2][0-9]:[0-5][0-9]))?");
+    public static final Pattern STRICT_PATTERN = Pattern.compile(STRICT_REGEX);
 
     /**
      * For parsing and formatting of {@code xs:dateTime} values with validation strictly adhering to
@@ -100,7 +108,7 @@ public class XsdDateTimeFormatter {
      * Pattern that corresponds to strings, accepted by XSD_DATETIME_PARSER
      */
     public static final Pattern LENIENT_PATTERN = Pattern.compile(
-            "[-][0-9]{2,4}-[0-1][0-9]-[0-3][0-9][ T][0-2][0-9]:[0-5][0-9](?::[0-5][0-9](?:\\.[0-9]{1,9})?)?(?:Z|(?:[-+][0-2][0-9](?::?[0-5][0-9])?))?");
+            "-?[0-9]{1,4}-[0-1][0-9]-[0-3][0-9][ T][0-2][0-9]:[0-5][0-9](?::[0-5][0-9](?:\\.[0-9]{1,9})?)?(?:Z|(?:[-+][0-2][0-9](?::?[0-5][0-9])?))?");
 
     private static final Map<String, DateTimeFormatter> XSD_DATETIME_PARSER_TZ = new ConcurrentHashMap<>(1);
 
