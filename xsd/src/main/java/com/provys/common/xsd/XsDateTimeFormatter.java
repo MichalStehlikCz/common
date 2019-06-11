@@ -7,6 +7,7 @@ import java.time.format.ResolverStyle;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -18,21 +19,18 @@ import static java.time.temporal.ChronoField.*;
  * Class provides formatter for parsing / formatting xs:dateTime values and their conversion to LocalDateTime used by
  * PROVYS system
  */
-public final class XsdDateTimeFormatter {
-
-    private static final String XSD_TZ_OFFSET_PATTERN_STRICT = "+HH:MM";
-    private static final String XSD_TZ_OFFSET_PATTERN_LENIENT = "+HH:mm";
+public final class XsDateTimeFormatter {
 
     /**
      * Class only contains static methods and properties
      */
-    private XsdDateTimeFormatter() {}
+    private XsDateTimeFormatter() {}
 
     /**
      * String defining format, accepted by STRICT formatter
      */
-    public static final String STRICT_REGEX = XsdDateFormatter.STRICT_REGEX +
-            "T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](?:\\.[0-9]{1,9})?(?:Z|(?:[-+][0-2][0-9]:[0-5][0-9]))?";
+    public static final String STRICT_REGEX = XsDateFormatter.STRICT_DATE_REGEX + 'T' +
+            XsTimeFormatter.STRICT_TIME_REGEX + XsTimezoneFormatter.STRICT_REGEX + '?';
 
     /**
      * Pattern that corresponds to strings, accepted by STRICT formatter
@@ -44,25 +42,17 @@ public final class XsdDateTimeFormatter {
      * <a href="https://www.w3.org/TR/xmlschema-2/#dateTime">XML Schema</a>.
      */
     public static final DateTimeFormatter STRICT = new DateTimeFormatterBuilder()
-                .parseCaseSensitive()
-                .append(ISO_LOCAL_DATE)
-                .appendLiteral('T')
-                .appendValue(HOUR_OF_DAY, 2)
-                .appendLiteral(':')
-                .appendValue(MINUTE_OF_HOUR, 2)
-                .appendLiteral(':')
-                .appendValue(SECOND_OF_MINUTE, 2)
-                .optionalStart()
-                .appendFraction(NANO_OF_SECOND, 0, 9, true)
-                .optionalEnd()
-                .optionalStart()
-                .appendOffset(XSD_TZ_OFFSET_PATTERN_STRICT, "Z")
-                .optionalEnd()
-                .toFormatter(Locale.ENGLISH)
-                .withResolverStyle(ResolverStyle.STRICT)
-                .withChronology(IsoChronology.INSTANCE);
+            .parseCaseSensitive()
+            .append(XsDateFormatter.STRICT_DATE)
+            .appendLiteral('T')
+            .append(XsTimeFormatter.STRICT_TIME)
+            .optionalStart()
+            .append(XsTimezoneFormatter.STRICT)
+            .optionalEnd()
+            .toFormatter(Locale.ENGLISH)
+            .withChronology(IsoChronology.INSTANCE);
 
-    /**
+     /**
      * Defines acceptable values for delimiter between date and time
      */
     private static final Map<Long, String> DATE_TIME_DELIMETER_MAP = new HashMap<>(2);
@@ -93,39 +83,41 @@ public final class XsdDateTimeFormatter {
      * </ul>
      */
     public static final DateTimeFormatter LENIENT = new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .append(ISO_LOCAL_DATE)
-                .appendText(NoValueField.DATE_TIME_DELIMITER, DATE_TIME_DELIMETER_MAP)
-                .append(ISO_LOCAL_TIME)
-                .optionalStart()
-                .appendOffset(XSD_TZ_OFFSET_PATTERN_LENIENT, "Z")
-                .optionalEnd()
-                .toFormatter(Locale.US)
-                .withResolverStyle(ResolverStyle.STRICT)
-                .withChronology(IsoChronology.INSTANCE);
+            .parseCaseInsensitive()
+            .append(XsDateFormatter.LENIENT_DATE)
+            .appendText(NoValueField.DATE_TIME_DELIMITER, DATE_TIME_DELIMETER_MAP)
+            .append(XsTimeFormatter.LENIENT_TIME)
+            .optionalStart()
+            .append(XsTimezoneFormatter.LENIENT)
+            .optionalEnd()
+            .toFormatter(Locale.ENGLISH)
+            .withChronology(IsoChronology.INSTANCE);
 
+    public static final String LENIENT_REGEX = XsDateFormatter.LENIENT_DATE_REGEX + "[ Tt]" +
+            XsTimeFormatter.LENIENT_TIME_REGEX + XsTimezoneFormatter.LENIENT_REGEX + '?';
     /**
      * Pattern that corresponds to strings, accepted by XSD_DATETIME_PARSER
      */
-    public static final Pattern LENIENT_PATTERN = Pattern.compile(
-            "-?[0-9]{1,4}-[0-1][0-9]-[0-3][0-9][ T][0-2][0-9]:[0-5][0-9](?::[0-5][0-9](?:\\.[0-9]{1,9})?)?(?:Z|(?:[-+][0-2][0-9](?::?[0-5][0-9])?))?");
+    public static final Pattern LENIENT_PATTERN = Pattern.compile(LENIENT_REGEX);
 
     private static final Map<String, DateTimeFormatter> XSD_DATETIME_PARSER_TZ = new ConcurrentHashMap<>(1);
 
     /**
      * Returns lenient parser that interprets missing timezone information as specified timezone
      */
-    public static DateTimeFormatter getFormatterTZ(String noOffsetText) {
-        return XSD_DATETIME_PARSER_TZ.computeIfAbsent(noOffsetText, defaultOffset -> new DateTimeFormatterBuilder()
-                .parseCaseInsensitive()
-                .append(ISO_LOCAL_DATE)
-                .appendText(NoValueField.DATE_TIME_DELIMITER, DATE_TIME_DELIMETER_MAP)
-                .append(ISO_LOCAL_TIME)
-                .optionalStart()
-                .appendOffset(XSD_TZ_OFFSET_PATTERN_LENIENT, defaultOffset)
-                .optionalEnd()
-                .toFormatter(Locale.US)
-                .withResolverStyle(ResolverStyle.STRICT)
-                .withChronology(IsoChronology.INSTANCE));
+    public static DateTimeFormatter getFormatterTZ(String defOffset) {
+        Objects.requireNonNull(defOffset);
+        return XSD_DATETIME_PARSER_TZ.computeIfAbsent(defOffset,
+                defaultOffset -> new DateTimeFormatterBuilder()
+                        .parseCaseInsensitive()
+                        .append(ISO_LOCAL_DATE)
+                        .appendText(NoValueField.DATE_TIME_DELIMITER, DATE_TIME_DELIMETER_MAP)
+                        .append(ISO_LOCAL_TIME)
+                        .optionalStart()
+                        .append(XsTimezoneFormatter.getLenient(defaultOffset))
+                        .optionalEnd()
+                        .toFormatter(Locale.US)
+                        .withResolverStyle(ResolverStyle.STRICT)
+                        .withChronology(IsoChronology.INSTANCE));
     }
 }
