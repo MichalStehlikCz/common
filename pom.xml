@@ -7,7 +7,7 @@
     <version>1.0.4-SNAPSHOT</version>
     <modules>
         <module>exception</module>
-        <module>xsd</module>
+        <module>datatype</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
