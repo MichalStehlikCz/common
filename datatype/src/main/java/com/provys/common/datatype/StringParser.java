@@ -51,7 +51,6 @@ public class StringParser {
         public int adjustCount(int count) {
             return included ? count - 1 : count;
             }
-        }
     }
 
     private final String string;
@@ -64,6 +63,25 @@ public class StringParser {
     public StringParser(String string) {
         this.string = Objects.requireNonNull(string);
         this.pos = 0;
+    }
+
+    /**
+     * @return current position of parser
+     */
+    public int getPos() {
+        return pos;
+    }
+
+    /**
+     * Set position of parser.
+     *
+     * @param pos is position to be set
+     */
+    public void setPos(int pos) {
+        if (pos < 0) {
+            throw new InvalidParameterException("Cannot set position of string parser to negative value " + pos);
+        }
+        this.pos = pos;
     }
 
     /**
@@ -142,10 +160,21 @@ public class StringParser {
      * @param chars is number of characters to be read
      * @return unsigned integer parsed from current position in the string
      */
-    public int readUnsingedInt(int chars) {
+    public int readUnsignedInt(int chars) {
         return readUnsignedInt(chars, chars);
     }
 
+    /**
+     * Parse signed integer from the string, reading only sign (optional) and digits. It reads at least minChars and
+     * at most maxChars characters (plus potentially sign, depending on signHandling), throws error if non-numeric
+     * character or end of string is reached
+     *
+     * @param minChars is minimal number of characters (see also signHandling)
+     * @param maxChars is amximal number of characters (see also signHandling)
+     * @param signHandling defines how should sign be handled. It might be forbidden, required and it might be included
+     *                    in number of characters specified in minChars / maxChars or added on top of that
+     * @return number read from String
+     */
     public int readInt(int minChars, int maxChars, SignHandling signHandling) {
         boolean negative = false;
         if (peek() < '0') {
@@ -162,6 +191,9 @@ public class StringParser {
                 default:
                     throw new InternalException(LOG, "Invalid first character in read integer " + peek());
             }
+            if (signHandling == SignHandling.NONE) {
+                throw new InternalException(LOG, "Sign not expected when parsing with sign-handling NONE");
+            }
         } else {
             if (signHandling == SignHandling.MANDATORY) {
                 throw new InternalException(LOG, "Sign required and missing");
@@ -169,5 +201,18 @@ public class StringParser {
         }
         int result = readUnsignedInt(minChars, maxChars);
         return negative ? -result : result;
+    }
+
+    /**
+     * Parse signed integer from the string, reading only sign (optional) and digits. It reads chars characters (plus
+     * potentially sign, depending on signHandling), throws error if non-numeric character or end of string is reached
+     *
+     * @param chars is number of characters to be read (see also signHandling)
+     * @param signHandling defines how should sign be handled. It might be forbidden, required and it might be included
+     *                    in number of characters specified in chars or added on top of that
+     * @return number read from String
+     */
+    public int readInt(int chars, SignHandling signHandling) {
+        return readInt(chars, chars, signHandling);
     }
 }

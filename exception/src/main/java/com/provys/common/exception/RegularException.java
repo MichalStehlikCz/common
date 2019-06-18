@@ -33,7 +33,12 @@ public final class RegularException extends ProvysException {
         super(nameNm + ": " + message, cause);
         this.nameNm = nameNm;
         this.params = new HashMap<>(params);
-        logger.error("{}: {} {}", nameNm, message, params);
+        if ((cause == null) || (cause instanceof InternalException) || (cause instanceof RegularException)) {
+            // null does not need logging and remaining too were already logged
+            logger.error("{}: {}; params {}", nameNm, message, params);
+        } else {
+            logger.error("{}: {}; params {}; cause {}", nameNm, message, params, cause);
+        }
     }
 
     /**

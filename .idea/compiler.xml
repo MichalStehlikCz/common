@@ -6,6 +6,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="common-datatype" />
         <module name="Common-Datatype" />
         <module name="common-exception" />
         <module name="common-xsd" />
@@ -14,6 +15,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="common" target="1.5" />
+      <module name="common-datatype" target="11" />
       <module name="Common-Datatype" target="11" />
       <module name="common-exception" target="11" />
       <module name="common-xsd" target="11" />

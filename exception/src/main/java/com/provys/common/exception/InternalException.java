@@ -30,7 +30,12 @@ public final class InternalException extends ProvysException {
      */
     public InternalException(Logger logger, String message, Map<String, String> params, @Nullable Throwable cause) {
         super(message, cause);
-        logger.error("{}: {} {} {}", NAME_NM, message, params, cause);
+        if ((cause == null) || (cause instanceof InternalException) || (cause instanceof RegularException)) {
+            // null does not need logging and remaining too were already logged
+            logger.error("{}: {}; params {}", NAME_NM, message, params);
+        } else {
+            logger.error("{}: {}; params {}; cause {}", NAME_NM, message, params, cause);
+        }
     }
 
     /**
