@@ -66,14 +66,14 @@ public class StringParser {
     }
 
     /**
-     * @return current position of parser
+     * @return current position of parser; it points to next character to be read and it is 0 when parser is created
      */
     public int getPos() {
         return pos;
     }
 
     /**
-     * Set position of parser.
+     * Set position of parser. Position should be index of next character to be read.
      *
      * @param pos is position to be set
      */
@@ -115,6 +115,17 @@ public class StringParser {
      */
     public char peek() {
         return string.charAt(pos);
+    }
+
+    /**
+     * Return current character, without moving position of the parser. It returns last character obtained if there was
+     * no setPos, character on index before one specified if setPos has been used
+     *
+     * @return character that will be returned next
+     * @throws StringIndexOutOfBoundsException in case position is after end of the string
+     */
+    public char current() {
+        return string.charAt(pos - 1);
     }
 
     /**

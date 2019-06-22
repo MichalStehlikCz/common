@@ -101,6 +101,30 @@ class StringParserTest {
     }
 
     @Nonnull
+    static Stream<Object[]> currentTest() {
+        return Stream.of(
+                new Object[]{"abcdefg", 7, false, 'g'}
+                , new Object[]{"abcdefg", 1, false, 'a'}
+                , new Object[]{"abcdefg", 100, true, 'x'}
+                , new Object[]{"abcdefg", 8, true, 'x'}
+                , new Object[]{"abcdefg", 0, true, 'x'}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void currentTest(String string, int pos, boolean exception, char result) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        if (exception) {
+            assertThatThrownBy(parser::current).isInstanceOf(StringIndexOutOfBoundsException.class);
+        } else {
+            assertThat(parser.current()).isEqualTo(result);
+            assertThat(parser.getPos()).isEqualTo(pos);
+        }
+    }
+
+    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readUnsignedIntTest() {
         return Stream.of(
