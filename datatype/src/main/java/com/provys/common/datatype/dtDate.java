@@ -3,6 +3,7 @@ package com.provys.common.datatype;
 import javax.annotation.Nonnull;
 import java.time.*;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -189,10 +190,45 @@ final public class DtDate implements Comparable<DtDate> {
     }
 
     /**
-     * @return true if date is in interval MIN - MAX, false if given date is special value (PRIV, ME)
+     * @return true if date is inside interval MIN - MAX, false if given date is special value (PRIV, ME, MIN, MAX)
      */
     public boolean isRegular() {
+        return (compareTo(MIN) > 0) && (compareTo(MAX) < 0);
+    }
+
+    /**
+     * @return true if this value is regular, MIN or MAX
+     */
+    public boolean isValid() {
         return (compareTo(MIN) >= 0) && (compareTo(MAX) <= 0);
+    }
+
+    /**
+     * @return if this value is PRIV
+     */
+    public boolean isPriv() {
+        return equals(PRIV);
+    }
+
+    /**
+     * @return if this value is ME (multivalue indicator)
+     */
+    public boolean isME() {
+        return equals(ME);
+    }
+
+    /**
+     * @return if this value is MIN (start of unlimited interval)
+     */
+    public boolean isMin() {
+        return equals(MIN);
+    }
+
+    /**
+     * @return if this value is MAX (end of unlimited interval)
+     */
+    public boolean isMax() {
+        return equals(MAX);
     }
 
     /**
@@ -211,6 +247,35 @@ final public class DtDate implements Comparable<DtDate> {
             return this;
         }
         return ofLocalDate(getLocalDate().plusDays(daysToAdd));
+    }
+
+    /**
+     * Difference of dates (in days).
+     *
+     * @param date date to be subtracted
+     * @return different of supplied dates in days. Returns PRIV if any of operands if missing privileges value, ME if
+     * any of the operands is ME and not PRIV
+     */
+    public long minus(DtDate date) {
+        if (isPriv() || date.isPriv()) {
+            return 0;
+        }
+        if (isME() || date.isME()) {
+            return -1;
+        }
+        if (isMax()) {
+            return date.isMax() ? 0 : Integer.MAX_VALUE;
+        }
+        if (isMin()) {
+            return date.isMin() ? 0 : Integer.MIN_VALUE;
+        }
+        if (date.isMax()) {
+            return Integer.MIN_VALUE;
+        }
+        if (date.isMin()) {
+            return Integer.MAX_VALUE;
+        }
+        return ChronoUnit.DAYS.between(this.getLocalDate(), date.getLocalDate());
     }
 
     /**
