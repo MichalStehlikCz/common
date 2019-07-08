@@ -9,7 +9,8 @@ import java.util.Objects;
 
 /**
  * Implements support for standard Provys DATE domain. DtDate value is immutable.
- * DATE values are modelled as LocalDate instances in Provys Java framework
+ * DATE values are held in DtDate instances in Provys Java framework; at the momentm logic is based on JDK's
+ * {@code LocalDate} functionality, but this behaviour can change later.
  */
 final public class DtDate implements Comparable<DtDate> {
 
@@ -190,6 +191,9 @@ final public class DtDate implements Comparable<DtDate> {
     }
 
     /**
+     * Indicates if given value is regular date value. Regular values are valid values in period MIN ... MAX
+     * (exclusive)
+     *
      * @return true if date is inside interval MIN - MAX, false if given date is special value (PRIV, ME, MIN, MAX)
      */
     public boolean isRegular() {
@@ -197,6 +201,9 @@ final public class DtDate implements Comparable<DtDate> {
     }
 
     /**
+     * Indicates values that are valid as date values in Provys. Note that boundary values (MIN, MAX) might be valid
+     * only for some properties and not valid for others.
+     *
      * @return true if this value is regular, MIN or MAX
      */
     public boolean isValid() {
@@ -235,47 +242,61 @@ final public class DtDate implements Comparable<DtDate> {
      * Returns a copy of this {@code DtDate} with the specified number of days added.
      * This method adds the specified amount of days and ensures result remains valid. The result is only invalid if the
      * maximum/minimum year is exceeded. When function is applied on special value (MIN, MAX, PRIV, ME), it is returned
-     * unchanged
+     * unchanged. If supplied integer value corresponds to one of special values (PRIV, ME), corresponding special value
+     * is returned
      *
      * @param daysToAdd  the days to add, may be negative
      * @return a {@code DtDate} based on this date with the days added, not null
      * @throws DateTimeException if the result exceeds the supported date range
      */
     @Nonnull
-    public DtDate plusDays(long daysToAdd) {
-        if ((compareTo(MIN) <= 0) || (compareTo(MAX) >=0)) {
+    public DtDate plusDays(int daysToAdd) {
+        if (equals(PRIV) || DtInteger.PRIV.equals(daysToAdd)) {
+            return PRIV;
+        }
+        if (equals(ME) || DtInteger.ME.equals(daysToAdd)) {
+            return ME;
+        }
+        if (equals(MIN) || equals(MAX)) {
             return this;
+        }
+        if (DtInteger.MIN.equals(daysToAdd)) {
+            return MIN;
+        }
+        if (DtInteger.MAX.equals(daysToAdd)) {
+            return MAX;
         }
         return ofLocalDate(getLocalDate().plusDays(daysToAdd));
     }
 
     /**
-     * Difference of dates (in days).
+     * Difference of dates (in days). Note that in case this or operand are special values, you will not get original
+     * value when applying result of minus on operand
      *
      * @param date date to be subtracted
      * @return different of supplied dates in days. Returns PRIV if any of operands if missing privileges value, ME if
      * any of the operands is ME and not PRIV
      */
-    public long minus(DtDate date) {
+    public int minus(DtDate date) {
         if (isPriv() || date.isPriv()) {
-            return 0;
+            return DtInteger.PRIV;
         }
         if (isME() || date.isME()) {
-            return -1;
+            return DtInteger.ME;
         }
         if (isMax()) {
-            return date.isMax() ? 0 : Integer.MAX_VALUE;
+            return date.isMax() ? 0 : DtInteger.MAX;
         }
         if (isMin()) {
-            return date.isMin() ? 0 : Integer.MIN_VALUE;
+            return date.isMin() ? 0 : DtInteger.MIN;
         }
         if (date.isMax()) {
-            return Integer.MIN_VALUE;
+            return DtInteger.MIN;
         }
         if (date.isMin()) {
-            return Integer.MAX_VALUE;
+            return DtInteger.MAX;
         }
-        return ChronoUnit.DAYS.between(this.getLocalDate(), date.getLocalDate());
+        return (int) ChronoUnit.DAYS.between(date.getLocalDate(), this.getLocalDate());
     }
 
     /**

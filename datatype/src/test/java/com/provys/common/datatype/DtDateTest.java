@@ -119,8 +119,8 @@ class DtDateTest {
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), true}
-                , new Object[]{DtDate.MIN, true}
-                , new Object[]{DtDate.MAX, true}
+                , new Object[]{DtDate.MIN, false}
+                , new Object[]{DtDate.MAX, false}
                 , new Object[]{DtDate.PRIV, false}
                 , new Object[]{DtDate.ME, false}
         );
@@ -130,6 +130,23 @@ class DtDateTest {
     @MethodSource
     void isRegularTest(DtDate date, boolean result) {
         assertThat(date.isRegular()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isValidTest() {
+        return Stream.of(
+                new Object[]{DtDate.of(1989, 11, 25), true}
+                , new Object[]{DtDate.MIN, true}
+                , new Object[]{DtDate.MAX, true}
+                , new Object[]{DtDate.PRIV, false}
+                , new Object[]{DtDate.ME, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidTest(DtDate date, boolean result) {
+        assertThat(date.isValid()).isEqualTo(result);
     }
 
     @Nonnull
@@ -152,12 +169,31 @@ class DtDateTest {
 
     @ParameterizedTest
     @MethodSource
-    void plusDaysTest(DtDate date, int days, @Nullable DtDate result) {
-        if (result != null) {
-            assertThat(date.plusDays(days)).isEqualTo(result);
-        } else {
-            assertThatThrownBy(() -> date.plusDays(days)).isInstanceOf(DateTimeException.class);
-        }
+    void plusDaysTest(DtDate date, int days, DtDate result) {
+        assertThat(date.plusDays(days)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> minusTest() {
+        return Stream.of(
+                new Object[]{DtDate.of(1989, 12, 5), DtDate.of(1989, 11, 25), 10}
+                , new Object[]{DtDate.of(1989, 11, 15), DtDate.of(1989, 11, 25), -10}
+                , new Object[]{DtDate.of(2012, 1, 1), DtDate.of(2011, 12, 31), 1}
+                , new Object[]{DtDate.of(2010, 12, 31), DtDate.of(2011, 1, 1), -1}
+                , new Object[]{DtDate.of(2010, 12, 31), DtDate.PRIV, DtInteger.PRIV}
+                , new Object[]{DtDate.PRIV, DtDate.ME, DtInteger.PRIV}
+                , new Object[]{DtDate.ME, DtDate.of(2012, 1, 1), DtInteger.ME}
+                , new Object[]{DtDate.MIN, DtDate.of(2010, 12, 31), DtInteger.MIN}
+                , new Object[]{DtDate.MAX, DtDate.of(2010, 12, 31), DtInteger.MAX}
+                , new Object[]{DtDate.of(2010, 12, 31), DtDate.MIN, DtInteger.MAX}
+                , new Object[]{DtDate.of(2010, 12, 31), DtDate.MAX, DtInteger.MIN}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void minusTest(DtDate date, DtDate second, int result) {
+        assertThat(date.minus(second)).isEqualTo(result);
     }
 
     @Nonnull
