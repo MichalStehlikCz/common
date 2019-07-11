@@ -15,6 +15,16 @@ public class DtInteger {
     public static final Integer MAX = Integer.MAX_VALUE;
 
     /**
+     * Indicates if supplied value is valid (e.g. regular or special value)
+     *
+     * @param value is the value to be checked
+     * @return true if supplied value is regular value from within MIN..MAX interval or special value, false otherwise
+     */
+    public static boolean isValid(int value) {
+        return ((value >= MIN) && (value <= MAX)) || (value == PRIV) || (value == ME);
+    }
+
+    /**
      * Indicates if supplied value is regular (e.g. not one of special values, inside interval of MIN .. MAX).
      *
      * @param value is the value to be checked
@@ -32,7 +42,7 @@ public class DtInteger {
      * @param value is the value to be checked
      * @return true if supplied value is from (inclusive) MIN .. MAX interval, false otherwise
      */
-    public static boolean isValid(int value) {
+    public static boolean isValidValue(int value) {
         return (value >= MIN) && (value <= MAX);
     }
 

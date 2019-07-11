@@ -133,7 +133,7 @@ class DtDateTest {
     }
 
     @Nonnull
-    static Stream<Object[]> isValidTest() {
+    static Stream<Object[]> isValidValueTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), true}
                 , new Object[]{DtDate.MIN, true}
@@ -145,8 +145,8 @@ class DtDateTest {
 
     @ParameterizedTest
     @MethodSource
-    void isValidTest(DtDate date, boolean result) {
-        assertThat(date.isValid()).isEqualTo(result);
+    void isValidValueTest(DtDate date, boolean result) {
+        assertThat(date.isValidValue()).isEqualTo(result);
     }
 
     @Nonnull

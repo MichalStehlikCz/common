@@ -206,7 +206,7 @@ final public class DtDate implements Comparable<DtDate> {
      *
      * @return true if this value is regular, MIN or MAX
      */
-    public boolean isValid() {
+    public boolean isValidValue() {
         return (compareTo(MIN) >= 0) && (compareTo(MAX) <= 0);
     }
 

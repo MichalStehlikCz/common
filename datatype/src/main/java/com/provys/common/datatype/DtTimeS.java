@@ -3,6 +3,7 @@ package com.provys.common.datatype;
 import javax.annotation.Nonnull;
 import java.time.DateTimeException;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
@@ -12,22 +13,22 @@ public class DtTimeS {
     /**
      * Date value, returned when user doesn't have the rights to access the value
      */
-    public static final DtTimeS PRIV = new DtTimeS(DtInteger.PRIV);
+    public static final DtTimeS PRIV = new DtTimeS(DtInteger.PRIV, false);
 
     /**
      * Date value, returned as indication of multi-value
      */
-    public static final DtTimeS ME = new DtTimeS(DtInteger.ME);
+    public static final DtTimeS ME = new DtTimeS(DtInteger.ME, false);
 
     /**
      * Minimal date value, valid in Provys
      */
-    public static final DtTimeS MIN = new DtTimeS(DtInteger.MIN);
+    public static final DtTimeS MIN = new DtTimeS(DtInteger.MIN, false);
 
     /**
      * Maximal date value, valid in Provys
      */
-    public static final DtTimeS MAX = new DtTimeS(DtInteger.MAX);
+    public static final DtTimeS MAX = new DtTimeS(DtInteger.MAX, false);
 
     /**
      * whole hours are used pretty often, so it might be good idea to cache them...
@@ -48,7 +49,7 @@ public class DtTimeS {
      */
     @Nonnull
     public static DtTimeS ofLocalTime(LocalTime time) {
-        return of(time.getHour()*3600 + time.getMinute()*60 + time.getSecond() + (time.getNano() >= 500000000 ? 1 : 0));
+        return ofHourToNano(time.getHour(), time.getMinute(), time.getSecond(), time.getNano());
     }
 
     /**
@@ -58,7 +59,7 @@ public class DtTimeS {
      * @return resulting value
      */
     @Nonnull
-    public static DtTimeS of(int time) {
+    public static DtTimeS ofSeconds(int time) {
         if (DtInteger.isRegular(time)) {
             if ((time % 3600 == 0) && (time / 3600 < HOURS.length)) {
                 return HOURS[time / 3600];
@@ -81,6 +82,207 @@ public class DtTimeS {
                 DtInteger.MIN + " .. " + DtInteger.MAX);
     }
 
+    private static void checkSecondToNano(int seconds, int nanoSeconds) {
+        if (seconds < 0) {
+            throw new DateTimeException("Negative number of seconds supplied; use negative sign instead");
+        }
+        if (nanoSeconds < 0) {
+            throw new DateTimeException("Negative number of nano-seconds supplied; use negative sign instead");
+        }
+        if (nanoSeconds >= 1000000000) {
+            throw new DateTimeException("Number of nanoseconds bigger than 1000000000 not allowed");
+        }
+    }
+
+    private static void checkMinuteToNano(int minutes, int seconds, int nanoSeconds) {
+        if (minutes < 0) {
+            throw new DateTimeException("Negative number of minutes supplied; use negative sign instead");
+        }
+        if (seconds >= 60) {
+            throw new DateTimeException("Number of seconds in minute is limited by 60");
+        }
+        checkSecondToNano(seconds, nanoSeconds);
+    }
+
+    private static void checkHourToNano(int hours, int minutes, int seconds, int nanoSeconds) {
+        if (hours < 0) {
+            throw new DateTimeException("Negative number of hours supplied; use negative sign instead");
+        }
+        if (minutes >= 60) {
+            throw new DateTimeException("Number of minutes in hour is limited by 60");
+        }
+        checkMinuteToNano(minutes, seconds, nanoSeconds);
+    }
+
+    @Nonnull
+    private static DtTimeS ofDayToNanoNoCheck(boolean negative, int days, int hours, int minutes, int seconds,
+                                              int nanoSeconds) {
+        int time = days * 86400 + hours*3600 + minutes*60 + seconds + (nanoSeconds >= 500000000 ? 1 : 0);
+        if (negative) {
+            time = -time;
+        }
+        return ofSeconds(time);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param days is number of days; might be positive or negative, in case of negative value, whole time value is
+     *             negative
+     * @param hours is number of hours, in range 0 .. 23
+     * @param minutes is number of minutes, in range 0 .. 59
+     * @param seconds is number of seconds, in range 0 .. 59
+     * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
+     */
+    @Nonnull
+    public static DtTimeS ofDayToNano(int days, int hours, int minutes, int seconds, int nanoSeconds) {
+        if (hours >= 24) {
+            throw new DateTimeException("Number of hours in day is limited by 24");
+        }
+        checkHourToNano(hours, minutes, seconds, nanoSeconds);
+        return ofDayToNanoNoCheck(false, days, hours, minutes, seconds, nanoSeconds);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param days is number of days; might be positive or negative, in case of negative value, whole time value is
+     *             negative
+     * @param hours is number of hours, in range 0 .. 23
+     * @param minutes is number of minutes, in range 0 .. 59
+     * @param seconds is number of seconds, in range 0 .. 59
+     */
+    @Nonnull
+    public static DtTimeS ofDayToSecond(int days, int hours, int minutes, int seconds) {
+        return ofDayToNano(days, hours, minutes, seconds, 0);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param days is number of days; might be positive or negative, in case of negative value, whole time value is
+     *             negative
+     * @param hours is number of hours, in range 0 .. 23
+     * @param minutes is number of minutes, in range 0 .. 59
+     */
+    @Nonnull
+    public static DtTimeS ofDayToMinute(int days, int hours, int minutes) {
+        return ofDayToSecond(days, hours, minutes, 0);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param negative indicates if time is negative (bellow zero) or positive
+     * @param hours is number of hours, must be positive or zero
+     * @param minutes is number of minutes, in range 0 .. 59
+     * @param seconds is number of seconds, in range 0 .. 59
+     * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
+     */
+    @Nonnull
+    public static DtTimeS ofHourToNano(boolean negative, int hours, int minutes, int seconds, int nanoSeconds) {
+        checkHourToNano(hours, minutes, seconds, nanoSeconds);
+        return ofDayToNanoNoCheck(negative, 0, hours, minutes, seconds, nanoSeconds);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param hours is number of hours, must be positive or zero
+     * @param minutes is number of minutes, in range 0 .. 59
+     * @param seconds is number of seconds, in range 0 .. 59
+     * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
+     */
+    @Nonnull
+    public static DtTimeS ofHourToNano(int hours, int minutes, int seconds, int nanoSeconds) {
+        return ofHourToNano(false, hours, minutes, seconds, nanoSeconds);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param negative indicates if time is negative (bellow zero) or positive
+     * @param hours is number of hours, must be positive or zero
+     * @param minutes is number of minutes, in range 0 .. 59
+     * @param seconds is number of seconds, in range 0 .. 59
+     */
+    @Nonnull
+    public static DtTimeS ofHourToSecond(boolean negative, int hours, int minutes, int seconds) {
+        return ofHourToNano(negative, hours, minutes, seconds, 0);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param hours is number of hours, must be positive or zero
+     * @param minutes is number of minutes, in range 0 .. 59
+     * @param seconds is number of seconds, in range 0 .. 59
+     */
+    @Nonnull
+    public static DtTimeS ofHourToSecond(int hours, int minutes, int seconds) {
+        return ofHourToSecond(false, hours, minutes, seconds);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param negative indicates if time is negative (bellow zero) or positive
+     * @param hours is number of hours, must be positive or zero
+     * @param minutes is number of minutes, in range 0 .. 59
+     */
+    @Nonnull
+    public static DtTimeS ofHourToMinute(boolean negative, int hours, int minutes) {
+        return ofHourToSecond(negative, hours, minutes, 0);
+    }
+
+    /**
+     * Return time object, representing given value (per parts).
+     *
+     * @param hours is number of hours, must be positive or zero
+     * @param minutes is number of minutes, in range 0 .. 59
+     */
+    @Nonnull
+    public static DtTimeS ofHourToMinute(int hours, int minutes) {
+        return ofHourToMinute(false, hours, minutes);
+    }
+
+    /**
+     * Parse value from text. Format is [-]HH:MM:SS; frame part can be specified, but must be 00. Hours might go beyond 24
+     * hours.
+     *
+     * @param value is text to be parsed
+     * @return valid {@code DtTimeS} value corresponding to supplied text
+     */
+    @Nonnull
+    public static DtTimeS parse(String value) {
+        var parser = new StringParser(value);
+        var negative = false;
+        if (parser.peek() == '-') {
+            negative = true;
+            parser.next();
+        }
+        var hours = parser.readUnsignedInt(1, 3);
+        if (parser.next() != ':') {
+            throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
+                    parser.getPos());
+        }
+        var minutes = parser.readUnsignedInt(1, 2);
+        if (parser.next() != ':') {
+            throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
+                    parser.getPos());
+        }
+        var seconds = parser.readUnsignedInt(1, 2);
+        if (parser.peek() == ':') {
+            parser.next();
+            var nanoSeconds = parser.readUnsignedInt(1, 9);
+            if (nanoSeconds != 0) {
+                throw new DateTimeParseException(
+                        "Invalid Provys time in seconds format; frame part expected to be zero", value, parser.getPos());
+            }
+        }
+        return ofHourToSecond(negative, hours, minutes, seconds);
+    }
+
     /**
      * Retrieve instance of {@code DtTimeS} corresponding to current time (in default time-zone).
      */
@@ -97,12 +299,31 @@ public class DtTimeS {
     private final int time;
 
     /**
-     * Default constructor. It is private, static functions should be used instead of constructor to retrieve instances
-     * of localtime (to support caching)
+     * Constructor supporting even special values. It is private, static functions should be used instead of constructor
+     * to retrieve instances of localtime (to allow caching)
+     *
+     * @param time is time in seconds new object should represent
+     * @param regular indicates if only regular time values are allowed
+     */
+    private DtTimeS(int time, boolean regular) {
+        if (regular) {
+            if (!DtInteger.isRegular(time)) {
+                throw new DateTimeException("Only regular time values allowed in constructor, not " + time);
+            }
+        } else {
+            if (!DtInteger.isValid(time)) {
+                throw new DateTimeException("Only valid time values allowed in constructor, not " + time);
+            }
+        }
+        this.time = time;
+    }
+
+    /**
+     * Default constructor, only supporting regular values.
      *
      * @param time is time in seconds new object should represent
      */
     private DtTimeS(int time) {
-        this.time = time;
+        this(time, true);
     }
 }

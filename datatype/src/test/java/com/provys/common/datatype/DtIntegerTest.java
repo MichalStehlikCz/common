@@ -11,6 +11,25 @@ import static org.assertj.core.api.Assertions.*;
 class DtIntegerTest {
 
     @Nonnull
+    static Stream<Object[]> isValidTest() {
+        return Stream.of(
+                new Object[]{15482, true}
+                , new Object[]{-87549645, true}
+                , new Object[]{DtInteger.PRIV, true}
+                , new Object[]{DtInteger.ME, true}
+                , new Object[]{DtInteger.MIN, true}
+                , new Object[]{DtInteger.MAX, true}
+                , new Object[]{Integer.MIN_VALUE, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidTest(int value, boolean result) {
+        assertThat(DtInteger.isValid(value)).isEqualTo(result);
+    }
+
+    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{15482, true}
@@ -29,7 +48,7 @@ class DtIntegerTest {
     }
 
     @Nonnull
-    static Stream<Object[]> isValidTest() {
+    static Stream<Object[]> isValidValueTest() {
         return Stream.of(
                 new Object[]{15482, true}
                 , new Object[]{-87549645, true}
@@ -42,7 +61,7 @@ class DtIntegerTest {
 
     @ParameterizedTest
     @MethodSource
-    void isValidTest(int value, boolean result) {
+    void isValidValueTest(int value, boolean result) {
         assertThat(DtInteger.isValid(value)).isEqualTo(result);
     }
 }
