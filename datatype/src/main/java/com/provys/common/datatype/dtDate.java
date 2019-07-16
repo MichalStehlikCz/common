@@ -12,7 +12,8 @@ import java.util.Objects;
  * DATE values are held in DtDate instances in Provys Java framework; at the momentm logic is based on JDK's
  * {@code LocalDate} functionality, but this behaviour can change later.
  */
-final public class DtDate implements Comparable<DtDate> {
+@SuppressWarnings("WeakerAccess")
+public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Minimal value that can be represented by DtDate; all special values must fall into this range
@@ -43,6 +44,26 @@ final public class DtDate implements Comparable<DtDate> {
      * Maximal date value, valid in Provys
      */
     public static final DtDate MAX = of(5000, 1, 1);
+
+    /**
+     * Text representing PRIV value
+     */
+    public static final String PRIV_TEXT = "########";
+
+    /**
+     * Text representing ME value
+     */
+    public static final String ME_TEXT = "********";
+
+    /**
+     * Text representing MIN value
+     */
+    public static final String MIN_TEXT = "<<<<<<<<";
+
+    /**
+     * Text representing MAX value
+     */
+    public static final String MAX_TEXT = ">>>>>>>>";
 
     /**
      * Retrieves instance of {@code DtDate} corresponding to given {@code LocalDate}.
@@ -109,6 +130,18 @@ final public class DtDate implements Comparable<DtDate> {
      */
     @Nonnull
     public static DtDate parse(CharSequence text) {
+        if (text.equals(PRIV_TEXT)) {
+            return PRIV;
+        }
+        if (text.equals(ME_TEXT)) {
+            return ME;
+        }
+        if (text.equals(MIN_TEXT)) {
+            return MIN;
+        }
+        if (text.equals(MAX_TEXT)) {
+            return MAX;
+        }
         return ofLocalDate(LocalDate.parse(text));
     }
 
@@ -163,34 +196,6 @@ final public class DtDate implements Comparable<DtDate> {
     }
 
     /**
-     * @return {@code LocalDate} represented by this object
-     */
-    public LocalDate getLocalDate() {
-        return value;
-    }
-
-    /**
-     * @return year from this date value
-     */
-    public int getYear() {
-        return value.getYear();
-    }
-
-    /**
-     * @return month from this date value
-     */
-    public int getMonthValue() {
-        return value.getMonthValue();
-    }
-
-    /**
-     * @return day of month from this date value
-     */
-    public int getDayOfMonth() {
-        return value.getDayOfMonth();
-    }
-
-    /**
      * Indicates if given value is regular date value. Regular values are valid values in period MIN ... MAX
      * (exclusive)
      *
@@ -236,6 +241,52 @@ final public class DtDate implements Comparable<DtDate> {
      */
     public boolean isMax() {
         return equals(MAX);
+    }
+
+    /**
+     * @return {@code LocalDate} represented by this object
+     */
+    public LocalDate getLocalDate() {
+        return value;
+    }
+
+    /**
+     * @return year from this date value
+     */
+    public int getYear() {
+        if (this.equals(PRIV)) {
+            return DtInteger.PRIV;
+        }
+        if (this.equals(ME)) {
+            return DtInteger.ME;
+        }
+        return value.getYear();
+    }
+
+    /**
+     * @return month from this date value
+     */
+    public int getMonthValue() {
+        if (this.equals(PRIV)) {
+            return DtInteger.PRIV;
+        }
+        if (this.equals(ME)) {
+            return DtInteger.ME;
+        }
+        return value.getMonthValue();
+    }
+
+    /**
+     * @return day of month from this date value
+     */
+    public int getDayOfMonth() {
+        if (this.equals(PRIV)) {
+            return DtInteger.PRIV;
+        }
+        if (this.equals(ME)) {
+            return DtInteger.ME;
+        }
+        return value.getDayOfMonth();
     }
 
     /**
@@ -341,6 +392,18 @@ final public class DtDate implements Comparable<DtDate> {
     @Nonnull
     @Override
     public String toString() {
+        if (equals(PRIV)) {
+            return PRIV_TEXT;
+        }
+        if (equals(ME)) {
+            return ME_TEXT;
+        }
+        if (equals(MIN)) {
+            return MIN_TEXT;
+        }
+        if (equals(MAX)) {
+            return MAX_TEXT;
+        }
         return value.toString();
     }
 }

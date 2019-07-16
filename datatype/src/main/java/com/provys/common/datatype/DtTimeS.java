@@ -8,7 +8,8 @@ import java.time.format.DateTimeParseException;
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
  */
-public class DtTimeS {
+@SuppressWarnings("WeakerAccess")
+public class DtTimeS implements Comparable<DtTimeS> {
 
     /**
      * Date value, returned when user doesn't have the rights to access the value
@@ -61,7 +62,7 @@ public class DtTimeS {
     @Nonnull
     public static DtTimeS ofSeconds(int time) {
         if (DtInteger.isRegular(time)) {
-            if ((time % 3600 == 0) && (time / 3600 < HOURS.length)) {
+            if ((time >= 0) && (time % 3600 == 0) && (time / 3600 < HOURS.length)) {
                 return HOURS[time / 3600];
             }
             return new DtTimeS(time);
@@ -267,12 +268,19 @@ public class DtTimeS {
                     parser.getPos());
         }
         var minutes = parser.readUnsignedInt(1, 2);
+        if (!parser.hasNext()) {
+            try {
+                return ofHourToMinute(negative, hours, minutes);
+            } catch (DateTimeException e) {
+                throw new DateTimeParseException(e.getMessage(), value, parser.getPos());
+            }
+        }
         if (parser.next() != ':') {
             throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
                     parser.getPos());
         }
         var seconds = parser.readUnsignedInt(1, 2);
-        if (parser.peek() == ':') {
+        if (parser.hasNext() && (parser.peek() == ':')) {
             parser.next();
             var nanoSeconds = parser.readUnsignedInt(1, 9);
             if (nanoSeconds != 0) {
@@ -280,7 +288,11 @@ public class DtTimeS {
                         "Invalid Provys time in seconds format; frame part expected to be zero", value, parser.getPos());
             }
         }
-        return ofHourToSecond(negative, hours, minutes, seconds);
+        try {
+            return ofHourToSecond(negative, hours, minutes, seconds);
+        } catch (DateTimeException e) {
+            throw new DateTimeParseException(e.getMessage(), value, parser.getPos());
+        }
     }
 
     /**
@@ -325,5 +337,206 @@ public class DtTimeS {
      */
     private DtTimeS(int time) {
         this(time, true);
+    }
+
+    /**
+     * Indicates if given value is regular date value. Regular values are valid values in period MIN ... MAX
+     * (exclusive)
+     *
+     * @return true if date is inside interval MIN - MAX, false if given date is special value (PRIV, ME, MIN, MAX)
+     */
+    public boolean isRegular() {
+        return (compareTo(MIN) > 0) && (compareTo(MAX) < 0);
+    }
+
+    /**
+     * Indicates values that are valid as date values in Provys. Note that boundary values (MIN, MAX) might be valid
+     * only for some properties and not valid for others.
+     *
+     * @return true if this value is regular, MIN or MAX
+     */
+    public boolean isValidValue() {
+        return (compareTo(MIN) >= 0) && (compareTo(MAX) <= 0);
+    }
+
+    /**
+     * @return if this value is PRIV
+     */
+    public boolean isPriv() {
+        return equals(PRIV);
+    }
+
+    /**
+     * @return if this value is ME (multivalue indicator)
+     */
+    public boolean isME() {
+        return equals(ME);
+    }
+
+    /**
+     * @return if this value is MIN (start of unlimited interval)
+     */
+    public boolean isMin() {
+        return equals(MIN);
+    }
+
+    /**
+     * @return if this value is MAX (end of unlimited interval)
+     */
+    public boolean isMax() {
+        return equals(MAX);
+    }
+
+    /**
+     * Subtract given amount of days from time
+     */
+    public DtTimeS plusDays(double daysToAdd) {
+        if (Math.abs(daysToAdd) * 86400 < 0.5) {
+            return this;
+        }
+        return ofSeconds((int) Math.round(time + daysToAdd * 86400));
+    }
+
+    /**
+     * Get number of days in this time item. Only whole days count when going to positive, even partial days count on
+     * negative side.
+     *
+     * @return number of days this time represents
+     */
+    public int getDays() {
+        if (time >= 0) {
+            return time / 86400;
+        } else {
+            return (time - 86359) / 86400;
+        }
+    }
+
+    /**
+     * Get given time expressed in days as unit.
+     *
+     * @return number of days (fractional) represented by this time
+     */
+    public double toDays() {
+        return ((double) time) / 86400d;
+    }
+
+    /**
+     * Get time with days removed.
+     *
+     * @return time with whole days removed, clipped to 0-24 hours interval
+     */
+    public DtTimeS getTime24() {
+        if (getDays() == 0) {
+            return this;
+        }
+        return ofSeconds(time - 86400 * getDays());
+    }
+
+    /**
+     * Get number of hours in this time item, minutes are trimmed, no 24 hout limit and negative values are treated as
+     * negative values
+     *
+     * @return number of hours this time represents
+     */
+    public int getHours() {
+        return time / 3600;
+    }
+
+    /**
+     * Get number of hours in this time item, but remove days part first.
+     *
+     * @return number of hours this time represents in range 0-23
+     */
+    public int getHours24() {
+        return (time - 86400 * getDays()) / 3600;
+    }
+
+    /**
+     * Get amount of hours this time represents.
+     *
+     * @return hours represented by this time
+     */
+    public double toHours() {
+        return (double) time / 3600d;
+    }
+
+    /**
+     * Get number of minutes in this item. In case of negative time, non-positive value is returned
+     *
+     * @return minute part of this time
+     */
+    public int getMinutes() {
+        return (time % 3600) / 60;
+    }
+
+    /**
+     * Get number of minutes in this item. Days part is subtracted first, resulting in this function always returning
+     * non-negative value
+     *
+     * @return minute part of this time
+     */
+    public int getMinutes24() {
+        return ((time - 86400 * getDays()) % 3600) / 60;
+    }
+
+    /**
+     * Convert given time to amount of minutes
+     *
+     * @return minute length this time represents
+     */
+    public double toMinutes() {
+        return (double) time / 60d;
+    }
+
+    /**
+     * Get number of seconds in this item. In case of negative time, non-positive value is returned
+     *
+     * @return second part of this time
+     */
+    public int getSeconds() {
+        return time % 60;
+    }
+
+    /**
+     * Get number of seconds in this item. Days part is subtracted first, resulting in this function always returning
+     * non-negative value
+     *
+     * @return second part of this time
+     */
+    public int getSeconds24() {
+        return (time - 86400 * getDays()) % 60;
+    }
+
+    /**
+     * @return time in seconds
+     */
+    public double toSeconds() {
+        return time;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DtTimeS dtTimeS = (DtTimeS) o;
+
+        return time == dtTimeS.time;
+    }
+
+    @Override
+    public int hashCode() {
+        return time;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(getHours()), Math.abs(getMinutes()),
+                Math.abs(getSeconds()));
+    }
+
+    @Override
+    public int compareTo(DtTimeS other) {
+        return Double.compare(this.toSeconds(), other.toSeconds());
     }
 }

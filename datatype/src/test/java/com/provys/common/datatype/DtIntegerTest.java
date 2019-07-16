@@ -62,6 +62,6 @@ class DtIntegerTest {
     @ParameterizedTest
     @MethodSource
     void isValidValueTest(int value, boolean result) {
-        assertThat(DtInteger.isValid(value)).isEqualTo(result);
+        assertThat(DtInteger.isValidValue(value)).isEqualTo(result);
     }
 }
