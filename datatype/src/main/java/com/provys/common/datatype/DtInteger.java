@@ -51,5 +51,5 @@ public class DtInteger {
      * DtInteger is utility class used for manipulation with Integer values in Provys framework and this is why its
      * constructor is not accessible
      */
-    private DtInteger() {};
+    private DtInteger() {}
 }

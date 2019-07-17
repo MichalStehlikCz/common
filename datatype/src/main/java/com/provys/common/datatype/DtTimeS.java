@@ -429,16 +429,16 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Translate irregular DtTimeS value to corresponding DtInteger value
      */
     private Integer getIrregularInt() {
-        if (equals(PRIV)) {
+        if (isPriv()) {
             return DtInteger.PRIV;
         }
-        if (equals(ME)) {
+        if (isME()) {
             return DtInteger.ME;
         }
-        if (equals(MIN)) {
+        if (isMin()) {
             return DtInteger.MIN;
         }
-        if (equals(MAX)) {
+        if (isMax()) {
             return DtInteger.MAX;
         }
         throw new InternalException(LOG, "Function can only be used on irregular value");
@@ -448,16 +448,16 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Translate irregular DtTimeS value to corresponding DtInteger value
      */
     private Double getIrregularDouble() {
-        if (equals(PRIV)) {
+        if (isPriv()) {
             return DtDouble.PRIV;
         }
-        if (equals(ME)) {
+        if (isME()) {
             return DtDouble.ME;
         }
-        if (equals(MIN)) {
+        if (isMin()) {
             return DtDouble.MIN;
         }
-        if (equals(MAX)) {
+        if (isMax()) {
             return DtDouble.MAX;
         }
         throw new InternalException(LOG, "Function can only be used on irregular value");
@@ -467,16 +467,16 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Subtract given amount of days from time
      */
     public DtTimeS plusDays(double daysToAdd) {
-        if (equals(PRIV) || (daysToAdd == DtDouble.PRIV)) {
+        if (isPriv() || (daysToAdd == DtDouble.PRIV)) {
             return PRIV;
         }
-        if (equals(ME) || (daysToAdd == DtDouble.ME)) {
+        if (isME() || (daysToAdd == DtDouble.ME)) {
             return ME;
         }
-        if (equals(MIN) || (daysToAdd == DtDouble.MIN)) {
+        if (isMin() || (!isMax() && (daysToAdd == DtDouble.MIN))) {
             return MIN;
         }
-        if (equals(MAX) || (daysToAdd == DtDouble.MAX)) {
+        if (isMin() || (daysToAdd == DtDouble.MAX)) {
             return MAX;
         }
         if (Math.abs(daysToAdd) * 86400 < 0.5) {
@@ -520,11 +520,14 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return time with whole days removed, clipped to 0-24 hours interval
      */
     public DtTimeS getTime24() {
-        if (equals(PRIV)) {
+        if (isPriv()) {
             return PRIV;
         }
-        if (equals(ME)) {
+        if (isME()) {
             return ME;
+        }
+        if (isMin() || isMax()) {
+            return ofSeconds(0);
         }
         if (getDays() == 0) {
             return this;
@@ -620,6 +623,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return time in seconds
      */
     public double toSeconds() {
+        if (!isRegular()) {
+            return getIrregularDouble();
+        }
         return time;
     }
 
@@ -640,6 +646,18 @@ public class DtTimeS implements Comparable<DtTimeS> {
 
     @Override
     public String toString() {
+        if (isPriv()) {
+            return PRIV_TEXT;
+        }
+        if (isME()) {
+            return ME_TEXT;
+        }
+        if (isMin()) {
+            return MIN_TEXT;
+        }
+        if (isMax()) {
+            return MAX_TEXT;
+        }
         return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(getHours()), Math.abs(getMinutes()),
                 Math.abs(getSeconds()));
     }

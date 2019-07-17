@@ -57,6 +57,108 @@ class DtTimeSTest {
     }
 
     @Nonnull
+    static Stream<Object[]> isRegularTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToMinute(12, 25), true}
+                , new Object[]{DtTimeS.MIN, false}
+                , new Object[]{DtTimeS.MAX, false}
+                , new Object[]{DtTimeS.PRIV, false}
+                , new Object[]{DtTimeS.ME, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isRegularTest(DtTimeS value, boolean result) {
+        assertThat(value.isRegular()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isValidValueTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToMinute(12, 25), true}
+                , new Object[]{DtTimeS.MIN, true}
+                , new Object[]{DtTimeS.MAX, true}
+                , new Object[]{DtTimeS.PRIV, false}
+                , new Object[]{DtTimeS.ME, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidValueTest(DtTimeS value, boolean result) {
+        assertThat(value.isValidValue()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isPrivTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
+                , new Object[]{DtTimeS.MIN, false}
+                , new Object[]{DtTimeS.MAX, false}
+                , new Object[]{DtTimeS.PRIV, true}
+                , new Object[]{DtTimeS.ME, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isPrivTest(DtTimeS value, boolean result) {
+        assertThat(value.isPriv()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isMETest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
+                , new Object[]{DtTimeS.MIN, false}
+                , new Object[]{DtTimeS.MAX, false}
+                , new Object[]{DtTimeS.PRIV, false}
+                , new Object[]{DtTimeS.ME, true}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isMETest(DtTimeS value, boolean result) {
+        assertThat(value.isME()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isMinTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
+                , new Object[]{DtTimeS.MIN, true}
+                , new Object[]{DtTimeS.MAX, false}
+                , new Object[]{DtTimeS.PRIV, false}
+                , new Object[]{DtTimeS.ME, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isMinTest(DtTimeS value, boolean result) {
+        assertThat(value.isMin()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isMaxTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
+                , new Object[]{DtTimeS.MIN, false}
+                , new Object[]{DtTimeS.MAX, true}
+                , new Object[]{DtTimeS.PRIV, false}
+                , new Object[]{DtTimeS.ME, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isMaxTest(DtTimeS value, boolean result) {
+        assertThat(value.isMax()).isEqualTo(result);
+    }
+
+    @Nonnull
     static Stream<Object[]> plusDaysTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 12.4/86400d,
@@ -69,6 +171,14 @@ class DtTimeSTest {
                         1d / 24d + 15d / 24d / 60d + 4d / 86400d, DtTimeS.ofSeconds(0)}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), -1d,
                         DtTimeS.ofHourToSecond(true, 48, 0, 0)}
+                , new Object[]{DtTimeS.PRIV, -1d, DtTimeS.PRIV}
+                , new Object[]{DtTimeS.ME, -1d, DtTimeS.ME}
+                , new Object[]{DtTimeS.MIN, -1d, DtTimeS.MIN}
+                , new Object[]{DtTimeS.MAX, -1d, DtTimeS.MAX}
+                , new Object[]{DtTimeS.ofHourToMinute(24, 0), DtDouble.PRIV, DtTimeS.PRIV}
+                , new Object[]{DtTimeS.ofHourToMinute(24, 0), DtDouble.ME, DtTimeS.ME}
+                , new Object[]{DtTimeS.ofHourToMinute(24, 0), DtDouble.MIN, DtTimeS.MIN}
+                , new Object[]{DtTimeS.ofHourToMinute(24, 0), DtDouble.MAX, DtTimeS.MAX}
         );
     }
 
@@ -88,6 +198,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), -1}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 5}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), -6}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, DtInteger.MIN}
+                , new Object[]{DtTimeS.MAX, DtInteger.MAX}
         );
     }
 
@@ -107,6 +221,10 @@ class DtTimeSTest {
                         (double) (-3600 - 60 * 15 - 4) / 86400d}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56),
                         (double) (3600 * 124 + 60 * 7 + 56) / 86400d}
+                , new Object[]{DtTimeS.PRIV, DtDouble.PRIV}
+                , new Object[]{DtTimeS.ME, DtDouble.ME}
+                , new Object[]{DtTimeS.MIN, DtDouble.MIN}
+                , new Object[]{DtTimeS.MAX, DtDouble.MAX}
         );
     }
 
@@ -132,6 +250,10 @@ class DtTimeSTest {
                         DtTimeS.ofHourToSecond(4, 7, 56)}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56),
                         DtTimeS.ofHourToSecond(19, 52, 4)}
+                , new Object[]{DtTimeS.PRIV, DtTimeS.PRIV}
+                , new Object[]{DtTimeS.ME, DtTimeS.ME}
+                , new Object[]{DtTimeS.MIN, DtTimeS.ofSeconds(0)}
+                , new Object[]{DtTimeS.MAX, DtTimeS.ofSeconds(0)}
         );
     }
 
