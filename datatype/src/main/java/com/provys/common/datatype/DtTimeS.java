@@ -1,5 +1,9 @@
 package com.provys.common.datatype;
 
+import com.provys.common.exception.InternalException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import javax.annotation.Nonnull;
 import java.time.DateTimeException;
 import java.time.LocalTime;
@@ -10,6 +14,8 @@ import java.time.format.DateTimeParseException;
  */
 @SuppressWarnings("WeakerAccess")
 public class DtTimeS implements Comparable<DtTimeS> {
+
+    private static final Logger LOG = LogManager.getLogger(DtTimeS.class);
 
     /**
      * Date value, returned when user doesn't have the rights to access the value
@@ -30,6 +36,26 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Maximal date value, valid in Provys
      */
     public static final DtTimeS MAX = new DtTimeS(DtInteger.MAX, false);
+
+    /**
+     * Textual representation of PRIV value
+     */
+    public static final String PRIV_TEXT = "######";
+
+    /**
+     * Textual representation of ME value
+     */
+    public static final String ME_TEXT = "******";
+
+    /**
+     * Textual representation of MIN value
+     */
+    public static final String MIN_TEXT = "<<<<<<";
+
+    /**
+     * Textual representation of MAX value
+     */
+    public static final String MAX_TEXT = ">>>>>>";
 
     /**
      * whole hours are used pretty often, so it might be good idea to cache them...
@@ -73,10 +99,10 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (time == DtInteger.ME) {
             return ME;
         }
-        if (time == DtInteger.MIN) {
+        if (time <= DtInteger.MIN) {
             return MIN;
         }
-        if (time == DtInteger.MAX) {
+        if (time >= DtInteger.MAX) {
             return MAX;
         }
         throw new DateTimeException(time + " is not valid time - must be regular integer value in interval " +
@@ -256,6 +282,18 @@ public class DtTimeS implements Comparable<DtTimeS> {
      */
     @Nonnull
     public static DtTimeS parse(String value) {
+        if (value.equals(PRIV_TEXT)) {
+            return PRIV;
+        }
+        if (value.equals(ME_TEXT)) {
+            return ME;
+        }
+        if (value.equals(MIN_TEXT)) {
+            return MIN;
+        }
+        if (value.equals(MAX_TEXT)) {
+            return MAX;
+        }
         var parser = new StringParser(value);
         var negative = false;
         if (parser.peek() == '-') {
@@ -388,9 +426,59 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
+     * Translate irregular DtTimeS value to corresponding DtInteger value
+     */
+    private Integer getIrregularInt() {
+        if (equals(PRIV)) {
+            return DtInteger.PRIV;
+        }
+        if (equals(ME)) {
+            return DtInteger.ME;
+        }
+        if (equals(MIN)) {
+            return DtInteger.MIN;
+        }
+        if (equals(MAX)) {
+            return DtInteger.MAX;
+        }
+        throw new InternalException(LOG, "Function can only be used on irregular value");
+    }
+
+    /**
+     * Translate irregular DtTimeS value to corresponding DtInteger value
+     */
+    private Double getIrregularDouble() {
+        if (equals(PRIV)) {
+            return DtDouble.PRIV;
+        }
+        if (equals(ME)) {
+            return DtDouble.ME;
+        }
+        if (equals(MIN)) {
+            return DtDouble.MIN;
+        }
+        if (equals(MAX)) {
+            return DtDouble.MAX;
+        }
+        throw new InternalException(LOG, "Function can only be used on irregular value");
+    }
+
+    /**
      * Subtract given amount of days from time
      */
     public DtTimeS plusDays(double daysToAdd) {
+        if (equals(PRIV) || (daysToAdd == DtDouble.PRIV)) {
+            return PRIV;
+        }
+        if (equals(ME) || (daysToAdd == DtDouble.ME)) {
+            return ME;
+        }
+        if (equals(MIN) || (daysToAdd == DtDouble.MIN)) {
+            return MIN;
+        }
+        if (equals(MAX) || (daysToAdd == DtDouble.MAX)) {
+            return MAX;
+        }
         if (Math.abs(daysToAdd) * 86400 < 0.5) {
             return this;
         }
@@ -404,6 +492,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return number of days this time represents
      */
     public int getDays() {
+        if (!isRegular()) {
+            return getIrregularInt();
+        }
         if (time >= 0) {
             return time / 86400;
         } else {
@@ -417,6 +508,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return number of days (fractional) represented by this time
      */
     public double toDays() {
+        if (!isRegular()) {
+            return getIrregularDouble();
+        }
         return ((double) time) / 86400d;
     }
 
@@ -426,6 +520,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return time with whole days removed, clipped to 0-24 hours interval
      */
     public DtTimeS getTime24() {
+        if (equals(PRIV)) {
+            return PRIV;
+        }
+        if (equals(ME)) {
+            return ME;
+        }
         if (getDays() == 0) {
             return this;
         }
@@ -439,6 +539,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return number of hours this time represents
      */
     public int getHours() {
+        if (!isRegular()) {
+            return getIrregularInt();
+        }
         return time / 3600;
     }
 
@@ -457,6 +560,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return hours represented by this time
      */
     public double toHours() {
+        if (!isRegular()) {
+            return getIrregularDouble();
+        }
         return (double) time / 3600d;
     }
 
@@ -485,6 +591,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return minute length this time represents
      */
     public double toMinutes() {
+        if (!isRegular()) {
+            return getIrregularDouble();
+        }
         return (double) time / 60d;
     }
 
