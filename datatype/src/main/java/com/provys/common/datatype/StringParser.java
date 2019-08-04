@@ -66,6 +66,13 @@ public class StringParser {
     }
 
     /**
+     * @return string parser is based on
+     */
+    public String getString() {
+        return string;
+    }
+
+    /**
      * @return current position of parser; it points to next character to be read and it is 0 when parser is created
      */
     public int getPos() {

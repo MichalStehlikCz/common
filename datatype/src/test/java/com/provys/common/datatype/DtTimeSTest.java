@@ -40,9 +40,17 @@ class DtTimeSTest {
                 , new Object[]{"3:27", DtTimeS.ofHourToMinute(3, 27)}
                 , new Object[]{"-1:15:4:00", DtTimeS.ofHourToSecond(true, 1, 15, 4)}
                 , new Object[]{"124:7:56:00", DtTimeS.ofHourToSecond(124, 7, 56)}
+                , new Object[]{"10", null}
                 , new Object[]{"10:74:00:00", null}
                 , new Object[]{"10:00:60:00", null}
                 , new Object[]{"10:00:00:05", null}
+                , new Object[]{"12#15:24", null}
+                , new Object[]{"12:15#24", null}
+                , new Object[]{"12:15:24#10", null}
+                , new Object[]{DtTimeS.PRIV_TEXT, DtTimeS.PRIV}
+                , new Object[]{DtTimeS.ME_TEXT, DtTimeS.ME}
+                , new Object[]{DtTimeS.MIN_TEXT, DtTimeS.MIN}
+                , new Object[]{DtTimeS.MAX_TEXT, DtTimeS.MAX}
         );
     }
 
@@ -54,6 +62,27 @@ class DtTimeSTest {
         } else {
             assertThatThrownBy(() -> DtTimeS.parse(value)).isInstanceOf(DateTimeParseException.class);
         }
+    }
+
+    @Nonnull
+    static Stream<Object[]> ofDaysToNanoErrorTest() {
+        return Stream.of(
+                new Object[]{0, 25, 0, 0, 0, ".*hours.*24.*"}
+                , new Object[]{0, -1, 0, 0, 0, ".*hours.*negative.*"}
+                , new Object[]{0, 0, 60, 0, 0, ".*minutes.*60.*"}
+                , new Object[]{0, 0, -1, 0, 0, ".*minutes.*negative.*"}
+                , new Object[]{0, 0, 0, 60, 0, ".*seconds.*60.*"}
+                , new Object[]{0, 0, 0, -1, 0, ".*seconds.*negative.*"}
+                , new Object[]{0, 0, 0, 0, 1000000000, ".*nanoseconds.*"}
+                , new Object[]{0, 0, 0, 0, -1, ".*nanoseconds.*negative.*"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void ofDaysToNanoErrorTest(int days, int hours, int minutes, int seconds, int nanoSeconds, String message) {
+        assertThatThrownBy(() -> DtTimeS.ofDayToNano(days, hours, minutes, seconds, nanoSeconds))
+                .hasMessageMatching(message);
     }
 
     @Nonnull
@@ -171,6 +200,8 @@ class DtTimeSTest {
                         1d / 24d + 15d / 24d / 60d + 4d / 86400d, DtTimeS.ofSeconds(0)}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), -1d,
                         DtTimeS.ofHourToSecond(true, 48, 0, 0)}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), 0.4/86400,
+                        DtTimeS.ofHourToMinute(3, 27)}
                 , new Object[]{DtTimeS.PRIV, -1d, DtTimeS.PRIV}
                 , new Object[]{DtTimeS.ME, -1d, DtTimeS.ME}
                 , new Object[]{DtTimeS.MIN, -1d, DtTimeS.MIN}
@@ -273,6 +304,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), -24}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 124}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), -124}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, DtInteger.MIN}
+                , new Object[]{DtTimeS.MAX, DtInteger.MAX}
         );
     }
 
@@ -292,6 +327,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), 0}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 4}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), 19}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, 0}
+                , new Object[]{DtTimeS.MAX, 0}
         );
     }
 
@@ -311,6 +350,10 @@ class DtTimeSTest {
                         (double) (-3600 - 60 * 15 - 4) / 3600d}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56),
                         (double) (3600 * 124 + 60 * 7 + 56) / 3600d}
+                , new Object[]{DtTimeS.PRIV, DtDouble.PRIV}
+                , new Object[]{DtTimeS.ME, DtDouble.ME}
+                , new Object[]{DtTimeS.MIN, DtDouble.MIN}
+                , new Object[]{DtTimeS.MAX, DtDouble.MAX}
         );
     }
 
@@ -330,6 +373,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), 0}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 7}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), -7}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, 0}
+                , new Object[]{DtTimeS.MAX, 0}
         );
     }
 
@@ -349,6 +396,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), 0}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 7}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), 52}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, 0}
+                , new Object[]{DtTimeS.MAX, 0}
         );
     }
 
@@ -368,6 +419,10 @@ class DtTimeSTest {
                         (double) (-3600 - 60 * 15 - 4) / 60d}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56),
                         (double) (3600 * 124 + 60 * 7 + 56) / 60d}
+                , new Object[]{DtTimeS.PRIV, DtDouble.PRIV}
+                , new Object[]{DtTimeS.ME, DtDouble.ME}
+                , new Object[]{DtTimeS.MIN, DtDouble.MIN}
+                , new Object[]{DtTimeS.MAX, DtDouble.MAX}
         );
     }
 
@@ -387,6 +442,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), 0}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 56}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), -56}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, 0}
+                , new Object[]{DtTimeS.MAX, 0}
         );
     }
 
@@ -406,6 +465,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), 0}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), 56}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), 4}
+                , new Object[]{DtTimeS.PRIV, DtInteger.PRIV}
+                , new Object[]{DtTimeS.ME, DtInteger.ME}
+                , new Object[]{DtTimeS.MIN, 0}
+                , new Object[]{DtTimeS.MAX, 0}
         );
     }
 
@@ -425,6 +488,10 @@ class DtTimeSTest {
                         (double) (-3600 - 60 * 15 - 4)}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56),
                         (double) (3600 * 124 + 60 * 7 + 56)}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.PRIV), DtDouble.PRIV}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.ME), DtDouble.ME}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.MIN), DtDouble.MIN}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.MAX), DtDouble.MAX}
         );
     }
 
@@ -444,6 +511,10 @@ class DtTimeSTest {
                 , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), "-24:00:00"}
                 , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), "124:07:56"}
                 , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), "-124:07:56"}
+                , new Object[]{DtTimeS.PRIV, DtTimeS.PRIV_TEXT}
+                , new Object[]{DtTimeS.ME, DtTimeS.ME_TEXT}
+                , new Object[]{DtTimeS.MIN, DtTimeS.MIN_TEXT}
+                , new Object[]{DtTimeS.MAX, DtTimeS.MAX_TEXT}
         );
     }
 

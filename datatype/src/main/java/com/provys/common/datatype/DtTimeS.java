@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.NoSuchElementException;
 
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
@@ -114,7 +115,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
             throw new DateTimeException("Negative number of seconds supplied; use negative sign instead");
         }
         if (nanoSeconds < 0) {
-            throw new DateTimeException("Negative number of nano-seconds supplied; use negative sign instead");
+            throw new DateTimeException("Negative number of nanoseconds supplied; use negative sign instead");
         }
         if (nanoSeconds >= 1000000000) {
             throw new DateTimeException("Number of nanoseconds bigger than 1000000000 not allowed");
@@ -274,8 +275,23 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
-     * Parse value from text. Format is [-]HH:MM:SS; frame part can be specified, but must be 00. Hours might go beyond 24
-     * hours.
+     * Verify that nanosecond part of parsed value is zero
+     *
+     * @param parser is parser, positioned on nanosecond delimiter
+     */
+    private static void parseNano(StringParser parser) {
+        parser.next();
+        var nanoSeconds = parser.readUnsignedInt(1, 9);
+        if (nanoSeconds != 0) {
+            throw new DateTimeParseException(
+                    "Invalid Provys time in seconds format; frame part expected to be zero", parser.getString(),
+                    parser.getPos());
+        }
+    }
+
+    /**
+     * Parse value from text. Format is [-]HH:MM:SS; frame part can be specified, but must be 00. Hours might go beyond
+     * 24 hours.
      *
      * @param value is text to be parsed
      * @return valid {@code DtTimeS} value corresponding to supplied text
@@ -294,40 +310,39 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (value.equals(MAX_TEXT)) {
             return MAX;
         }
+        if (value.isEmpty()) {
+            throw new DateTimeParseException("String to be parsed as time value is empty", value, 0);
+        }
         var parser = new StringParser(value);
-        var negative = false;
-        if (parser.peek() == '-') {
-            negative = true;
-            parser.next();
-        }
-        var hours = parser.readUnsignedInt(1, 3);
-        if (parser.next() != ':') {
-            throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
-                    parser.getPos());
-        }
-        var minutes = parser.readUnsignedInt(1, 2);
-        if (!parser.hasNext()) {
-            try {
-                return ofHourToMinute(negative, hours, minutes);
-            } catch (DateTimeException e) {
-                throw new DateTimeParseException(e.getMessage(), value, parser.getPos());
-            }
-        }
-        if (parser.next() != ':') {
-            throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
-                    parser.getPos());
-        }
-        var seconds = parser.readUnsignedInt(1, 2);
-        if (parser.hasNext() && (parser.peek() == ':')) {
-            parser.next();
-            var nanoSeconds = parser.readUnsignedInt(1, 9);
-            if (nanoSeconds != 0) {
-                throw new DateTimeParseException(
-                        "Invalid Provys time in seconds format; frame part expected to be zero", value, parser.getPos());
-            }
-        }
         try {
+            var negative = false;
+            if (parser.peek() == '-') {
+                negative = true;
+                parser.next();
+            }
+            var hours = parser.readUnsignedInt(1, 3);
+            if (parser.next() != ':') {
+                throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
+                        parser.getPos());
+            }
+            var minutes = parser.readUnsignedInt(1, 2);
+            if (!parser.hasNext()) {
+                return ofHourToMinute(negative, hours, minutes);
+            }
+            if (parser.next() != ':') {
+                throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
+                        parser.getPos());
+            }
+            var seconds = parser.readUnsignedInt(1, 2);
+            if (parser.hasNext() && (parser.peek() == ':')) {
+                parseNano(parser);
+            }
+            if (parser.hasNext()) {
+                throw new DateTimeParseException("End of string not rached parsing the value", value, parser.getPos());
+            }
             return ofHourToSecond(negative, hours, minutes, seconds);
+        } catch (NoSuchElementException e) {
+            throw new DateTimeParseException("End of string reached prematurely", value, parser.getPos());
         } catch (DateTimeException e) {
             throw new DateTimeParseException(e.getMessage(), value, parser.getPos());
         }
@@ -464,7 +479,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
-     * Subtract given amount of days from time
+     * Add or subtract given amount of days from time
      */
     public DtTimeS plusDays(double daysToAdd) {
         if (isPriv() || (daysToAdd == DtDouble.PRIV)) {
@@ -476,10 +491,10 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (isMin() || (!isMax() && (daysToAdd == DtDouble.MIN))) {
             return MIN;
         }
-        if (isMin() || (daysToAdd == DtDouble.MAX)) {
+        if (isMax() || (daysToAdd == DtDouble.MAX)) {
             return MAX;
         }
-        if (Math.abs(daysToAdd) * 86400 < 0.5) {
+        if (Math.abs(daysToAdd * 86400.0) < 0.5) {
             return this;
         }
         return ofSeconds((int) Math.round(time + daysToAdd * 86400));
@@ -554,6 +569,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return number of hours this time represents in range 0-23
      */
     public int getHours24() {
+        if (!isValidValue()) {
+            return getIrregularInt();
+        }
+        if (isMin() || isMax()) {
+            return 0;
+        }
         return (time - 86400 * getDays()) / 3600;
     }
 
@@ -575,6 +596,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return minute part of this time
      */
     public int getMinutes() {
+        if (!isValidValue()) {
+            return getIrregularInt();
+        }
+        if (isMin() || isMax()) {
+            return 0;
+        }
         return (time % 3600) / 60;
     }
 
@@ -585,6 +612,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return minute part of this time
      */
     public int getMinutes24() {
+        if (!isValidValue()) {
+            return getIrregularInt();
+        }
+        if (isMin() || isMax()) {
+            return 0;
+        }
         return ((time - 86400 * getDays()) % 3600) / 60;
     }
 
@@ -606,6 +639,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return second part of this time
      */
     public int getSeconds() {
+        if (!isValidValue()) {
+            return getIrregularInt();
+        }
+        if (isMin() || isMax()) {
+            return 0;
+        }
         return time % 60;
     }
 
@@ -616,6 +655,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return second part of this time
      */
     public int getSeconds24() {
+        if (!isValidValue()) {
+            return getIrregularInt();
+        }
+        if (isMin() || isMax()) {
+            return 0;
+        }
         return (time - 86400 * getDays()) % 60;
     }
 
@@ -664,6 +709,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
 
     @Override
     public int compareTo(DtTimeS other) {
-        return Double.compare(this.toSeconds(), other.toSeconds());
+        return Integer.compare(this.time, other.time);
     }
 }
