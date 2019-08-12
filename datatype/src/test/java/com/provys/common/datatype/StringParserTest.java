@@ -5,6 +5,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
@@ -267,5 +268,48 @@ class StringParserTest {
             assertThat(parser.readInt(chars, signHandling)).isEqualTo(result);
             assertThat(parser.getPos()).isEqualTo(endPos);
         }
+    }
+    @Nonnull
+    @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
+    static Stream<Object[]> readStringTest() {
+        return Stream.of(
+                new Object[]{"abcdefg", 6, 2, null, 8, StringIndexOutOfBoundsException.class}
+                , new Object[]{"abcdefg", 5, 2, "fg", 7, null}
+                , new Object[]{"abcdefg", 5, -1, null, 5, InvalidParameterException.class}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void readStringTest(String string, int pos, int chars, @Nullable String result, int endPos,
+                        @Nullable Class<?> exception) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        if (exception != null) {
+            assertThatThrownBy(() -> parser.readString(chars)).isInstanceOf(exception);
+        } else {
+            assertThat(parser.readString(chars)).isEqualTo(result);
+            assertThat(parser.getPos()).isEqualTo(endPos);
+        }
+    }
+
+    @Nonnull
+    @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
+    static Stream<Object[]> onTextTest() {
+        return Stream.of(
+                new Object[]{"abcdefg", 6, "fg", false, 6}
+                , new Object[]{"abcdefg", 5, "fg", true, 7}
+                , new Object[]{"abcdefg", 2, "cd", true, 4}
+                , new Object[]{"abcdefg", 2, "fg", false, 2}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void onTextTest(String string, int pos, String text, boolean result, int endPos) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        assertThat(parser.onText(text)).isEqualTo(result);
+        assertThat(parser.getPos()).isEqualTo(endPos);
     }
 }

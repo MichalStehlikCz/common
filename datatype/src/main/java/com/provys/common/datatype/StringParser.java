@@ -4,6 +4,7 @@ import com.provys.common.exception.InternalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -232,5 +233,41 @@ public class StringParser {
      */
     public int readInt(int chars, SignHandling signHandling) {
         return readInt(chars, chars, signHandling);
+    }
+
+    /**
+     * Read supplied number of characters and return resulting String
+     *
+     * @param chars is number of characters to be read
+     * @return substring starting at current position, supplied number of characters long
+     * @throws StringIndexOutOfBoundsException in case there are not enough characters available
+     */
+    @Nonnull
+    public String readString(int chars) {
+        if (chars < 0) {
+            throw new InvalidParameterException("Number of characters to be read cannot be negative (" + chars + ')');
+        }
+        String result = string.substring(pos, pos + chars);
+        pos += chars;
+        return result;
+    }
+
+    /**
+     * If parser is positioned at the start of supplied string, read this string and return true. Otherwise return false
+     * and keep current position.
+     *
+     * @param text is text to be read from parser
+     * @return true if value has been found and read, false otherwise
+     */
+    public boolean onText(String text) {
+        if (pos + text.length() > string.length()) {
+            // text cannot be present - not enough characters remain
+            return false;
+        }
+        if (string.substring(pos, pos + text.length()).equals(text)) {
+            pos += text.length();
+            return true;
+        }
+        return false;
     }
 }

@@ -123,33 +123,70 @@ public final class DtDate implements Comparable<DtDate> {
     }
 
     /**
-     * Parse provided text in strict ISO local date format.
+     * Parse value from StringParser; unlike "normal" String parse, this method can read only part of parser content;
+     * parser is moved after last character read as part of date values.
+     *
+     * @param parser is parser containing text to be read
+     * @return datetime value read from parser
+     */
+    @Nonnull
+    public static DtDate parse(StringParser parser) {
+        if (!parser.hasNext()) {
+            throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
+                    parser.getPos());
+        }
+        if (parser.onText(PRIV_TEXT)) {
+            return PRIV;
+        }
+        if (parser.onText(ME_TEXT)) {
+            return ME;
+        }
+        if (parser.onText(MIN_TEXT)) {
+            return MIN;
+        }
+        if (parser.onText(MAX_TEXT)) {
+            return MAX;
+        }
+        try {
+            var year = parser.readUnsignedInt(4);
+            if (parser.next() != '-') {
+                throw new DateTimeParseException("Expecting - as year / month delimiter", parser.getString(),
+                        parser.getPos());
+            }
+            var month = parser.readUnsignedInt(2);
+            if (parser.next() != '-') {
+                throw new DateTimeParseException("Expecting - as year / month delimiter", parser.getString(),
+                        parser.getPos());
+            }
+            var day = parser.readUnsignedInt(2);
+            return of(year, month, day);
+        } catch (StringIndexOutOfBoundsException e) {
+            throw new DateTimeParseException("Unexpected end of string encountered", parser.getString(),
+                    parser.getPos());
+        }
+    }
+
+    /**
+     * Parse provided text in strict ISO local date format. Also supports parsing special values.
      *
      * @param text is text in ISO-8601 format for local date (e.g. YYYY-MM-DD)
      * @return date value corresponding to provided text
      */
     @Nonnull
-    public static DtDate parse(CharSequence text) {
-        if (text.equals(PRIV_TEXT)) {
-            return PRIV;
+    public static DtDate parse(String text) {
+        var parser = new StringParser(text);
+        var result = parse(parser);
+        if (parser.hasNext()) {
+            throw new DateTimeParseException("Value parsed before reading whole text", text, parser.getPos());
         }
-        if (text.equals(ME_TEXT)) {
-            return ME;
-        }
-        if (text.equals(MIN_TEXT)) {
-            return MIN;
-        }
-        if (text.equals(MAX_TEXT)) {
-            return MAX;
-        }
-        return ofLocalDate(LocalDate.parse(text));
+        return result;
     }
 
     /**
      * Parse provided text as Provys string representation of date value, in format DD.MM.YYYY. It also accepts value
      * with time part 00:00:00.
      *
-     * @param value is value in Provys string represetation
+     * @param value is value in Provys string representation
      * @return date value corresponding to provided text
      */
     @Nonnull
@@ -316,6 +353,9 @@ public final class DtDate implements Comparable<DtDate> {
         }
         if (DtInteger.MAX.equals(daysToAdd)) {
             return MAX;
+        }
+        if (daysToAdd == 0) {
+            return this;
         }
         return ofLocalDate(getLocalDate().plusDays(daysToAdd));
     }

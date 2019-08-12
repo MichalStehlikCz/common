@@ -502,6 +502,31 @@ class DtTimeSTest {
     }
 
     @Nonnull
+    static Stream<Object[]> toLocalTimeTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
+                        LocalTime.of(12, 15, 24)}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), LocalTime.of(3, 27)}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), null}
+                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), null}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.PRIV), null}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.ME), null}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.MIN), null}
+                , new Object[]{DtTimeS.ofSeconds(DtInteger.MAX), null}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toLocalTimeTest(DtTimeS value, @Nullable LocalTime result) {
+        if (result == null) {
+            assertThatThrownBy(value::getLocalTime);
+        } else {
+            assertThat(value.getLocalTime()).isEqualTo(result);
+        }
+    }
+
+    @Nonnull
     static Stream<Object[]> toStringTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}

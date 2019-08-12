@@ -290,6 +290,61 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
+     * Parse value from StringParser; unlike "normal" String parse, this method can read only part of parser content;
+     * parser is moved after last character read as part of time value.
+     *
+     * @param parser is parser containing text to be read
+     * @return datetime value read from parser
+     */
+    @Nonnull
+    public static DtTimeS parse(StringParser parser) {
+        if (!parser.hasNext()) {
+            throw new DateTimeParseException("Empty parser supplied to read DtTimeS", parser.getString(),
+                    parser.getPos());
+        }
+        if (parser.onText(PRIV_TEXT)) {
+            return DtTimeS.PRIV;
+        }
+        if (parser.onText(ME_TEXT)) {
+            return DtTimeS.ME;
+        }
+        if (parser.onText(MIN_TEXT)) {
+            return DtTimeS.MIN;
+        }
+        if (parser.onText(MAX_TEXT)) {
+            return DtTimeS.MAX;
+        }
+        try {
+            var negative = false;
+            if (parser.peek() == '-') {
+                parser.next();
+                negative = true;
+            }
+            var hours = parser.readUnsignedInt(1, 3);
+            if (parser.next() != ':') {
+                throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(),
+                        parser.getString(), parser.getPos());
+            }
+            var minutes = parser.readUnsignedInt(1, 2);
+            if (!parser.hasNext() || (parser.peek() != ':')) {
+                return ofHourToMinute(negative, hours, minutes);
+            }
+            parser.next();
+            var seconds = parser.readUnsignedInt(1, 2);
+            if (parser.hasNext() && (parser.peek() == ':')) {
+                parseNano(parser);
+            }
+            return ofHourToSecond(negative, hours, minutes, seconds);
+        } catch (NoSuchElementException e) {
+            throw new DateTimeParseException("End of string reached prematurely",
+                    parser.getString(), parser.getPos());
+        } catch (DateTimeException e) {
+            throw new DateTimeParseException(e.getMessage(),
+                    parser.getString(), parser.getPos());
+        }
+    }
+
+    /**
      * Parse value from text. Format is [-]HH:MM:SS; frame part can be specified, but must be 00. Hours might go beyond
      * 24 hours.
      *
@@ -298,54 +353,15 @@ public class DtTimeS implements Comparable<DtTimeS> {
      */
     @Nonnull
     public static DtTimeS parse(String value) {
-        if (value.equals(PRIV_TEXT)) {
-            return PRIV;
-        }
-        if (value.equals(ME_TEXT)) {
-            return ME;
-        }
-        if (value.equals(MIN_TEXT)) {
-            return MIN;
-        }
-        if (value.equals(MAX_TEXT)) {
-            return MAX;
-        }
         if (value.isEmpty()) {
             throw new DateTimeParseException("String to be parsed as time value is empty", value, 0);
         }
         var parser = new StringParser(value);
-        try {
-            var negative = false;
-            if (parser.peek() == '-') {
-                negative = true;
-                parser.next();
-            }
-            var hours = parser.readUnsignedInt(1, 3);
-            if (parser.next() != ':') {
-                throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
-                        parser.getPos());
-            }
-            var minutes = parser.readUnsignedInt(1, 2);
-            if (!parser.hasNext()) {
-                return ofHourToMinute(negative, hours, minutes);
-            }
-            if (parser.next() != ':') {
-                throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(), value,
-                        parser.getPos());
-            }
-            var seconds = parser.readUnsignedInt(1, 2);
-            if (parser.hasNext() && (parser.peek() == ':')) {
-                parseNano(parser);
-            }
-            if (parser.hasNext()) {
-                throw new DateTimeParseException("End of string not rached parsing the value", value, parser.getPos());
-            }
-            return ofHourToSecond(negative, hours, minutes, seconds);
-        } catch (NoSuchElementException e) {
-            throw new DateTimeParseException("End of string reached prematurely", value, parser.getPos());
-        } catch (DateTimeException e) {
-            throw new DateTimeParseException(e.getMessage(), value, parser.getPos());
+        var result = parse(parser);
+        if (parser.hasNext()) {
+            throw new DateTimeParseException("End of string not rached parsing the value", value, parser.getPos());
         }
+        return result;
     }
 
     /**
@@ -672,6 +688,15 @@ public class DtTimeS implements Comparable<DtTimeS> {
             return getIrregularDouble();
         }
         return time;
+    }
+
+    /**
+     * @return LocalTime value represented by this DtTimeS; throws exception if such conversion is not possible (because
+     * LocalTime is limited to 0-24h)
+     */
+    @Nonnull
+    public LocalTime getLocalTime() {
+        return LocalTime.of(getHours(), getMinutes(), getSeconds());
     }
 
     @Override

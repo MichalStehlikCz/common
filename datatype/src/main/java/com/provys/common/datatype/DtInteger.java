@@ -1,7 +1,8 @@
 package com.provys.common.datatype;
 
 /**
- * Implements support for Provys domain INTEGER
+ * Implements support for integer values in Java provys framework; note that id does not correspond to INTEGER
+ * Provys domain - this honor belongs to DtCount class
  */
 @SuppressWarnings("WeakerAccess")
 public class DtInteger {
