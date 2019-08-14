@@ -1,10 +1,13 @@
 package com.provys.common.datatype;
 
+import com.provys.common.exception.InternalException;
+
 import javax.annotation.Nonnull;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 /**
@@ -184,6 +187,41 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Parse provided text as Provys string representation of date value, in format DD.MM.YYYY. It also accepts value
+     * with time part 00:00:00. It can finish reading before reading whole content of parser.
+     *
+     * @param parser is parser containing value in Provys string representation
+     * @return date value corresponding to provided text
+     */
+    @Nonnull
+    public static DtDate ofProvysValue(StringParser parser) {
+        try {
+            var day = parser.readUnsignedInt(2);
+            if (parser.next() != '.') {
+                throw new DateTimeParseException("Invalid Provys date string format delimiter " + parser.current(),
+                        parser.getString(), 2);
+            }
+            var month = parser.readUnsignedInt(2);
+            if (parser.next() != '.') {
+                throw new DateTimeParseException("Invalid Provys date string format delimiter " + parser.current(),
+                        parser.getString(), 2);
+            }
+            var year = parser.readUnsignedInt(4);
+            // only time " 00:00:00" is allowed to be present for date values - and if it is, it is read
+            parser.onText(" 00:00:00");
+            return of(year, month, day);
+        } catch (NoSuchElementException e) {
+            throw new DateTimeParseException("String finished before reading whole value", parser.getString(),
+                    parser.getPos(), e);
+        } catch (InternalException e) {
+            throw new DateTimeParseException("Error reading date value", parser.getString(), parser.getPos(), e);
+        } catch (DateTimeException e) {
+            throw new DateTimeParseException("Parsed value is not valid date value", parser.getString(),
+                    parser.getPos(), e);
+        }
+    }
+
+    /**
+     * Parse provided text as Provys string representation of date value, in format DD.MM.YYYY. It also accepts value
      * with time part 00:00:00.
      *
      * @param value is value in Provys string representation
@@ -192,22 +230,11 @@ public final class DtDate implements Comparable<DtDate> {
     @Nonnull
     public static DtDate ofProvysValue(String value) {
         var parser = new StringParser(Objects.requireNonNull(value));
-        var day = parser.readUnsignedInt(2);
-        if (parser.next() != '.') {
-            throw new DateTimeParseException("Invalid Provys date string format delimiter " + parser.current(), value,
-                    2);
+        var result = DtDate.ofProvysValue(parser);
+        if (parser.hasNext()) {
+            throw new DateTimeParseException("Time parsed before reading whole supplied value", value, parser.getPos());
         }
-        var month = parser.readUnsignedInt(2);
-        if (parser.next() != '.') {
-            throw new DateTimeParseException("Invalid Provys date string format delimiter " + parser.current(), value,
-                    2);
-        }
-        var year = parser.readUnsignedInt(4);
-        // only time " 00:00:00" is allowed to be present for date values
-        if (parser.hasNext() && !value.substring(10).equals(" 00:00:00")) {
-            throw new DateTimeParseException("Only date or date with 00:00:00 allowed", value, 10);
-        }
-        return of(year, month, day);
+        return result;
     }
 
     /**

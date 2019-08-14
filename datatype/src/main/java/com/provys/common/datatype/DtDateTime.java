@@ -407,7 +407,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
     }
 
     /**
-     * Converts {@code DtDate} value to Provys string representation (format DD.MM.YYYY)
+     * Converts {@code DtDate} value to Provys string representation (format DD.MM.YYYY HH:MI:SS)
      */
     @Nonnull
     public String toProvysValue() {

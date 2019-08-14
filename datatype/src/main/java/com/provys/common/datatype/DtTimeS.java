@@ -8,7 +8,9 @@ import javax.annotation.Nonnull;
 import java.time.DateTimeException;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Locale;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
@@ -373,6 +375,77 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
+     * Parse provided text as Provys string representation of time value, in format HH:MI:SS (2-3 places for hours). It
+     * also accepts value without seconds or with frames part 00. It can also parse +/- days right after string. Can
+     * finish reading before processing whole parser content
+     *
+     * @param parser is parser containing value in Provys string representation
+     * @return time value corresponding to provided text
+     */
+    @Nonnull
+    public static DtTimeS ofProvysValue(StringParser parser) {
+        try {
+            var hours = parser.readInt(2, 3, StringParser.SignHandling.EXTEND);
+            boolean negative = false;
+            if (hours < 0) {
+                negative = true;
+                hours = -hours;
+            }
+            if (parser.next() != ':') {
+                throw new DateTimeParseException("Invalid Provys time string format delimiter " + parser.current(),
+                        parser.getString(), parser.getPos());
+            }
+            var minutes = parser.readUnsignedInt(2);
+            int seconds = 0;
+            if (parser.hasNext() && (parser.peek() == ':')) {
+                parser.next();
+                seconds = parser.readUnsignedInt(2);
+                if (parser.hasNext() && (parser.peek() == ':')) {
+                    parser.next();
+                    if (parser.readUnsignedInt(2) != 0) {
+                        throw new DateTimeParseException("Frame part must be 00 in time with seconds precision",
+                                parser.getString(), parser.getPos());
+                    }
+                }
+            }
+            if (parser.hasNext() && ((parser.peek() == '+') || (parser.peek() == '-'))) {
+                if (negative) {
+                    throw new DateTimeParseException("Cannot combine negative and plus days part", parser.getString(),
+                            parser.getPos());
+                }
+                var days = parser.readInt(2, 3, StringParser.SignHandling.MANDATORY);
+                return ofDayToSecond(days, hours, minutes, seconds);
+            }
+            return ofHourToSecond(negative, hours, minutes, seconds);
+        } catch (NoSuchElementException e) {
+            throw new DateTimeParseException("String finished before reading whole value", parser.getString(),
+                    parser.getPos(), e);
+        } catch (InternalException e) {
+            throw new DateTimeParseException("Error reading time value", parser.getString(), parser.getPos(), e);
+        } catch (DateTimeException e) {
+            throw new DateTimeParseException("Parsed value is not valid time value", parser.getString(),
+                    parser.getPos(), e);
+        }
+    }
+
+    /**
+     * Parse provided text as Provys string representation of time value, in format HH:MI:SS (2-3 places for hours). It
+     * also accepts value without seconds or with frames part 00. It can also parse +/- days right after string.
+     *
+     * @param value is value in Provys string representation
+     * @return time value corresponding to provided text
+     */
+    @Nonnull
+    public static DtTimeS ofProvysValue(String value) {
+        var parser = new StringParser(Objects.requireNonNull(value));
+        var result = ofProvysValue(parser);
+        if (parser.hasNext()) {
+            throw new DateTimeParseException("Time parsed before reading whole supplied value", value, parser.getPos());
+        }
+        return result;
+    }
+
+    /**
      * Time held is represented as time in seconds. DtInteger MIN and MAX values should be sufficient for time data,
      * held in Provys (as these are usually limited to to just slightly more than single day - longer time intervals
      * are expressed as duration in days (as it is natural time interval measurement in Provys)
@@ -697,6 +770,15 @@ public class DtTimeS implements Comparable<DtTimeS> {
     @Nonnull
     public LocalTime getLocalTime() {
         return LocalTime.of(getHours(), getMinutes(), getSeconds());
+    }
+
+    /**
+     * Converts {@code DtDate} value to Provys string representation (format [-]HH:MI:SS)
+     */
+    @Nonnull
+    public String toProvysValue() {
+        return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(time) / 3600,
+                (Math.abs(time) / 60) % 60, Math.abs(time) % 60);
     }
 
     @Override

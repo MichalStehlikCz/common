@@ -86,6 +86,39 @@ class DtTimeSTest {
     }
 
     @Nonnull
+    static Stream<Object[]> ofProvysValueTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"03:27", DtTimeS.ofHourToMinute(3, 27)}
+                , new Object[]{"-01:15:04:00", DtTimeS.ofHourToSecond(true, 1, 15, 4)}
+                , new Object[]{"124:07:56:00", DtTimeS.ofHourToSecond(124, 7, 56)}
+                , new Object[]{"03:27+1", DtTimeS.ofDayToMinute(1, 3, 27)}
+                , new Object[]{"03:27-1", DtTimeS.ofDayToMinute(-1, 3, 27)}
+                , new Object[]{"10", null}
+                , new Object[]{"10:74:00:00", null}
+                , new Object[]{"10:00:60:00", null}
+                , new Object[]{"10:00:00:05", null}
+                , new Object[]{"12#15:24", null}
+                , new Object[]{"12:15#24", null}
+                , new Object[]{"12:15:24#10", null}
+                , new Object[]{DtTimeS.PRIV_TEXT, null}
+                , new Object[]{DtTimeS.ME_TEXT, null}
+                , new Object[]{DtTimeS.MIN_TEXT, null}
+                , new Object[]{DtTimeS.MAX_TEXT, null}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void ofProvysValueTest(String value, @Nullable DtTimeS result) {
+        if (result != null) {
+            assertThat(DtTimeS.ofProvysValue(value)).isEqualTo(result);
+        } else {
+            assertThatThrownBy(() -> DtTimeS.ofProvysValue(value)).isInstanceOf(DateTimeParseException.class);
+        }
+    }
+
+    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), true}
@@ -524,6 +557,25 @@ class DtTimeSTest {
         } else {
             assertThat(value.getLocalTime()).isEqualTo(result);
         }
+    }
+
+    @Nonnull
+    static Stream<Object[]> toProvysValueTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), "03:27:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), "00:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), "-01:15:04"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), "-24:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), "124:07:56"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), "-124:07:56"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toProvysValueTest(DtTimeS value, String result) {
+        assertThat(value.toProvysValue()).isEqualTo(result);
     }
 
     @Nonnull
