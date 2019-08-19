@@ -134,6 +134,21 @@ class DtDateTest {
         assertThat(date.isValidValue()).isEqualTo(result);
     }
 
+    @Test
+    void getYearTest() {
+        assertThat(DtDate.of(1987, 12, 5).getYear()).isEqualTo(1987);
+    }
+
+    @Test
+    void getMonthValueTest() {
+        assertThat(DtDate.of(1987, 12, 5).getMonthValue()).isEqualTo(12);
+    }
+
+    @Test
+    void getDayOfMonthTest() {
+        assertThat(DtDate.of(1987, 12, 5).getDayOfMonth()).isEqualTo(5);
+    }
+
     @Nonnull
     static Stream<Object[]> plusDaysTest() {
         return Stream.of(
@@ -150,21 +165,6 @@ class DtDateTest {
                 , new Object[]{DtDate.MIN, -1, DtDate.MIN}
                 , new Object[]{DtDate.MAX, -1, DtDate.MAX}
         );
-    }
-
-    @Test
-    void getYearTest() {
-        assertThat(DtDate.of(1987, 12, 5).getYear()).isEqualTo(1987);
-    }
-
-    @Test
-    void getMonthValueTest() {
-        assertThat(DtDate.of(1987, 12, 5).getMonthValue()).isEqualTo(12);
-    }
-
-    @Test
-    void getDayOfMonthTest() {
-        assertThat(DtDate.of(1987, 12, 5).getDayOfMonth()).isEqualTo(5);
     }
 
     @ParameterizedTest

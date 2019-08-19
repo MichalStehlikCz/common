@@ -43,12 +43,12 @@ public class DtTimeS implements Comparable<DtTimeS> {
     /**
      * Textual representation of PRIV value
      */
-    public static final String PRIV_TEXT = "######";
+    public static final String PRIV_TEXT = DtString.PRIV;
 
     /**
      * Textual representation of ME value
      */
-    public static final String ME_TEXT = "******";
+    public static final String ME_TEXT = DtString.ME;
 
     /**
      * Textual representation of MIN value

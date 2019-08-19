@@ -65,4 +65,72 @@ class DtDoubleTest {
     void isValidValueTest(double value, boolean result) {
         assertThat(DtDouble.isValidValue(value)).isEqualTo(result);
     }
+
+    static Stream<Object[]> isPrivTest() {
+        return Stream.of(
+                new Object[]{15482d, false}
+                , new Object[]{-87549645d, false}
+                , new Object[]{DtDouble.PRIV, true}
+                , new Object[]{DtDouble.ME, false}
+                , new Object[]{DtDouble.MIN, false}
+                , new Object[]{DtDouble.MAX, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isPrivTest(double value, boolean result) {
+        assertThat(DtDouble.isPriv(value)).isEqualTo(result);
+    }
+
+    static Stream<Object[]> isMETest() {
+        return Stream.of(
+                new Object[]{15482d, false}
+                , new Object[]{-87549645d, false}
+                , new Object[]{DtDouble.PRIV, false}
+                , new Object[]{DtDouble.ME, true}
+                , new Object[]{DtDouble.MIN, false}
+                , new Object[]{DtDouble.MAX, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isMETest(double value, boolean result) {
+        assertThat(DtDouble.isME(value)).isEqualTo(result);
+    }
+
+    static Stream<Object[]> isMinTest() {
+        return Stream.of(
+                new Object[]{15482d, false}
+                , new Object[]{-87549645d, false}
+                , new Object[]{DtDouble.PRIV, false}
+                , new Object[]{DtDouble.ME, false}
+                , new Object[]{DtDouble.MIN, true}
+                , new Object[]{DtDouble.MAX, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isMinTest(double value, boolean result) {
+        assertThat(DtDouble.isMin(value)).isEqualTo(result);
+    }
+
+    static Stream<Object[]> isMaxTest() {
+        return Stream.of(
+                new Object[]{15482d, false}
+                , new Object[]{-87549645d, false}
+                , new Object[]{DtDouble.PRIV, false}
+                , new Object[]{DtDouble.ME, false}
+                , new Object[]{DtDouble.MIN, false}
+                , new Object[]{DtDouble.MAX, true}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isMaxTest(double value, boolean result) {
+        assertThat(DtDouble.isMax(value)).isEqualTo(result);
+    }
 }

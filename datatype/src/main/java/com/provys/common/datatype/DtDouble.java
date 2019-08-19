@@ -48,8 +48,48 @@ public class DtDouble {
     }
 
     /**
+     * Indicates if supplied value is special value indicating missing privileges
+     *
+     * @param value is the value to be checked
+     * @return true if it is PRIV value, false otherwise
+     */
+    public static boolean isPriv(double value) {
+        return value == PRIV;
+    }
+
+    /**
+     * Indicates if supplied value is special value indicating multi-value
+     *
+     * @param value is the value to be checked
+     * @return true if it is ME value, false otherwise
+     */
+    public static boolean isME(double value) {
+        return value == ME;
+    }
+
+    /**
+     * Indicates if supplied value is minimal value
+     *
+     * @param value is the value to be checked
+     * @return true if it is MIN value, false otherwise
+     */
+    public static boolean isMin(double value) {
+        return value == MIN;
+    }
+
+    /**
+     * Indicates if supplied value is maximal value
+     *
+     * @param value is the value to be checked
+     * @return true if it is MAX value, false otherwise
+     */
+    public static boolean isMax(double value) {
+        return value == MAX;
+    }
+
+    /**
      * DtDouble is utility class used for manipulation with double values in Provys framework and this is why its
      * constructor is not accessible
      */
-    private DtDouble() {};
+    private DtDouble() {}
 }

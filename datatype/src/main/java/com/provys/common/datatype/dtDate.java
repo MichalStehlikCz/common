@@ -3,6 +3,7 @@ package com.provys.common.datatype;
 import com.provys.common.exception.InternalException;
 
 import javax.annotation.Nonnull;
+import javax.json.bind.annotation.JsonbTypeAdapter;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -16,6 +17,7 @@ import java.util.Objects;
  * {@code LocalDate} functionality, but this behaviour can change later.
  */
 @SuppressWarnings("WeakerAccess")
+@JsonbTypeAdapter(JsonbDtDateAdapter.class)
 public final class DtDate implements Comparable<DtDate> {
 
     /**
@@ -51,12 +53,12 @@ public final class DtDate implements Comparable<DtDate> {
     /**
      * Text representing PRIV value
      */
-    public static final String PRIV_TEXT = "########";
+    public static final String PRIV_TEXT = DtString.PRIV;
 
     /**
      * Text representing ME value
      */
-    public static final String ME_TEXT = "********";
+    public static final String ME_TEXT = DtString.ME;
 
     /**
      * Text representing MIN value
@@ -87,11 +89,45 @@ public final class DtDate implements Comparable<DtDate> {
     }
 
     /**
+     * Retrieves instance of {@code DtDate} corresponding to given year, month and day.
+     */
+    @Nonnull
+    public static DtDate of(int year, short month, short day, boolean allowSpecial) {
+        if (allowSpecial) {
+            if ((year == PRIV.value.getYear()) && (month == PRIV.value.getMonthValue()) &&
+                    (day == PRIV.value.getDayOfMonth())) {
+                return PRIV;
+            }
+            if ((year == ME.value.getYear()) && (month == ME.value.getMonthValue()) &&
+                    (day == ME.value.getDayOfMonth())) {
+                return ME;
+            }
+            if ((year == MIN.value.getYear()) && (month == MIN.value.getMonthValue()) &&
+                    (day == MIN.value.getDayOfMonth())) {
+                return MIN;
+            }
+            if ((year == MAX.value.getYear()) && (month == MAX.value.getMonthValue()) &&
+                    (day == MAX.value.getDayOfMonth())) {
+                return MAX;
+            }
+        }
+        return of(year, month, day);
+    }
+
+    /**
      * Retrieves instance of {@code DtDate} corresponding to given year, month and day as {@code int} values.
      */
     @Nonnull
     public static DtDate of(int year, int month, int day) {
         return DtDate.of(year, (short) month, (short) day);
+    }
+
+    /**
+     * Retrieves instance of {@code DtDate} corresponding to given year, month and day.
+     */
+    @Nonnull
+    public static DtDate of(int year, int month, int day, boolean allowSpecial) {
+        return of(year, (short) month, (short) day, allowSpecial);
     }
 
     /**
@@ -208,7 +244,7 @@ public final class DtDate implements Comparable<DtDate> {
             var year = parser.readUnsignedInt(4);
             // only time " 00:00:00" is allowed to be present for date values - and if it is, it is read
             parser.onText(" 00:00:00");
-            return of(year, month, day);
+            return of(year, month, day, true);
         } catch (NoSuchElementException e) {
             throw new DateTimeParseException("String finished before reading whole value", parser.getString(),
                     parser.getPos(), e);

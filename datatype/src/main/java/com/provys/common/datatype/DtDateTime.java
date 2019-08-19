@@ -3,21 +3,20 @@ package com.provys.common.datatype;
 import javax.annotation.Nonnull;
 import java.time.*;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
-import java.util.Locale;
 import java.util.Objects;
 
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class DtDateTime implements Comparable<DtDateTime> {
 
     /**
      * Date value, returned when user doesn't have the rights to access the value
      */
-    public static final DtDateTime PRIV = new DtDateTime(DtDate.PRIV, DtTimeS.PRIV);
+    public static final DtDateTime PRIV = new DtDateTime(DtDate.PRIV, DtTimeS.ofSeconds(0));
 
     /**
      * Date value, returned as indication of multi-value
      */
-    public static final DtDateTime ME = new DtDateTime(DtDate.ME, DtTimeS.ME);
+    public static final DtDateTime ME = new DtDateTime(DtDate.ME, DtTimeS.ofSeconds(0));
 
     /**
      * Minimal date value, valid in Provys
@@ -32,12 +31,12 @@ public class DtDateTime implements Comparable<DtDateTime> {
     /**
      * Text representing PRIV value
      */
-    public static final String PRIV_TEXT = "########";
+    public static final String PRIV_TEXT = DtString.PRIV;
 
     /**
      * Text representing ME value
      */
-    public static final String ME_TEXT = "********";
+    public static final String ME_TEXT = DtString.ME;
 
     /**
      * Text representing MIN value
@@ -48,6 +47,47 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * Text representing MAX value
      */
     public static final String MAX_TEXT = ">>>>>>>>";
+
+    /**
+     * Creates DtDateTime for supplied date and time.
+     *
+     * @param year is year of the date
+     * @param month is month of the date
+     * @param day is day in month
+     * @param hour is hour (0-23)
+     * @param minute is minute (0-59)
+     * @param second is second (0-59)
+     */
+    @Nonnull
+    public static DtDateTime of(int year, int month, int day, int hour, int minute, int second) {
+        return ofDateTime(DtDate.of(year, month, day), DtTimeS.ofHourToSecond(hour, minute, second));
+    }
+
+    /**
+     * Creates DtDateTime for supplied date and time.
+     *
+     * @param year is year of the date
+     * @param month is month of the date
+     * @param day is day in month
+     * @param hour is hour (0-23)
+     * @param minute is minute (0-59)
+     */
+    @Nonnull
+    public static DtDateTime of(int year, int month, int day, int hour, int minute) {
+        return of(year, month, day, hour, minute, 0);
+    }
+
+    /**
+     * Creates DtDateTime for supplied date.
+     *
+     * @param year is year of the date
+     * @param month is month of the date
+     * @param day is day in month
+     */
+    @Nonnull
+    public static DtDateTime of(int year, int month, int day) {
+        return of(year, month, day, 0, 0);
+    }
 
     /**
      * Creates DtDateTime value based on supplied date.
@@ -119,15 +159,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
      */
     @Nonnull
     private DtDateTime(DtDate date, DtTimeS time) {
-        if (date.isPriv()) {
-            if (!time.isPriv()) {
-                throw new DateTimeException("Time part of PRIV date-time must be PRIV");
-            }
-        } else if (date.isME()) {
-            if (!time.isME()) {
-                throw new DateTimeException("Time part of ME date-time must be ME");
-            }
-        } else if (date.isMin() || date.isMax()) {
+        if (!date.isRegular()) {
             if (time.getSeconds() != 0) {
                 throw new DateTimeException("Time part of irregular date-time must be zero");
             }
@@ -243,6 +275,12 @@ public class DtDateTime implements Comparable<DtDateTime> {
      */
     @Nonnull
     public DtTimeS getTime() {
+        if (isPriv()) {
+            return DtTimeS.PRIV;
+        }
+        if (isME()) {
+            return DtTimeS.ME;
+        }
         return time;
     }
 
@@ -305,6 +343,12 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @return year from this date value
      */
     public int getYear() {
+        if (isPriv()) {
+            return DtInteger.PRIV;
+        }
+        if (isME()) {
+            return DtInteger.ME;
+        }
         return date.getYear();
     }
 
@@ -312,6 +356,12 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @return month from this date value
      */
     public int getMonthValue() {
+        if (isPriv()) {
+            return DtInteger.PRIV;
+        }
+        if (isME()) {
+            return DtInteger.ME;
+        }
         return date.getMonthValue();
     }
 
@@ -319,6 +369,12 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @return day of month from this date value
      */
     public int getDayOfMonth() {
+        if (isPriv()) {
+            return DtInteger.PRIV;
+        }
+        if (isME()) {
+            return DtInteger.ME;
+        }
         return date.getDayOfMonth();
     }
 
@@ -335,6 +391,21 @@ public class DtDateTime implements Comparable<DtDateTime> {
      */
     @Nonnull
     public DtDateTime plusDays(int daysToAdd) {
+        if (isPriv() || DtInteger.PRIV.equals(daysToAdd)) {
+            return DtDateTime.PRIV;
+        }
+        if (isME() || DtInteger.ME.equals(daysToAdd)) {
+            return DtDateTime.ME;
+        }
+        if (isMin() || isMax()) {
+            return this;
+        }
+        if (DtInteger.MIN.equals(daysToAdd)) {
+            return DtDateTime.MIN;
+        }
+        if (DtInteger.MAX.equals(daysToAdd)) {
+            return DtDateTime.MAX;
+        }
         if (daysToAdd == 0) {
             return this;
         }
@@ -354,20 +425,20 @@ public class DtDateTime implements Comparable<DtDateTime> {
      */
     @Nonnull
     public DtDateTime plusDays(double daysToAdd) {
-        if (equals(PRIV) || DtDouble.PRIV.equals(daysToAdd)) {
-            return PRIV;
+        if (isPriv() || DtDouble.PRIV.equals(daysToAdd)) {
+            return DtDateTime.PRIV;
         }
-        if (equals(ME) || DtDouble.ME.equals(daysToAdd)) {
-            return ME;
+        if (isME() || DtDouble.ME.equals(daysToAdd)) {
+            return DtDateTime.ME;
         }
-        if (equals(MIN) || equals(MAX)) {
-            return this;
+        if (isMin() || isMax()) {
+            return DtDateTime.this;
         }
         if (DtDouble.MIN.equals(daysToAdd)) {
-            return MIN;
+            return DtDateTime.MIN;
         }
         if (DtDouble.MAX.equals(daysToAdd)) {
-            return MAX;
+            return DtDateTime.MAX;
         }
         if (daysToAdd == 0) {
             return this;

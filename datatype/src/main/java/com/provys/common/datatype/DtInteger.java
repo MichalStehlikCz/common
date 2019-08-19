@@ -49,6 +49,46 @@ public class DtInteger {
     }
 
     /**
+     * Indicates if supplied value is special value indicating missing privileges
+     *
+     * @param value is the value to be checked
+     * @return true if it is PRIV value, false otherwise
+     */
+    public static boolean isPriv(int value) {
+        return value == PRIV;
+    }
+
+    /**
+     * Indicates if supplied value is special value indicating multi-value
+     *
+     * @param value is the value to be checked
+     * @return true if it is ME value, false otherwise
+     */
+    public static boolean isME(int value) {
+        return value == ME;
+    }
+
+    /**
+     * Indicates if supplied value is minimal value
+     *
+     * @param value is the value to be checked
+     * @return true if it is MIN value, false otherwise
+     */
+    public static boolean isMin(int value) {
+        return value == MIN;
+    }
+
+    /**
+     * Indicates if supplied value is maximal value
+     *
+     * @param value is the value to be checked
+     * @return true if it is MAX value, false otherwise
+     */
+    public static boolean isMax(int value) {
+        return value == MAX;
+    }
+
+    /**
      * DtInteger is utility class used for manipulation with Integer values in Provys framework and this is why its
      * constructor is not accessible
      */
