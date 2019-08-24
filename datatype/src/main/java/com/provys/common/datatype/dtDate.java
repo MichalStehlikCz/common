@@ -4,6 +4,7 @@ import com.provys.common.exception.InternalException;
 
 import javax.annotation.Nonnull;
 import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
@@ -13,11 +14,12 @@ import java.util.Objects;
 
 /**
  * Implements support for standard Provys DATE domain. DtDate value is immutable.
- * DATE values are held in DtDate instances in Provys Java framework; at the momentm logic is based on JDK's
+ * DATE values are held in DtDate instances in Provys Java framework; at the moment logic is based on JDK's
  * {@code LocalDate} functionality, but this behaviour can change later.
  */
 @SuppressWarnings("WeakerAccess")
 @JsonbTypeAdapter(JsonbDtDateAdapter.class)
+@XmlJavaTypeAdapter(XmlDtDateAdapter.class)
 public final class DtDate implements Comparable<DtDate> {
 
     /**
@@ -169,22 +171,24 @@ public final class DtDate implements Comparable<DtDate> {
      * @return datetime value read from parser
      */
     @Nonnull
-    public static DtDate parse(StringParser parser) {
+    public static DtDate parse(StringParser parser, boolean allowSpecialText, boolean allowSpecialValue) {
         if (!parser.hasNext()) {
             throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
                     parser.getPos());
         }
-        if (parser.onText(PRIV_TEXT)) {
-            return PRIV;
-        }
-        if (parser.onText(ME_TEXT)) {
-            return ME;
-        }
-        if (parser.onText(MIN_TEXT)) {
-            return MIN;
-        }
-        if (parser.onText(MAX_TEXT)) {
-            return MAX;
+        if (allowSpecialText) {
+            if (parser.onText(PRIV_TEXT)) {
+                return PRIV;
+            }
+            if (parser.onText(ME_TEXT)) {
+                return ME;
+            }
+            if (parser.onText(MIN_TEXT)) {
+                return MIN;
+            }
+            if (parser.onText(MAX_TEXT)) {
+                return MAX;
+            }
         }
         try {
             var year = parser.readUnsignedInt(4);
@@ -198,10 +202,12 @@ public final class DtDate implements Comparable<DtDate> {
                         parser.getPos());
             }
             var day = parser.readUnsignedInt(2);
-            return of(year, month, day);
-        } catch (StringIndexOutOfBoundsException e) {
+            return of(year, month, day, allowSpecialValue);
+        } catch (NoSuchElementException | StringIndexOutOfBoundsException e) {
             throw new DateTimeParseException("Unexpected end of string encountered", parser.getString(),
                     parser.getPos());
+        } catch (InternalException e) {
+            throw new DateTimeParseException(e.getMessage(), parser.getString(), parser.getPos(), e);
         }
     }
 
@@ -214,9 +220,108 @@ public final class DtDate implements Comparable<DtDate> {
     @Nonnull
     public static DtDate parse(String text) {
         var parser = new StringParser(text);
-        var result = parse(parser);
+        var result = parse(parser, true, false);
         if (parser.hasNext()) {
             throw new DateTimeParseException("Value parsed before reading whole text", text, parser.getPos());
+        }
+        return result;
+    }
+
+    private static DtDate parseIsoTime(DtDate date, StringParser parser) {
+        var result = date;
+        if (parser.hasNext() && (parser.peek() == 'T')) {
+            parser.next();
+            // parse optional zero time part
+            int hours = parser.readUnsignedInt(2);
+            if (hours == 24) {
+                // 24 hours is supported as end of day... it represents following day
+                result = result.plusDays(1);
+            } else if (hours != 0) {
+                throw new DateTimeParseException("Hours expected to equal zero in ISO date", parser.toString(),
+                        parser.getPos());
+            }
+            if (parser.next() != ':') {
+                throw new DateTimeParseException(": expected as hour - minute delimiter in ISO date",
+                        parser.getString(), parser.getPos());
+            }
+            if (parser.readUnsignedInt(2) != 0) {
+                throw new DateTimeParseException("Minutes expected to equal zero in ISO date", parser.toString(),
+                        parser.getPos());
+            }
+            if (parser.hasNext() && (parser.peek() == ':')) {
+                // seconds
+                parser.next();
+                if (parser.readUnsignedInt(2) != 0) {
+                    throw new DateTimeParseException("Seconds expected to equal zero in ISO date", parser.toString(),
+                            parser.getPos());
+                }
+                if (parser.hasNext() && ((parser.peek() == '.') || (parser.peek() == ','))) {
+                    // fractional part of seconds
+                    parser.next();
+                    if (parser.readUnsignedInt(1, 18) != 0) {
+                        throw new DateTimeParseException("Milliseconds expected to equal zero in ISO date",
+                                parser.toString(), parser.getPos());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    private static void parseIsoTimeZone(StringParser parser) {
+        if (parser.hasNext() && (parser.peek() == 'Z')) {
+            // UTC time
+            parser.next();
+        } else if (parser.hasNext() && ((parser.peek() == '+') || (parser.peek() == '-'))) {
+            // timezone
+            parser.next();
+            parser.readUnsignedInt(2);
+            if (parser.hasNext() && (parser.peek() == ':')) {
+                parser.next();
+                parser.readUnsignedInt(2);
+            }
+        }
+    }
+
+    /**
+     * Parse provided text in ISO local date format (lenient); special values are encoded as regular date strings
+     *
+     * @param parser is parser containing text in ISO-8601 format for local date (e.g. YYYY-MM-DD); also accepts date
+     *              with zero time or with zero time with timezone
+     * @return datetime value read from parser
+     */
+    @Nonnull
+    public static DtDate parseIso(StringParser parser, boolean allowTime) {
+        if (!parser.hasNext()) {
+            throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
+                    parser.getPos());
+        }
+        try {
+            var result = parse(parser, false, true);
+            if (allowTime) {
+                result = parseIsoTime(result, parser);
+                parseIsoTimeZone(parser);
+            }
+            return result;
+        } catch (NoSuchElementException | StringIndexOutOfBoundsException e) {
+            throw new DateTimeParseException("Unexpected end of string encountered in ISO date", parser.getString(),
+                    parser.getPos());
+        }
+    }
+
+    /**
+     * Parse provided text in ISO local date format (lenient); special values are encoded as regular date strings
+     *
+     * @param text is text in ISO-8601 format for local date (e.g. YYYY-MM-DD); also accepts date with zero time
+     *             or with zero time with timezone
+     * @return date value corresponding to provided text
+     */
+    @Nonnull
+    public static DtDate parseIso(String text) {
+        var parser = new StringParser(text);
+        var result = parseIso(parser, true);
+        if (parser.hasNext()) {
+            throw new DateTimeParseException("ISO date value parsed before reading whole text", text, parser.getPos());
         }
         return result;
     }
@@ -451,6 +556,27 @@ public final class DtDate implements Comparable<DtDate> {
             return DtInteger.MAX;
         }
         return (int) ChronoUnit.DAYS.between(date.getLocalDate(), this.getLocalDate());
+    }
+
+    /**
+     * Converts {@code DtDate} value to ISO date string representation. Unlike toString, special values are also
+     * converted to normal Iso date format, as special strings would not pass document validation
+     */
+    @Nonnull
+    public String toIso() {
+        if (isPriv()) {
+            return "1000-01-02";
+        }
+        if (isME()) {
+            return "1000-01-01";
+        }
+        if (isMin()) {
+            return "1000-01-03";
+        }
+        if (isMax()) {
+            return "5000-01-01";
+        }
+        return toString();
     }
 
     /**

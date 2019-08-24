@@ -7,6 +7,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.*;
+import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
@@ -59,20 +60,48 @@ class DtDateTest {
     @Nonnull
     static Stream<Object[]> parseTest() {
         return Stream.of(
-                new Object[]{"1989-11-25", LocalDate.of(1989, 11, 25)}
+                new Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
+                , new Object[]{"1989:21:25", null}
+                , new Object[]{"1989-21:25", null}
+                , new Object[]{"1989-21", null}
                 , new Object[]{"1989-1-1", null}
                 , new Object[]{"1989-11-25Z", null}
-                , new Object[]{null, null}
         );
     }
 
     @ParameterizedTest
     @MethodSource
-    void parseTest(String date, @Nullable LocalDate result) {
+    void parseTest(String date, @Nullable DtDate result) {
         if (result != null) {
-            assertThat(DtDate.parse(date)).isEqualTo(DtDate.ofLocalDate(result));
+            assertThat(DtDate.parse(date)).isEqualTo(result);
         } else {
-            assertThatThrownBy(() -> DtDate.parse(date));
+            assertThatThrownBy(() -> DtDate.parse(date)).isInstanceOf(DateTimeParseException.class);
+        }
+    }
+
+    @Nonnull
+    static Stream<Object[]> parseIsoTest() {
+        return Stream.of(
+                new Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
+                , new Object[]{"1989:21:25", null}
+                , new Object[]{"1989-21:25", null}
+                , new Object[]{"1989-21", null}
+                , new Object[]{"1989-1-1", null}
+                , new Object[]{"1989-11-25Z", DtDate.of(1989, 11, 25)}
+                , new Object[]{"1989-11-25T00:00:00.000Z", DtDate.of(1989, 11, 25)}
+                , new Object[]{"1989-11-25T00:00:00,000Z", DtDate.of(1989, 11, 25)}
+                , new Object[]{"1989-11-25T00:00:00Z", DtDate.of(1989, 11, 25)}
+                , new Object[]{"1989-11-25T00:00Z", DtDate.of(1989, 11, 25)}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void parseIsoTest(String date, @Nullable DtDate result) {
+        if (result != null) {
+            assertThat(DtDate.parseIso(date)).isEqualTo(result);
+        } else {
+            assertThatThrownBy(() -> DtDate.parse(date)).isInstanceOf(DateTimeParseException.class);
         }
     }
 

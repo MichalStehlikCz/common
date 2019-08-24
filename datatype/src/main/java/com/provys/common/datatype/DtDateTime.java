@@ -237,7 +237,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
         if (parser.onText(MAX_TEXT)) {
             return DtDateTime.MAX;
         }
-        var date = DtDate.parse(parser);
+        var date = DtDate.parse(parser, false, false);
         if (parser.next() != 'T') {
             throw new DateTimeParseException("T expected as delimiter of date and time part", parser.getString(),
                     parser.getPos());
