@@ -1,7 +1,6 @@
 package com.provys.common.datatype;
 
 import javax.json.bind.adapter.JsonbAdapter;
-import java.time.format.DateTimeParseException;
 
 /**
  * Adapter ensuring provys integer value is treated as plain numeric value when
