@@ -242,7 +242,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
             throw new DateTimeParseException("T expected as delimiter of date and time part", parser.getString(),
                     parser.getPos());
         }
-        var time = DtTimeS.parse(parser);
+        var time = DtTimeS.parse(parser, false, false, false);
         return ofDateTime(date, time);
     }
 
@@ -284,6 +284,33 @@ public class DtDateTime implements Comparable<DtDateTime> {
         return time;
     }
 
+    /**
+     * Get time, but based on specified base date (e.g. potentially outside 0-24 hours interval)
+     *
+     * @param baseDate is base date against which time is calculated
+     * @return time relative to specified base date
+     */
+    public DtTimeS getTime(DtDate baseDate) {
+        if (isPriv() || baseDate.isPriv()) {
+            return DtTimeS.PRIV;
+        }
+        if (isME() || baseDate.isME()) {
+            return DtTimeS.ME;
+        }
+        if ((isMax() && baseDate.isMax()) || (isMin() && baseDate.isMin())) {
+            return DtTimeS.ofSeconds(0);
+        }
+        if (isMax() || baseDate.isMin()) {
+            return DtTimeS.MAX;
+        }
+        if (isMin() || baseDate.isMax()) {
+            return DtTimeS.MIN;
+        }
+        if (baseDate.equals(date)) {
+            return time;
+        }
+        return DtTimeS.ofSeconds((int) Math.round(minus(DtDateTime.ofDate(baseDate))*86400d));
+    }
     /**
      * Indicates if given value is regular datetime value. Regular values are valid values in period MIN ... MAX
      * (exclusive)

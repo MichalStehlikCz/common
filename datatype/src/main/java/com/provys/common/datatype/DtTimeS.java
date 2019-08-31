@@ -5,10 +5,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
-import java.time.DateTimeException;
-import java.time.LocalTime;
+import javax.annotation.Nullable;
+import java.time.*;
 import java.time.format.DateTimeParseException;
-import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
@@ -59,6 +58,94 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Textual representation of MAX value
      */
     public static final String MAX_TEXT = ">>>>>>";
+
+    /**
+     * Regular expression for hours part (0-23; 24 hours is special case handled on time level, not on individual
+     * components)
+     */
+    public static final String HOURS_REGEX_STRICT = "[0-1][0-9]|2[0-3]";
+
+    /**
+     * Regular expression for minutes part (0-59)
+     */
+    public static final String MINUTES_REGEX_STRICT = "[0-5][0-9]";
+
+    /**
+     * Regular expression for seconds part (0-59)
+     */
+    public static final String SECONDS_REGEX_STRICT = "[0-5][0-9]";
+
+    /**
+     * Regular expression for nanoseconds part
+     */
+    public static final String NANO_REGEX_STRICT = "[,.]\\d{1-9}";
+
+    /**0
+     * Regular expression for time (strict, without timezone)
+     */
+    public static final String TIME_REGEX_STRICT = "(?:24:00:00|" + HOURS_REGEX_STRICT + ":" + MINUTES_REGEX_STRICT + ":"
+            + SECONDS_REGEX_STRICT + ")(?:" + NANO_REGEX_STRICT + ")?";
+
+    /**
+     * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone)
+     */
+    public static final String PATTERN_STRICT = "^(" + TIME_REGEX_STRICT + ")(" + ZoneOffsetUtil.REGEX_STRICT
+            + ")?";
+
+    /**
+     * Regular expression for hours part (0-23; 24 hours is special case handled on time level, not on individual
+     * components)
+     */
+    public static final String HOURS_REGEX_LENIENT = "[0-1]?[0-9]|2[0-3]";
+
+    /**
+     * Regular expression for minutes part (0-59)
+     */
+    public static final String MINUTES_REGEX_LENIENT = "[0-5]?[0-9]";
+
+    /**
+     * Regular expression for seconds part (0-59)
+     */
+    public static final String SECONDS_REGEX_LENIENT = "[0-5]?[0-9]";
+
+    /**
+     * Regular expression for nano-seconds part (same as strict at the moment)
+     */
+    public static final String NANO_REGEX_LENIENT = NANO_REGEX_STRICT;
+
+    /**
+     * Regular expression for time (lenient; allows both time with separators with missing leading zeroes and time
+     * without separator, seconds are optional, without timezone)
+     */
+    public static final String TIME_REGEX_LENIENT = "^(?:24:0?0(?::0?0(?:" + NANO_REGEX_LENIENT + ")?)?|" +
+            "2400(?:00(?:\" + NANO_REGEX_LENIENT + \")?)?|" +
+            HOURS_REGEX_LENIENT + ":" + MINUTES_REGEX_LENIENT + "(?::" + SECONDS_REGEX_LENIENT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?|" +
+            HOURS_REGEX_STRICT + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?";
+
+    /**
+     * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient - allows some
+     * divergencies from norm
+     */
+    public static final String PATTERN_LENIENT = "(" + TIME_REGEX_LENIENT + ")(" + ZoneOffsetUtil.REGEX_LENIENT +
+            ")?";
+
+    /**
+     * Regular expression for time information (e.g. time not limited to 24 hours)
+     */
+    public static final String TIMEINFO_REGEX_LENIENT = "[+-]?[0-9]{1,2}:" + MINUTES_REGEX_LENIENT +
+            "(?::" + SECONDS_REGEX_LENIENT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?|" +
+            "[+-]?[0-9]{2}" + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?";
+
+    /**
+     * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient - allows some
+     * divergencies from norm
+     */
+    public static final String INFO_PATTERN_LENIENT = "(" + TIME_REGEX_LENIENT + ")(" + ZoneOffsetUtil.REGEX_LENIENT +
+            ")?";
 
     /**
      * whole hours are used pretty often, so it might be good idea to cache them...
@@ -292,18 +379,10 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
-     * Parse value from StringParser; unlike "normal" String parse, this method can read only part of parser content;
-     * parser is moved after last character read as part of time value.
-     *
-     * @param parser is parser containing text to be read
-     * @return datetime value read from parser
+     * Parse special text if present, return null if special text was not found
      */
-    @Nonnull
-    public static DtTimeS parse(StringParser parser) {
-        if (!parser.hasNext()) {
-            throw new DateTimeParseException("Empty parser supplied to read DtTimeS", parser.getString(),
-                    parser.getPos());
-        }
+    @Nullable
+    private static DtTimeS parseSpecialText(StringParser parser) {
         if (parser.onText(PRIV_TEXT)) {
             return DtTimeS.PRIV;
         }
@@ -316,9 +395,32 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (parser.onText(MAX_TEXT)) {
             return DtTimeS.MAX;
         }
+        return null;
+    }
+
+    /**
+     * Parse value from StringParser; unlike "normal" String parse, this method can read only part of parser content;
+     * parser is moved after last character read as part of time value.
+     *
+     * @param parser is parser containing text to be read
+     * @return datetime value read from parser
+     */
+    @Nonnull
+    public static DtTimeS parse(StringParser parser, boolean allowNegative, boolean allowSpecialText,
+                                boolean allowSpecialValue) {
+        if (!parser.hasNext()) {
+            throw new DateTimeParseException("Empty parser supplied to read DtTimeS", parser.getString(),
+                    parser.getPos());
+        }
+        if (allowSpecialText) {
+            DtTimeS result = parseSpecialText(parser);
+            if (result != null) {
+                return result;
+            }
+        }
         try {
             var negative = false;
-            if (parser.peek() == '-') {
+            if (allowNegative && (parser.peek() == '-')) {
                 parser.next();
                 negative = true;
             }
@@ -359,9 +461,106 @@ public class DtTimeS implements Comparable<DtTimeS> {
             throw new DateTimeParseException("String to be parsed as time value is empty", value, 0);
         }
         var parser = new StringParser(value);
-        var result = parse(parser);
+        var result = parse(parser, true, true, false);
         if (parser.hasNext()) {
-            throw new DateTimeParseException("End of string not rached parsing the value", value, parser.getPos());
+            throw new DateTimeParseException("End of string not reached parsing the value", value, parser.getPos());
+        }
+        return result;
+    }
+
+    /**
+     * Strict validation of Iso time value
+     *
+     * @param text is supplied text to be validated
+     * @return if supplied text is valid time information (including potential zone offset)
+     */
+    public static boolean isValidStrict(String text) {
+        return PATTERN_STRICT.matches(text);
+    }
+
+    /**
+     * Lenient validation of Iso time value
+     *
+     * @param text is supplied text to be validated
+     * @return if supplied text is valid time information (including potential zone offset)
+     */
+    public static boolean isValidLenient(String text) {
+        return PATTERN_LENIENT.matches(text);
+    }
+
+    /**
+     * Parse text from ISO format, without zone offset information.
+     * Supported formats
+     * HH:MI
+     * HH:MI:SS
+     * HH:MI:SS.NNNN or HH:MI:SS,NNNN
+     * HH:MI:SS:FF
+     * HHMI
+     * HHMISS
+     * HHMISSFF
+     *
+     * @param text is supplied text
+     * @return time parsed from supplied text
+     */
+    @Nonnull
+    public static DtTimeS parseIsoTime(String text) {
+        var result = parseIsoTimeInfo(text, false);
+        if (result.compareTo(DtTimeS.ofHourToMinute(24, 0)) < 0) {
+            throw new DateTimeParseException("Parsed time exceeds 24 hours", text, 0);
+        }
+        return result;
+    }
+
+    /**
+     * Lenient validation of Iso time value, without 24 hour limit
+     *
+     * @param text is supplied text to be validated
+     * @return if supplied text is valid time information (including potential zone offset)
+     */
+    public static boolean isValidInfoLenient(String text, boolean allowNegative) {
+        return INFO_PATTERN_LENIENT.matches(text);
+    }
+
+    /**
+     * Parse text from ISO format, without zone offset information; allows time outside normal Iso limits (0-24 hours),
+     * potentially negative
+     *
+     * @param text is supplied text
+     * @return time parsed from supplied text
+     */
+    @Nonnull
+    public static DtTimeS parseIsoTimeInfo(String text, boolean allowNegative) {
+
+    }
+
+    /**
+     * Method used when converting data to zone with explicitly specified offset
+     *
+     * @param time is specified time, before offset is incorporated
+     * @param zoneOffset is offset that has been specified with time value
+     * @param localZoneId is local timezone. System expects, that datetime information is valid in this zone
+     * @return time in local timezone, corresponding to time with explicitly specified offset
+     */
+    private static DtTimeS shiftFromOffset(DtTimeS time, DtDate date, ZoneOffset zoneOffset, ZoneId localZoneId) {
+        return DtDateTime.ofLocalDateTime(
+                ZonedDateTime.ofInstant(DtDateTime.ofDateTime(date, time).getLocalDateTime()
+                        , zoneOffset, localZoneId)
+                        .toLocalDateTime()).getTime(date);
+    }
+
+    @Nonnull
+    public static DtTimeS parseIso(StringParser parser, boolean allowNegative, DtDate date, ZoneId localZoneId) {
+        if (!parser.hasNext()) {
+            throw new DateTimeParseException("Empty parser supplied to parse Iso time", parser.getString(),
+                    parser.getPos());
+        }
+        var result = parse(parser, allowNegative, false, true);
+        if (parser.hasNext() && (parser.peek() == 'Z')) {
+            // GMT time
+            result = shiftFromOffset(result, date, ZoneOffset.UTC, localZoneId);
+        } else if (parser.hasNext() && ((parser.peek() == '+') || (parser.peek() == '-'))) {
+            // explicit time-zone
+
         }
         return result;
     }

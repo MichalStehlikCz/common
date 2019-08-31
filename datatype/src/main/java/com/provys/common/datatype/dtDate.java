@@ -11,6 +11,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Implements support for standard Provys DATE domain. DtDate value is immutable.
@@ -71,6 +72,50 @@ public final class DtDate implements Comparable<DtDate> {
      * Text representing MAX value
      */
     public static final String MAX_TEXT = ">>>>>>>>";
+
+    /**
+     * Regular expression validating year, strict (4 digit). Valid years correspond to date values allowed in Provys
+     * framework
+     */
+    public static String YEAR_REGEX_STRICT = "[1-5][0-9]{3}";
+
+    /**
+     * Regular expression validating month, strict (2 digit)
+     */
+    public static String MONTH_REGEX_STRICT = "(?:0[1-9]|1[0-2])";
+
+    /**
+     * Regular expression validating day, strict (2 digits)
+     */
+    public static String DAY_REGEX_STRICT = "(?:0[1-9]|[1-2][0-9]|3[0-1])";
+
+    /**
+     * Defines format, supported by Iso parse
+     */
+    public static Pattern ISO_DATE_STRICT = Pattern.compile("(" + YEAR_REGEX_STRICT + ")-(" + MONTH_REGEX_STRICT +
+            ")-(" + DAY_REGEX_STRICT + ")");
+
+    /**
+     * Regular expression validating year, lenient; allows 2 digit year (that is then interpreted in -50/+50 years
+     * window)
+     */
+    public static String YEAR_REGEX_LENIENT = "(?:" + YEAR_REGEX_STRICT + "|[0-9]{2})";
+
+    /**
+     * Regular expression validating month, lenient (supports 1 or 2 digits)
+     */
+    public static String MONTH_REGEX_LENIENT = "(?:0?[1-9]|1[0-2])";
+
+    /**
+     * Regular expression validating day, lenient (1-2 digits)
+     */
+    public static String DAY_REGEX_LENIENT = "(?:0?[1-9]|[1-2][0-9]|3[0-1])";
+
+    /**
+     * Defines format, supported by Iso parse
+     */
+    public static Pattern ISO_DATE_LENIENT = Pattern.compile("(" + YEAR_REGEX_LENIENT + ")[-.](" + MONTH_REGEX_LENIENT +
+            ")[-.](" + DAY_REGEX_LENIENT + ")(?:00:00(?::00(?:[,.][0]{0,9})))");
 
     /**
      * Retrieves instance of {@code DtDate} corresponding to given {@code LocalDate}.

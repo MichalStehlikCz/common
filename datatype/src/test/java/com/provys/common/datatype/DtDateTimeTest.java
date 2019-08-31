@@ -114,6 +114,34 @@ class DtDateTimeTest {
     }
 
     @Nonnull
+    static Stream<Object[]> getTimeBaseTest() {
+        return Stream.of(
+                new Object[]{DtDateTime.of(1989, 11, 28, 1, 25),
+                        DtDate.of(1989, 11, 27), DtTimeS.ofDayToMinute(1, 1, 25)}
+                , new Object[]{DtDateTime.of(1989, 11, 28, 1, 25),
+                        DtDate.of(1989, 11, 29), DtTimeS.ofDayToMinute(-1, 1, 25)}
+                , new Object[]{DtDateTime.PRIV, DtDate.of(1989, 11, 27), DtTimeS.PRIV}
+                , new Object[]{DtDateTime.of(2011, 5, 14), DtDate.PRIV, DtTimeS.PRIV}
+                , new Object[]{DtDateTime.PRIV, DtDate.ME, DtTimeS.PRIV}
+                , new Object[]{DtDateTime.ME, DtDate.of(1989, 11, 27), DtTimeS.ME}
+                , new Object[]{DtDateTime.of(2011, 5, 14), DtDate.ME, DtTimeS.ME}
+                , new Object[]{DtDateTime.ME, DtDate.MIN, DtTimeS.ME}
+                , new Object[]{DtDateTime.MIN, DtDate.of(1989, 11, 27), DtTimeS.MIN}
+                , new Object[]{DtDateTime.of(2011, 5, 14), DtDate.MIN, DtTimeS.MAX}
+                , new Object[]{DtDateTime.MIN, DtDate.MIN, DtTimeS.ofSeconds(0)}
+                , new Object[]{DtDateTime.MAX, DtDate.of(1989, 11, 27), DtTimeS.MAX}
+                , new Object[]{DtDateTime.of(2011, 5, 14), DtDate.MAX, DtTimeS.MIN}
+                , new Object[]{DtDateTime.MAX, DtDate.MAX, DtTimeS.ofSeconds(0)}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void getTimeBaseTest(DtDateTime value, DtDate baseDate, DtTimeS result) {
+        assertThat(value.getTime(baseDate)).isEqualTo(result);
+    }
+
+    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtDateTime.ofDate(DtDate.of(1989, 11, 25)), true}
