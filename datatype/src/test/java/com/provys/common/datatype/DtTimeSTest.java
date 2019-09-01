@@ -65,6 +65,230 @@ class DtTimeSTest {
     }
 
     @Nonnull
+    static Stream<Object[]> isValidTimeStrictTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", true}
+                , new Object[]{"22:10:18,156", true}
+                , new Object[]{"22:10:18.156", true}
+                , new Object[]{"22:10:18:00", false}
+                , new Object[]{"22:10:18:05", false}
+                , new Object[]{"24:00:00", true}
+                , new Object[]{"24:01:00", false}
+                , new Object[]{"25:00:00", false}
+                , new Object[]{"15:60:00", false}
+                , new Object[]{"15:00:60", false}
+                , new Object[]{"22:10", false}
+                , new Object[]{"3:27:15", false}
+                , new Object[]{"12:5:24", false}
+                , new Object[]{"12:15:4", false}
+                , new Object[]{"-1:15:04", false}
+                , new Object[]{"121524,123", false}
+                , new Object[]{"121524", false}
+                , new Object[]{"12152", false}
+                , new Object[]{"1215", false}
+                , new Object[]{"121", false}
+                , new Object[]{"12", false}
+                , new Object[]{"1", false}
+                , new Object[]{"124:07:56", false}
+                , new Object[]{"12#15:24", false}
+                , new Object[]{"12:15#24", false}
+                , new Object[]{"12:15:24#10", false}
+                , new Object[]{DtTimeS.PRIV_TEXT, false}
+                , new Object[]{DtTimeS.ME_TEXT, false}
+                , new Object[]{DtTimeS.MIN_TEXT, false}
+                , new Object[]{DtTimeS.MAX_TEXT, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidTimeStrictTest(String text, boolean result) {
+        assertThat(DtTimeS.isValidTimeStrict(text)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isValidTimeLenientTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", true}
+                , new Object[]{"22:10:18,156", true}
+                , new Object[]{"22:10:18.156", true}
+                , new Object[]{"22:10:18:00", false}
+                , new Object[]{"22:10:18:05", false}
+                , new Object[]{"24:00:00", true}
+                , new Object[]{"24:01:00", false}
+                , new Object[]{"25:00:00", false}
+                , new Object[]{"15:60:00", false}
+                , new Object[]{"15:00:60", false}
+                , new Object[]{"22:10", true}
+                , new Object[]{"22", false}
+                , new Object[]{"3:27:15", true}
+                , new Object[]{"12:5:24", true}
+                , new Object[]{"12:15:4", true}
+                , new Object[]{"-1:15:04", false}
+                , new Object[]{"121524,123", true}
+                , new Object[]{"121524", true}
+                , new Object[]{"12152", false}
+                , new Object[]{"1215", true}
+                , new Object[]{"121", false}
+                , new Object[]{"12", false}
+                , new Object[]{"1", false}
+                , new Object[]{"124:07:56", false}
+                , new Object[]{"12#15:24", false}
+                , new Object[]{"12:15#24", false}
+                , new Object[]{"12:15:24#10", false}
+                , new Object[]{DtTimeS.PRIV_TEXT, false}
+                , new Object[]{DtTimeS.ME_TEXT, false}
+                , new Object[]{DtTimeS.MIN_TEXT, false}
+                , new Object[]{DtTimeS.MAX_TEXT, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidTimeLenientTest(String text, boolean result) {
+        assertThat(DtTimeS.isValidTimeLenient(text)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> parseIsoTimeTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"22:10:18,156", DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
+                , new Object[]{"22:10:18.156", DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
+                , new Object[]{"22:10:18:00", null}
+                , new Object[]{"22:10:18:05", null}
+                , new Object[]{"24:00:00", DtTimeS.ofHourToMinute(24, 0)}
+                , new Object[]{"24:01:00", null}
+                , new Object[]{"25:00:00", null}
+                , new Object[]{"15:60:00", null}
+                , new Object[]{"15:00:60", null}
+                , new Object[]{"22:10", DtTimeS.ofHourToMinute(22, 10)}
+                , new Object[]{"22", null}
+                , new Object[]{"3:27:15", DtTimeS.ofHourToSecond(3, 27, 15)}
+                , new Object[]{"12:5:24", DtTimeS.ofHourToSecond(12, 5, 24)}
+                , new Object[]{"12:15:4", DtTimeS.ofHourToSecond(12, 15, 4)}
+                , new Object[]{"-1:15:04", null}
+                , new Object[]{"121524,123", DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
+                , new Object[]{"121524", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"12152", null}
+                , new Object[]{"1215", DtTimeS.ofHourToMinute(12, 15)}
+                , new Object[]{"121", null}
+                , new Object[]{"12", null}
+                , new Object[]{"1", null}
+                , new Object[]{"124:07:56", null}
+                , new Object[]{"12#15:24", null}
+                , new Object[]{"12:15#24", null}
+                , new Object[]{"12:15:24#10", null}
+                , new Object[]{DtTimeS.PRIV_TEXT, null}
+                , new Object[]{DtTimeS.ME_TEXT, null}
+                , new Object[]{DtTimeS.MIN_TEXT, null}
+                , new Object[]{DtTimeS.MAX_TEXT, null}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void parseIsoTimeTest(String text, @Nullable DtTimeS result) {
+        if (result == null) {
+            assertThatThrownBy(() -> DtTimeS.parseIsoTime(text)).isInstanceOf(DateTimeParseException.class);
+        } else {
+            assertThat(DtTimeS.parseIsoTime(text)).isEqualTo(result);
+        }
+    }
+
+    @Nonnull
+    static Stream<Object[]> isValidTimeInfoLenientTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", false, true}
+                , new Object[]{"22:10:18,156", false, true}
+                , new Object[]{"22:10:18.156", false, true}
+                , new Object[]{"22:10:18:00", false, false}
+                , new Object[]{"22:10:18:05", false, false}
+                , new Object[]{"24:00:00", false, true}
+                , new Object[]{"24:01:00", false, true}
+                , new Object[]{"25:00:00", false, true}
+                , new Object[]{"15:60:00", false, false}
+                , new Object[]{"15:00:60", false, false}
+                , new Object[]{"22:10", false, true}
+                , new Object[]{"22", false, false}
+                , new Object[]{"3:27:15", false, true}
+                , new Object[]{"12:5:24", false, true}
+                , new Object[]{"12:15:4", false, true}
+                , new Object[]{"-1:15:04", false, false}
+                , new Object[]{"-1:15:04", true, true}
+                , new Object[]{"121524,123", false, true}
+                , new Object[]{"121524", false, true}
+                , new Object[]{"12152", false, false}
+                , new Object[]{"1215", false, true}
+                , new Object[]{"121", false, false}
+                , new Object[]{"12", false, false}
+                , new Object[]{"1", false, false}
+                , new Object[]{"124:07:56", false, true}
+                , new Object[]{"12#15:24", false, false}
+                , new Object[]{"12:15#24", false, false}
+                , new Object[]{"12:15:24#10", false, false}
+                , new Object[]{DtTimeS.PRIV_TEXT, false, false}
+                , new Object[]{DtTimeS.ME_TEXT, false, false}
+                , new Object[]{DtTimeS.MIN_TEXT, false, false}
+                , new Object[]{DtTimeS.MAX_TEXT, false, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidTimeInfoLenientTest(String text, boolean allowNegative, boolean result) {
+        assertThat(DtTimeS.isValidTimeInfoLenient(text, allowNegative)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> parseIsoTimeInfoTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", false, DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"22:10:18,156", false, DtTimeS.ofHourToNano(22, 10, 18, 156)}
+                , new Object[]{"22:10:18.156", false, DtTimeS.ofHourToNano(22, 10, 18, 156)}
+                , new Object[]{"22:10:18:00", false, null}
+                , new Object[]{"22:10:18:05", false, null}
+                , new Object[]{"24:00:00", false, DtTimeS.ofHourToMinute(24, 0)}
+                , new Object[]{"24:01:00", false, DtTimeS.ofHourToMinute(24, 1)}
+                , new Object[]{"25:00:00", false, DtTimeS.ofHourToMinute(25, 0)}
+                , new Object[]{"15:60:00", false, null}
+                , new Object[]{"15:00:60", false, null}
+                , new Object[]{"22:10", false, DtTimeS.ofHourToMinute(22, 10)}
+                , new Object[]{"22", false, null}
+                , new Object[]{"3:27:15", false, DtTimeS.ofHourToSecond(3, 27, 15)}
+                , new Object[]{"12:5:24", false, DtTimeS.ofHourToSecond(12, 5, 24)}
+                , new Object[]{"12:15:4", false, DtTimeS.ofHourToSecond(12, 15, 4)}
+                , new Object[]{"-1:15:04", false, null}
+                , new Object[]{"-1:15:04", true, DtTimeS.ofHourToSecond(true, 1, 15, 4)}
+                , new Object[]{"121524,123", false, DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
+                , new Object[]{"121524", false, DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"12152", false, null}
+                , new Object[]{"1215", false, DtTimeS.ofHourToMinute(12, 15)}
+                , new Object[]{"121", false, null}
+                , new Object[]{"12", false, null}
+                , new Object[]{"1", false, null}
+                , new Object[]{"124:07:56", false, DtTimeS.ofHourToSecond(124, 7, 56)}
+                , new Object[]{"12#15:24", false, null}
+                , new Object[]{"12:15#24", false, null}
+                , new Object[]{"12:15:24#10", false, null}
+                , new Object[]{DtTimeS.PRIV_TEXT, false, null}
+                , new Object[]{DtTimeS.ME_TEXT, false, null}
+                , new Object[]{DtTimeS.MIN_TEXT, false, null}
+                , new Object[]{DtTimeS.MAX_TEXT, false, null}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void parseIsoTimeInfoTest(String text, boolean allowNegative, @Nullable DtTimeS result) {
+        if (result == null) {
+            assertThatThrownBy(() -> DtTimeS.parseIsoTimeInfo(text, allowNegative)).isInstanceOf(DateTimeParseException.class);
+        } else {
+            assertThat(DtTimeS.parseIsoTimeInfo(text, allowNegative)).isEqualTo(result);
+        }
+    }
+
+    @Nonnull
     static Stream<Object[]> ofDaysToNanoErrorTest() {
         return Stream.of(
                 new Object[]{0, 25, 0, 0, 0, ".*hours.*24.*"}

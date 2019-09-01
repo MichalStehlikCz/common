@@ -10,6 +10,7 @@ import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
@@ -63,7 +64,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Regular expression for hours part (0-23; 24 hours is special case handled on time level, not on individual
      * components)
      */
-    public static final String HOURS_REGEX_STRICT = "[0-1][0-9]|2[0-3]";
+    public static final String HOURS_REGEX_STRICT = "(?:[0-1][0-9]|2[0-3])";
 
     /**
      * Regular expression for minutes part (0-59)
@@ -78,7 +79,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     /**
      * Regular expression for nanoseconds part
      */
-    public static final String NANO_REGEX_STRICT = "[,.]\\d{1-9}";
+    public static final String NANO_REGEX_STRICT = "[,.]\\d{1,9}";
 
     /**0
      * Regular expression for time (strict, without timezone)
@@ -87,16 +88,21 @@ public class DtTimeS implements Comparable<DtTimeS> {
             + SECONDS_REGEX_STRICT + ")(?:" + NANO_REGEX_STRICT + ")?";
 
     /**
+     * Regular expression for time as defined in ISO, without time zone
+     */
+    public static final Pattern TIME_PATTERN_STRICT = Pattern.compile("^" + TIME_REGEX_STRICT + "$");
+
+    /**
      * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone)
      */
-    public static final String PATTERN_STRICT = "^(" + TIME_REGEX_STRICT + ")(" + ZoneOffsetUtil.REGEX_STRICT
-            + ")?";
+    public static final Pattern PATTERN_STRICT = Pattern.compile("^(" + TIME_REGEX_STRICT + ")(" +
+            ZoneOffsetUtil.REGEX_STRICT + ")?");
 
     /**
      * Regular expression for hours part (0-23; 24 hours is special case handled on time level, not on individual
      * components)
      */
-    public static final String HOURS_REGEX_LENIENT = "[0-1]?[0-9]|2[0-3]";
+    public static final String HOURS_REGEX_LENIENT = "(?:[0-1]?[0-9]|2[0-3])";
 
     /**
      * Regular expression for minutes part (0-59)
@@ -117,35 +123,56 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Regular expression for time (lenient; allows both time with separators with missing leading zeroes and time
      * without separator, seconds are optional, without timezone)
      */
-    public static final String TIME_REGEX_LENIENT = "^(?:24:0?0(?::0?0(?:" + NANO_REGEX_LENIENT + ")?)?|" +
-            "2400(?:00(?:\" + NANO_REGEX_LENIENT + \")?)?|" +
-            HOURS_REGEX_LENIENT + ":" + MINUTES_REGEX_LENIENT + "(?::" + SECONDS_REGEX_LENIENT +
-            "(?:" + NANO_REGEX_LENIENT + ")?)?|" +
-            HOURS_REGEX_STRICT + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
-            "(?:" + NANO_REGEX_LENIENT + ")?)?";
+    @SuppressWarnings("squid:S1192")
+    public static final String TIME_REGEX_LENIENT = "(?:24:0?0(?::0?0(?:" + NANO_REGEX_LENIENT + ")?)?)|" +
+            "(?:2400(?:00(?:" + NANO_REGEX_LENIENT + ")?)?)|" +
+            "(?:" + HOURS_REGEX_LENIENT + ":" + MINUTES_REGEX_LENIENT + "(?::" + SECONDS_REGEX_LENIENT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?)|" +
+            "(?:" + HOURS_REGEX_STRICT + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?)";
+
+    /**
+     * Regular expression for time (without time zone), lenient form, allowing additional parsable formats
+     */
+    public static final Pattern TIME_PATTERN_LENIENT = Pattern.compile("^" + TIME_REGEX_LENIENT + "$");
 
     /**
      * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient - allows some
      * divergencies from norm
      */
-    public static final String PATTERN_LENIENT = "(" + TIME_REGEX_LENIENT + ")(" + ZoneOffsetUtil.REGEX_LENIENT +
-            ")?";
+    public static final Pattern PATTERN_LENIENT = Pattern.compile("^(" + TIME_REGEX_LENIENT + ")(" +
+            ZoneOffsetUtil.REGEX_LENIENT + ")?");
 
     /**
      * Regular expression for time information (e.g. time not limited to 24 hours)
      */
-    public static final String TIMEINFO_REGEX_LENIENT = "[+-]?[0-9]{1,2}:" + MINUTES_REGEX_LENIENT +
+    public static final String TIMEINFO_REGEX_LENIENT = "[+-]?(?:[0-9]{1,4}:" + MINUTES_REGEX_LENIENT +
             "(?::" + SECONDS_REGEX_LENIENT +
             "(?:" + NANO_REGEX_LENIENT + ")?)?|" +
-            "[+-]?[0-9]{2}" + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
-            "(?:" + NANO_REGEX_LENIENT + ")?)?";
+            "[0-9]{2}" + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
+            "(?:" + NANO_REGEX_LENIENT + ")?)?)";
+
+    /**
+     * Regular expression for time; might exceed 24 hour limit, supports negative values and allows other parsable
+     * formats
+     */
+    public static final Pattern TIMEINFO_PATTERN_LENIENT = Pattern.compile("^" + TIME_REGEX_LENIENT + "$");
 
     /**
      * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient - allows some
      * divergencies from norm
      */
-    public static final String INFO_PATTERN_LENIENT = "(" + TIME_REGEX_LENIENT + ")(" + ZoneOffsetUtil.REGEX_LENIENT +
-            ")?";
+    public static final Pattern INFO_PATTERN_LENIENT = Pattern.compile("(" + TIME_REGEX_LENIENT + ")(" +
+            ZoneOffsetUtil.REGEX_LENIENT + ")?");
+
+    /**
+     * Pattern used to parse time info
+     */
+    public static final Pattern TIMEINFO_PATTERN_PARSE = Pattern.compile("([+-]?)(?:([0-9]{1,4}):(" +
+            MINUTES_REGEX_LENIENT + ")(?::(" + SECONDS_REGEX_LENIENT +
+            ")(?:(" + NANO_REGEX_LENIENT + "))?)?|" +
+            "([0-9]{2})(" + MINUTES_REGEX_STRICT + ")(?:(" + SECONDS_REGEX_STRICT +
+            ")(?:(" + NANO_REGEX_LENIENT + "))?)?)");
 
     /**
      * whole hours are used pretty often, so it might be good idea to cache them...
@@ -474,8 +501,8 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
-    public static boolean isValidStrict(String text) {
-        return PATTERN_STRICT.matches(text);
+    public static boolean isValidTimeStrict(String text) {
+        return TIME_PATTERN_STRICT.matcher(text).matches();
     }
 
     /**
@@ -484,8 +511,8 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
-    public static boolean isValidLenient(String text) {
-        return PATTERN_LENIENT.matches(text);
+    public static boolean isValidTimeLenient(String text) {
+        return TIME_PATTERN_LENIENT.matcher(text).matches();
     }
 
     /**
@@ -505,7 +532,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     @Nonnull
     public static DtTimeS parseIsoTime(String text) {
         var result = parseIsoTimeInfo(text, false);
-        if (result.compareTo(DtTimeS.ofHourToMinute(24, 0)) < 0) {
+        if (result.compareTo(DtTimeS.ofHourToMinute(24, 0)) > 0) {
             throw new DateTimeParseException("Parsed time exceeds 24 hours", text, 0);
         }
         return result;
@@ -517,8 +544,19 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
-    public static boolean isValidInfoLenient(String text, boolean allowNegative) {
-        return INFO_PATTERN_LENIENT.matches(text);
+    public static boolean isValidTimeInfoLenient(String text, boolean allowNegative) {
+        var matcher = TIMEINFO_PATTERN_LENIENT.matcher(text);
+        return matcher.matches() && ((allowNegative) || (!"-".equals(matcher.group(1))));
+    }
+
+    /**
+     * Parse nano-second string (including delimiter)
+     *
+     * @param nanoGroup is captured nanosecond group, including delimiter
+     * @return nanosecond value
+     */
+    private static int parseNanoGroup(String nanoGroup) {
+        return Integer.parseInt(String.format("%-9s", nanoGroup.substring(1)).replace(" ", "0"));
     }
 
     /**
@@ -530,7 +568,36 @@ public class DtTimeS implements Comparable<DtTimeS> {
      */
     @Nonnull
     public static DtTimeS parseIsoTimeInfo(String text, boolean allowNegative) {
-
+        if (text.isBlank()) {
+            throw new DateTimeParseException("Empty text supplied to parse time", text, 0);
+        }
+        var matcher = TIMEINFO_PATTERN_PARSE.matcher(text);
+        if (!matcher.matches()) {
+            throw new DateTimeParseException("Supplied expression does not match any recognised time format", text, 0);
+        }
+        boolean negative = matcher.group(1).equals("-");
+        if (negative && !allowNegative) {
+            throw new DateTimeParseException("Negative time not allowed", text, 0);
+        }
+        int hours = Integer.parseInt((matcher.group(2) != null) ? matcher.group(2) : matcher.group(6));
+        int minutes = Integer.parseInt((matcher.group(3) != null) ? matcher.group(3) : matcher.group(7));
+        int seconds;
+        if (matcher.group(4) != null) {
+            seconds = Integer.parseInt(matcher.group(4));
+        } else if (matcher.group(8) != null) {
+            seconds = Integer.parseInt(matcher.group(8));
+        } else {
+            seconds = 0;
+        }
+        int nanoSeconds;
+        if (matcher.group(5) != null) {
+            nanoSeconds = parseNanoGroup(matcher.group(5));
+        } else if (matcher.group(9) != null) {
+            nanoSeconds = parseNanoGroup(matcher.group(9));
+        } else {
+            nanoSeconds = 0;
+        }
+        return DtTimeS.ofHourToNano(negative, hours, minutes, seconds, nanoSeconds);
     }
 
     /**
