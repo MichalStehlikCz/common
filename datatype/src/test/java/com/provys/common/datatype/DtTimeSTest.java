@@ -47,6 +47,8 @@ class DtTimeSTest {
                 , new Object[]{"12#15:24", null}
                 , new Object[]{"12:15#24", null}
                 , new Object[]{"12:15:24#10", null}
+                , new Object[]{"x12:15:24", null}
+                , new Object[]{"12:15:24x", null}
                 , new Object[]{DtTimeS.PRIV_TEXT, DtTimeS.PRIV}
                 , new Object[]{DtTimeS.ME_TEXT, DtTimeS.ME}
                 , new Object[]{DtTimeS.MIN_TEXT, DtTimeS.MIN}
@@ -93,6 +95,8 @@ class DtTimeSTest {
                 , new Object[]{"12#15:24", false}
                 , new Object[]{"12:15#24", false}
                 , new Object[]{"12:15:24#10", false}
+                , new Object[]{"x12:15:24", false}
+                , new Object[]{"12:15:24x", false}
                 , new Object[]{DtTimeS.PRIV_TEXT, false}
                 , new Object[]{DtTimeS.ME_TEXT, false}
                 , new Object[]{DtTimeS.MIN_TEXT, false}
@@ -136,6 +140,8 @@ class DtTimeSTest {
                 , new Object[]{"12#15:24", false}
                 , new Object[]{"12:15#24", false}
                 , new Object[]{"12:15:24#10", false}
+                , new Object[]{"x12:15:24", false}
+                , new Object[]{"12:15:24x", false}
                 , new Object[]{DtTimeS.PRIV_TEXT, false}
                 , new Object[]{DtTimeS.ME_TEXT, false}
                 , new Object[]{DtTimeS.MIN_TEXT, false}
@@ -179,6 +185,8 @@ class DtTimeSTest {
                 , new Object[]{"12#15:24", null}
                 , new Object[]{"12:15#24", null}
                 , new Object[]{"12:15:24#10", null}
+                , new Object[]{"x12:15:24", null}
+                , new Object[]{"12:15:24x", null}
                 , new Object[]{DtTimeS.PRIV_TEXT, null}
                 , new Object[]{DtTimeS.ME_TEXT, null}
                 , new Object[]{DtTimeS.MIN_TEXT, null}
@@ -227,6 +235,8 @@ class DtTimeSTest {
                 , new Object[]{"12#15:24", false, false}
                 , new Object[]{"12:15#24", false, false}
                 , new Object[]{"12:15:24#10", false, false}
+                , new Object[]{"x12:15:24", true, false}
+                , new Object[]{"12:15:24x", true, false}
                 , new Object[]{DtTimeS.PRIV_TEXT, false, false}
                 , new Object[]{DtTimeS.ME_TEXT, false, false}
                 , new Object[]{DtTimeS.MIN_TEXT, false, false}
@@ -271,6 +281,8 @@ class DtTimeSTest {
                 , new Object[]{"12#15:24", false, null}
                 , new Object[]{"12:15#24", false, null}
                 , new Object[]{"12:15:24#10", false, null}
+                , new Object[]{"x12:15:24", true, null}
+                , new Object[]{"12:15:24x", true, null}
                 , new Object[]{DtTimeS.PRIV_TEXT, false, null}
                 , new Object[]{DtTimeS.ME_TEXT, false, null}
                 , new Object[]{DtTimeS.MIN_TEXT, false, null}

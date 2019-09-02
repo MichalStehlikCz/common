@@ -156,7 +156,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Regular expression for time; might exceed 24 hour limit, supports negative values and allows other parsable
      * formats
      */
-    public static final Pattern TIMEINFO_PATTERN_LENIENT = Pattern.compile("^" + TIME_REGEX_LENIENT + "$");
+    public static final Pattern TIMEINFO_PATTERN_LENIENT = Pattern.compile("^" + TIMEINFO_REGEX_LENIENT + "$");
 
     /**
      * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient - allows some
@@ -469,7 +469,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
         } catch (NoSuchElementException e) {
             throw new DateTimeParseException("End of string reached prematurely",
                     parser.getString(), parser.getPos());
-        } catch (DateTimeException e) {
+        } catch (DateTimeException | InternalException e) {
             throw new DateTimeParseException(e.getMessage(),
                     parser.getString(), parser.getPos());
         }
@@ -546,7 +546,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      */
     public static boolean isValidTimeInfoLenient(String text, boolean allowNegative) {
         var matcher = TIMEINFO_PATTERN_LENIENT.matcher(text);
-        return matcher.matches() && ((allowNegative) || (!"-".equals(matcher.group(1))));
+        return matcher.matches() && ((allowNegative) || (text.charAt(0) != '-'));
     }
 
     /**
