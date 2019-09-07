@@ -6,6 +6,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
 
@@ -67,7 +69,7 @@ class DtTimeSTest {
     }
 
     @Nonnull
-    static Stream<Object[]> isValidTimeStrictTest() {
+    static Stream<Object[]> isValidIsoTimeStrictTest() {
         return Stream.of(
                 new Object[]{"12:15:24", true}
                 , new Object[]{"22:10:18,156", true}
@@ -106,12 +108,12 @@ class DtTimeSTest {
 
     @ParameterizedTest
     @MethodSource
-    void isValidTimeStrictTest(String text, boolean result) {
-        assertThat(DtTimeS.isValidTimeStrict(text)).isEqualTo(result);
+    void isValidIsoTimeStrictTest(String text, boolean result) {
+        assertThat(DtTimeS.isValidIsoTimeStrict(text)).isEqualTo(result);
     }
 
     @Nonnull
-    static Stream<Object[]> isValidTimeLenientTest() {
+    static Stream<Object[]> isValidIsoTimeLenientTest() {
         return Stream.of(
                 new Object[]{"12:15:24", true}
                 , new Object[]{"22:10:18,156", true}
@@ -151,8 +153,8 @@ class DtTimeSTest {
 
     @ParameterizedTest
     @MethodSource
-    void isValidTimeLenientTest(String text, boolean result) {
-        assertThat(DtTimeS.isValidTimeLenient(text)).isEqualTo(result);
+    void isValidIsoTimeLenientTest(String text, boolean result) {
+        assertThat(DtTimeS.isValidIsoTimeLenient(text)).isEqualTo(result);
     }
 
     @Nonnull
@@ -205,7 +207,7 @@ class DtTimeSTest {
     }
 
     @Nonnull
-    static Stream<Object[]> isValidTimeInfoLenientTest() {
+    static Stream<Object[]> isValidIsoTimeInfoLenientTest() {
         return Stream.of(
                 new Object[]{"12:15:24", false, true}
                 , new Object[]{"22:10:18,156", false, true}
@@ -246,8 +248,8 @@ class DtTimeSTest {
 
     @ParameterizedTest
     @MethodSource
-    void isValidTimeInfoLenientTest(String text, boolean allowNegative, boolean result) {
-        assertThat(DtTimeS.isValidTimeInfoLenient(text, allowNegative)).isEqualTo(result);
+    void isValidIsoTimeInfoLenientTest(String text, boolean allowNegative, boolean result) {
+        assertThat(DtTimeS.isValidIsoTimeInfoLenient(text, allowNegative)).isEqualTo(result);
     }
 
     @Nonnull
@@ -297,6 +299,199 @@ class DtTimeSTest {
             assertThatThrownBy(() -> DtTimeS.parseIsoTimeInfo(text, allowNegative)).isInstanceOf(DateTimeParseException.class);
         } else {
             assertThat(DtTimeS.parseIsoTimeInfo(text, allowNegative)).isEqualTo(result);
+        }
+    }
+
+    @Nonnull
+    static Stream<Object[]> isValidIsoStrictTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", true}
+                , new Object[]{"22:10:18,156", true}
+                , new Object[]{"22:10:18.156", true}
+                , new Object[]{"22:10:18:00", false}
+                , new Object[]{"22:10:18:05", false}
+                , new Object[]{"24:00:00", true}
+                , new Object[]{"24:01:00", false}
+                , new Object[]{"25:00:00", false}
+                , new Object[]{"15:60:00", false}
+                , new Object[]{"15:00:60", false}
+                , new Object[]{"22:10", false}
+                , new Object[]{"22", false}
+                , new Object[]{"3:27:15", false}
+                , new Object[]{"12:5:24", false}
+                , new Object[]{"12:15:4", false}
+                , new Object[]{"-1:15:04", false}
+                , new Object[]{"121524,123", false}
+                , new Object[]{"121524", false}
+                , new Object[]{"12152", false}
+                , new Object[]{"1215", false}
+                , new Object[]{"121", false}
+                , new Object[]{"12", false}
+                , new Object[]{"1", false}
+                , new Object[]{"124:07:56", false}
+                , new Object[]{"12#15:24", false}
+                , new Object[]{"12:15#24", false}
+                , new Object[]{"12:15:24#10", false}
+                , new Object[]{"x12:15:24", false}
+                , new Object[]{"12:15:24x", false}
+                , new Object[]{"12:15:24Z", true}
+                , new Object[]{"12:15:24+01", true}
+                , new Object[]{"12:15:24-12:00", true}
+                , new Object[]{DtTimeS.PRIV_TEXT, false}
+                , new Object[]{DtTimeS.ME_TEXT, false}
+                , new Object[]{DtTimeS.MIN_TEXT, false}
+                , new Object[]{DtTimeS.MAX_TEXT, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidIsoStrictTest(String text, boolean result) {
+        assertThat(DtTimeS.isValidIsoStrict(text)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> isValidIsoLenientTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", true}
+                , new Object[]{"22:10:18,156", true}
+                , new Object[]{"22:10:18.156", true}
+                , new Object[]{"22:10:18:00", false}
+                , new Object[]{"22:10:18:05", false}
+                , new Object[]{"24:00:00", true}
+                , new Object[]{"24:01:00", false}
+                , new Object[]{"25:00:00", false}
+                , new Object[]{"15:60:00", false}
+                , new Object[]{"15:00:60", false}
+                , new Object[]{"22:10", true}
+                , new Object[]{"22", false}
+                , new Object[]{"3:27:15", true}
+                , new Object[]{"12:5:24", true}
+                , new Object[]{"12:15:4", true}
+                , new Object[]{"-1:15:04", false}
+                , new Object[]{"121524,123", true}
+                , new Object[]{"121524", true}
+                , new Object[]{"12152", false}
+                , new Object[]{"1215", true}
+                , new Object[]{"121", false}
+                , new Object[]{"12", false}
+                , new Object[]{"1", false}
+                , new Object[]{"124:07:56", false}
+                , new Object[]{"12#15:24", false}
+                , new Object[]{"12:15#24", false}
+                , new Object[]{"12:15:24#10", false}
+                , new Object[]{"x12:15:24", false}
+                , new Object[]{"12:15:24x", false}
+                , new Object[]{"12:15:24Z", true}
+                , new Object[]{"12:15:24+01", true}
+                , new Object[]{"12:15:24-12:00", true}
+                , new Object[]{DtTimeS.PRIV_TEXT, false}
+                , new Object[]{DtTimeS.ME_TEXT, false}
+                , new Object[]{DtTimeS.MIN_TEXT, false}
+                , new Object[]{DtTimeS.MAX_TEXT, false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isValidIsoLenientTest(String text, boolean result) {
+        assertThat(DtTimeS.isValidIsoLenient(text)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> parseIsoTest() {
+        return Stream.of(
+                new Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"22:10:18,156", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
+                , new Object[]{"22:10:18.156", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
+                , new Object[]{"22:10:18:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"22:10:18:05", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"24:00:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToMinute(24, 0)}
+                , new Object[]{"24:01:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"25:00:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"15:60:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"15:00:60", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"22:10", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToMinute(22, 10)}
+                , new Object[]{"22", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"3:27:15", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(3, 27, 15)}
+                , new Object[]{"12:5:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(12, 5, 24)}
+                , new Object[]{"12:15:4", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(12, 15, 4)}
+                , new Object[]{"-1:15:04", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"121524,123", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
+                , new Object[]{"121524", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"12152", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"1215", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToMinute(12, 15)}
+                , new Object[]{"121", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"12", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"1", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"124:07:56", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"12#15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"12:15#24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"12:15:24#10", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"x12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"12:15:24x", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{DtTimeS.PRIV_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{DtTimeS.ME_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{DtTimeS.MIN_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{DtTimeS.MAX_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        null}
+                , new Object[]{"12:15:24Z", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"12:15:24+01", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(11, 15, 24)}
+                , new Object[]{"12:15:24-12:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                        DtTimeS.ofHourToSecond(24, 15, 24)}
+                , new Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
+                        DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new Object[]{"12:15:24-01", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
+                        DtTimeS.ofHourToSecond(14, 15, 24)}
+                , new Object[]{"12:15:24Z", DtDate.of(1984, 06, 16), ZoneId.of("Europe/Prague"),
+                        DtTimeS.ofHourToSecond(14, 15, 24)}
+                , new Object[]{"12:15:24Z", DtDate.of(1984, 12, 16), ZoneId.of("Europe/Prague"),
+                        DtTimeS.ofHourToSecond(13, 15, 24)}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void parseIsoTest(String text, DtDate date, ZoneId localZoneId, @Nullable DtTimeS result) {
+        if (result == null) {
+            assertThatThrownBy(() -> DtTimeS.parseIso(text, date, localZoneId))
+                    .isInstanceOf(DateTimeParseException.class);
+        } else {
+            assertThat(DtTimeS.parseIso(text, date, localZoneId)).isEqualTo(result);
         }
     }
 
@@ -793,6 +988,114 @@ class DtTimeSTest {
         } else {
             assertThat(value.getLocalTime()).isEqualTo(result);
         }
+    }
+
+    @Nonnull
+    static Stream<Object[]> toIsoTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), "03:27:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), "00:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), "-01:15:04"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), "-24:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), "124:07:56"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), "-124:07:56"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toIsoTest(DtTimeS value, String result) {
+        assertThat(value.toIso()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> toIso24ETest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), true, "12:15:24"}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), true, "03:27:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), false, "00:00:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), true, "24:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), false,
+                        "22:44:56"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), false,
+                        "00:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), true,
+                        "24:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), true, "04:07:56"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), true,
+                        "19:52:04"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toIso24ETest(DtTimeS value, boolean endTime, String result) {
+        assertThat(value.toIso24(endTime)).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> toIso24Test() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), "03:27:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), "00:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), "22:44:56"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0), "00:00:00"}
+                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), "04:07:56"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56), "19:52:04"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toIso24Test(DtTimeS value, String result) {
+        assertThat(value.toIso24()).isEqualTo(result);
+    }
+
+    @Nonnull
+    static Stream<Object[]> toIso24ZTest() {
+        return Stream.of(
+                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), ZoneOffset.of("Z"), true,
+                        DtDate.of(1984, 10, 12), ZoneId.of("Z"), "12:15:24Z"}
+                , new Object[]{DtTimeS.ofHourToMinute(3, 27), ZoneOffset.of("Z"), true,
+                        DtDate.of(1984, 10, 12), ZoneId.of("Z"), "03:27:00Z"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("Z"), false,
+                        DtDate.of(1984, 10, 12), ZoneId.of("Z"), "00:00:00Z"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("+01:00"), false,
+                        DtDate.of(1984, 10, 12), ZoneId.of("Z"), "01:00:00+01:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("+01:00"), false,
+                        DtDate.of(1984, 10, 12), ZoneId.of("+01:00"), "00:00:00+01:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("-01:00"), false,
+                        DtDate.of(1984, 10, 12), ZoneId.of("+01:00"), "22:00:00-01:00"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("Z"), false,
+                        DtDate.of(1984, 12, 12), ZoneId.of("Europe/Prague"), "23:00:00Z"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("Z"), false,
+                        DtDate.of(1984, 6, 12), ZoneId.of("Europe/Prague"), "22:00:00Z"}
+                , new Object[]{DtTimeS.ofHourToMinute(0, 0), ZoneOffset.of("Z"), true,
+                        DtDate.of(1984, 10, 12), ZoneId.of("Z"), "24:00:00Z"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4),
+                        ZoneOffset.of("Z"), true, DtDate.of(1984, 10, 12), ZoneId.of("Z"),
+                        "22:44:56Z"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0),
+                        ZoneOffset.of("Z"), false, DtDate.of(1984, 10, 12), ZoneId.of("Z"),
+                        "00:00:00Z"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 24, 0, 0),
+                        ZoneOffset.of("Z"), true, DtDate.of(1984, 10, 12), ZoneId.of("Z"),
+                        "24:00:00Z"}
+                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), ZoneOffset.of("Z"), true,
+                        DtDate.of(1984, 10, 12), ZoneId.of("Z"), "04:07:56Z"}
+                , new Object[]{DtTimeS.ofHourToSecond(true, 124, 7, 56),
+                        ZoneOffset.of("Z"), true, DtDate.of(1984, 10, 12), ZoneId.of("Z"),
+                        "19:52:04Z"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toIso24ZTest(DtTimeS value, ZoneOffset zoneOffset, boolean endTime, DtDate date, ZoneId localZoneId,
+                      String result) {
+        assertThat(value.toIso24(zoneOffset, endTime, date, localZoneId)).isEqualTo(result);
     }
 
     @Nonnull

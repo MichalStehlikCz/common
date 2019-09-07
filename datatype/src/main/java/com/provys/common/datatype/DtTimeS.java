@@ -6,6 +6,8 @@ import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
@@ -16,6 +18,8 @@ import java.util.regex.Pattern;
  * Support for Provys domain TIME with subdomain S (time in seconds)
  */
 @SuppressWarnings("WeakerAccess")
+@JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
+@XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
 public class DtTimeS implements Comparable<DtTimeS> {
 
     private static final Logger LOG = LogManager.getLogger(DtTimeS.class);
@@ -501,7 +505,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
-    public static boolean isValidTimeStrict(String text) {
+    public static boolean isValidIsoTimeStrict(String text) {
         return TIME_PATTERN_STRICT.matcher(text).matches();
     }
 
@@ -511,7 +515,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
-    public static boolean isValidTimeLenient(String text) {
+    public static boolean isValidIsoTimeLenient(String text) {
         return TIME_PATTERN_LENIENT.matcher(text).matches();
     }
 
@@ -544,7 +548,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
-    public static boolean isValidTimeInfoLenient(String text, boolean allowNegative) {
+    public static boolean isValidIsoTimeInfoLenient(String text, boolean allowNegative) {
         var matcher = TIMEINFO_PATTERN_LENIENT.matcher(text);
         return matcher.matches() && ((allowNegative) || (text.charAt(0) != '-'));
     }
@@ -601,6 +605,30 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
+     * Method validates if supplied string is valid time, including timezone; strict validation. Note that while time
+     * in timezone must be within 0-24 hours interval, if parsed, returned values might fall outside this interval due
+     * to timezone difference
+     *
+     * @param text is supplied text to be validated
+     * @return if supplied text is valid time, including potential zone offset
+     */
+    public static boolean isValidIsoStrict(String text) {
+        return PATTERN_STRICT.matcher(text).matches();
+    }
+
+    /**
+     * Method validates if supplied string is valid time, including timezone; strict validation. Note that while time
+     * in timezone must be within 0-24 hours interval, if parsed, returned values might fall outside this interval due
+     * to timezone difference
+     *
+     * @param text is supplied text to be validated
+     * @return if supplied text is valid time, including potential zone offset
+     */
+    public static boolean isValidIsoLenient(String text) {
+        return PATTERN_LENIENT.matcher(text).matches();
+    }
+
+    /**
      * Method used when converting data to zone with explicitly specified offset
      *
      * @param time is specified time, before offset is incorporated
@@ -615,21 +643,67 @@ public class DtTimeS implements Comparable<DtTimeS> {
                         .toLocalDateTime()).getTime(date);
     }
 
+    /**
+     * Method parses supplied string as time, including timezone. Note that while time in timezone must be within 0-24
+     * hours interval, if parsed, returned values might fall outside this interval due to timezone difference. This is
+     * expected behaviour. It is strongly recommended to use TimeInfo when handling time in timezone
+     *
+     * @param text is supplied text to be validated
+     * @param date is date, used to look up offset for timezone
+     * @param localZoneId is timezone for resulting time
+     * @return if supplied text is valid time, including potential zone offset
+     */
     @Nonnull
-    public static DtTimeS parseIso(StringParser parser, boolean allowNegative, DtDate date, ZoneId localZoneId) {
-        if (!parser.hasNext()) {
-            throw new DateTimeParseException("Empty parser supplied to parse Iso time", parser.getString(),
-                    parser.getPos());
+    public static DtTimeS parseIso(String text, DtDate date, ZoneId localZoneId) {
+        if (text.isBlank()) {
+            throw new DateTimeParseException("Empty text supplied to parse time", text, 0);
         }
-        var result = parse(parser, allowNegative, false, true);
-        if (parser.hasNext() && (parser.peek() == 'Z')) {
-            // GMT time
-            result = shiftFromOffset(result, date, ZoneOffset.UTC, localZoneId);
-        } else if (parser.hasNext() && ((parser.peek() == '+') || (parser.peek() == '-'))) {
-            // explicit time-zone
+        var matcher = PATTERN_LENIENT.matcher(text);
+        if (!matcher.matches()) {
+            throw new DateTimeParseException("Supplied expression does not match any recognised time with offset " +
+                    "format", text, 0);
+        }
+        var time = parseIsoTime(matcher.group(1));
+        if (matcher.group(2) != null) {
+            time = shiftFromOffset(time, date, ZoneOffsetUtil.parseIso(matcher.group(2)), localZoneId);
+        }
+        return time;
+    }
 
-        }
-        return result;
+    /**
+     * Method parses supplied string as time, including timezone. It will use default time zone for parsing
+     *
+     * @param text is supplied text to be validated
+     * @param date is date, used to look up offset for timezone
+     * @return if supplied text is valid time, including potential zone offset
+     */
+    @Nonnull
+    public static DtTimeS parseIso(String text, DtDate date) {
+        return parseIso(text, date, ZoneId.systemDefault());
+    }
+
+    /**
+     * Method parses supplied string as time, including timezone. It will use default time zone for parsing
+     *
+     * @param text is supplied text to be validated
+     * @param localZoneId is timezone for resulting time
+     * @return if supplied text is valid time, including potential zone offset
+     */
+    @Nonnull
+    public static DtTimeS parseIso(String text, ZoneId localZoneId) {
+        return parseIso(text, DtDate.now());
+    }
+
+    /**
+     * Method parses supplied string as time, including timezone. It will use current date and default time zone for
+     * parsing
+     *
+     * @param text is supplied text to be validated
+     * @return if supplied text is valid time, including potential zone offset
+     */
+    @Nonnull
+    public static DtTimeS parseIso(String text) {
+        return parseIso(text, DtDate.now(), ZoneId.systemDefault());
     }
 
     /**
@@ -1039,12 +1113,169 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
-     * Converts {@code DtDate} value to Provys string representation (format [-]HH:MI:SS)
+     * @return time value in iso format without timezone; it is callers responsibility to verify if value corresponds to
+     * range, supported by iso times (e.g. 0-24h)
+     */
+    @Nonnull
+    public String toIso() {
+        if (!isRegular()) {
+            throw new InternalException(LOG, "Cannot export special time value to ISO format");
+        }
+        return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(time) / 3600,
+                (Math.abs(time) / 60) % 60, Math.abs(time) % 60);
+    }
+
+    /**
+     * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
+     * @return time value in iso format without timezone. Time is cut to 0-24 hour interval
+     */
+    @Nonnull
+    public String toIso24(boolean endTime) {
+        if (!isRegular()) {
+            throw new InternalException(LOG, "Cannot export special time value to ISO format");
+        }
+        if (endTime && (time % 86400 == 0)) {
+            return "24:00:00";
+        }
+        return String.format("%02d:%02d:%02d", getHours24(),
+                getMinutes24(), getSeconds24());
+    }
+
+    /**
+     * @return time value in iso format without timezone. Time is cut to 0-24 hour interval
+     */
+    @Nonnull
+    public String toIso24() {
+        return toIso24(false);
+    }
+
+    /**
+     * Method used when converting data to zone with explicitly specified offset
+     *
+     * @param zoneOffset is offset that has been specified with time value
+     * @param date is date on which time should be converted
+     * @param localZoneId is local timezone. System expects, that datetime information is valid in this zone
+     * @return time in local timezone, corresponding to time with explicitly specified offset
+     */
+    private DtTimeS shiftToOffset(ZoneOffset zoneOffset, DtDate date, ZoneId localZoneId) {
+        if (!isRegular()) {
+            return this;
+        }
+        var result =  DtDateTime.ofLocalDateTime(
+                ZonedDateTime.of(DtDateTime.ofDateTime(date, this).getLocalDateTime(),
+                        localZoneId).toOffsetDateTime().atZoneSameInstant(ZoneId.of(zoneOffset.getId()))
+                        .toLocalDateTime()).getTime();
+        if (result.equals(this)) {
+            // no need to maintain multiple instances of the same time...
+            return this;
+        }
+        return result;
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param date is date on which conversion to timezone is performed
+     * @param localZoneId is local timezone used to interpret supplied time
+     * @return time value in iso format with timezone; it is callers responsibility to verify if value corresponds to
+     * range, supported by iso times (e.g. 0-24h). Note that time might get out of this interval during conversion
+     */
+    @Nonnull
+    public String toIso(ZoneOffset zoneOffset, DtDate date, ZoneId localZoneId) {
+        var convertedTime = shiftToOffset(zoneOffset, date, localZoneId);
+        return convertedTime.toIso() + zoneOffset.getId();
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
+     * @param date is date on which conversion to timezone is performed
+     * @param localZoneId is local timezone used to interpret supplied time
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, boolean endTime, DtDate date, ZoneId localZoneId) {
+        var convertedTime = shiftToOffset(zoneOffset, date, localZoneId);
+        return convertedTime.toIso24(endTime) + zoneOffset.getId();
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param date is date on which conversion to timezone is performed
+     * @param localZoneId is local timezone used to interpret supplied time
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, DtDate date, ZoneId localZoneId) {
+        return toIso24(zoneOffset, false, date, localZoneId);
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
+     * @param localZoneId is local timezone used to interpret supplied time
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, boolean endTime, ZoneId localZoneId) {
+        return toIso24(zoneOffset, endTime, DtDate.now(), localZoneId);
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param localZoneId is local timezone used to interpret supplied time
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, ZoneId localZoneId) {
+        return toIso24(zoneOffset, false, DtDate.now(), localZoneId);
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
+     * @param date is date on which conversion to timezone is performed
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, boolean endTime, DtDate date) {
+        return toIso24(zoneOffset, endTime, date, ZoneId.systemDefault());
+    }
+
+    /**
+     * @param date is date on which conversion to timezone is performed
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, DtDate date) {
+        return toIso24(zoneOffset, date, ZoneId.systemDefault());
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset, boolean endTime) {
+        return toIso24(zoneOffset, endTime, DtDate.now(), ZoneId.systemDefault());
+    }
+
+    /**
+     * @param zoneOffset is zone offset that should be used in resulting text representation
+     * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+     */
+    @Nonnull
+    public String toIso24(ZoneOffset zoneOffset) {
+        return toIso24(zoneOffset, DtDate.now(), ZoneId.systemDefault());
+    }
+
+    /**
+     * Converts {@code DtTimeS} value to Provys string representation (format [-]HH:MI:SS)
      */
     @Nonnull
     public String toProvysValue() {
-        return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(time) / 3600,
-                (Math.abs(time) / 60) % 60, Math.abs(time) % 60);
+        return toIso();
     }
 
     @Override

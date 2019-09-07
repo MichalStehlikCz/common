@@ -3,12 +3,12 @@ package com.provys.common.datatype;
 import javax.json.bind.adapter.JsonbAdapter;
 
 /**
- * Adapter ensuring provys date value is converted using standard ISO formatting
+ * Adapter ensuring provys time value is converted using standard ISO formatting
  * serializing to / deserializing from Json using JSON-B
  *
  * @author stehlik
  */
-public class JsonbDtDateAdapter implements JsonbAdapter<DtDate, String> {
+public class JsonbDtTimeSAdapter implements JsonbAdapter<DtTimeS, String> {
 
     /**
      * Unwrap value to ensure it is properly serialized to Json
@@ -17,7 +17,7 @@ public class JsonbDtDateAdapter implements JsonbAdapter<DtDate, String> {
      * @return unwrapped value (String)
      */
     @Override
-    public String adaptToJson(DtDate original) {
+    public String adaptToJson(DtTimeS original) {
         return original.toIso();
     }
 
@@ -28,7 +28,7 @@ public class JsonbDtDateAdapter implements JsonbAdapter<DtDate, String> {
      * @return wrapped provys datatype value
      */
     @Override
-    public DtDate adaptFromJson(String adapted) {
-        return DtDate.parseIso(adapted);
+    public DtTimeS adaptFromJson(String adapted) {
+        return DtTimeS.parseIso(adapted);
     }
 }
