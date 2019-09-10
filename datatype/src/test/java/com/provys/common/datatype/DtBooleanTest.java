@@ -8,15 +8,15 @@ class DtBooleanTest {
 
     @Test
     void parseProvysValueTest() {
-        assertThat(DtBoolean.parseProvysValue('Y')).isTrue();
-        assertThat(DtBoolean.parseProvysValue('N')).isFalse();
-        assertThatThrownBy(() -> DtBoolean.parseProvysValue('0'));
+        assertThat(DtBoolean.ofProvysDb("Y")).isTrue();
+        assertThat(DtBoolean.ofProvysDb("N")).isFalse();
+        assertThatThrownBy(() -> DtBoolean.ofProvysDb("0"));
     }
 
     @Test
     void toProvysValueTest() {
-        assertThat(DtBoolean.toProvysValue(true)).isEqualTo('Y');
-        assertThat(DtBoolean.toProvysValue(false)).isEqualTo('N');
+        assertThat(DtBoolean.toProvysDb(true)).isEqualTo("Y");
+        assertThat(DtBoolean.toProvysDb(false)).isEqualTo("N");
 
     }
 }
