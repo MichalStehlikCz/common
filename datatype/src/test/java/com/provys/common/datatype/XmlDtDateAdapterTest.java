@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -55,7 +56,8 @@ class XmlDtDateAdapterTest {
                     .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                             "<DtDateElement><value>2010-12-01</value></DtDateElement>");
         } catch (JAXBException e) {
-            e.printStackTrace();
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JAXBException thrown during test", e);
         }
     }
 
@@ -67,9 +69,10 @@ class XmlDtDateAdapterTest {
             var reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                     "<DtDateElement><value>2018-05-12</value></DtDateElement>");
             DtDateElement result = (DtDateElement) u.unmarshal(reader);
-            assertThat(result.getValue()).isEqualTo(DtDate.of(2018, 05, 12));
+            assertThat(result.getValue()).isEqualTo(DtDate.of(2018, 5, 12));
         } catch (JAXBException e) {
-            e.printStackTrace();
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JAXBException thrown during test", e);
         }
     }
 }

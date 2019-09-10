@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -51,7 +52,8 @@ class XmlDtTimeSAdapterTest {
                     .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                             "<DtTimeSElement><value>15:05:48</value></DtTimeSElement>");
         } catch (JAXBException e) {
-            e.printStackTrace();
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JAXBException thrown during test", e);
         }
     }
 
@@ -61,11 +63,12 @@ class XmlDtTimeSAdapterTest {
             var context = JAXBContext.newInstance(DtTimeSElement.class);
             Unmarshaller u = context.createUnmarshaller();
             var reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                    "<DtDateElement><value>05:13:55</value></DtDateElement>");
+                    "<DtTimeSElement><value>05:13:55</value></DtTimeSElement>");
             DtTimeSElement result = (DtTimeSElement) u.unmarshal(reader);
             assertThat(result.getValue()).isEqualTo(DtTimeS.ofHourToSecond(5, 13, 55));
         } catch (JAXBException e) {
-            e.printStackTrace();
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JAXBException thrown during test", e);
         }
     }
 }
