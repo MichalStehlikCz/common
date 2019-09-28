@@ -269,12 +269,38 @@ class StringParserTest {
             assertThat(parser.getPos()).isEqualTo(endPos);
         }
     }
+
+    @Nonnull
+    @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
+    static Stream<Object[]> readString0Test() {
+        return Stream.of(
+                new Object[]{"abcdefg", 8, null, 8, StringIndexOutOfBoundsException.class}
+                , new Object[]{"abcdefg", 7, "", 7, null}
+                , new Object[]{"abcdefg", 5, "fg", 7, null}
+                , new Object[]{"abcdefg", 3, "defg", 7, null}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void readString0Test(String string, int pos, @Nullable String result, int endPos, @Nullable Class<?> exception) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        if (exception != null) {
+            assertThatThrownBy(parser::readString).isInstanceOf(exception);
+        } else {
+            assertThat(parser.readString()).isEqualTo(result);
+            assertThat(parser.getPos()).isEqualTo(endPos);
+        }
+    }
+
     @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readStringTest() {
         return Stream.of(
                 new Object[]{"abcdefg", 6, 2, null, 8, StringIndexOutOfBoundsException.class}
                 , new Object[]{"abcdefg", 5, 2, "fg", 7, null}
+                , new Object[]{"abcdefg", 3, 2, "de", 5, null}
                 , new Object[]{"abcdefg", 5, -1, null, 5, InvalidParameterException.class}
         );
     }
@@ -310,6 +336,26 @@ class StringParserTest {
         var parser = new StringParser(string);
         parser.setPos(pos);
         assertThat(parser.onText(text)).isEqualTo(result);
+        assertThat(parser.getPos()).isEqualTo(endPos);
+    }
+
+    @Nonnull
+    @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
+    static Stream<Object[]> isOnTextTest() {
+        return Stream.of(
+                new Object[]{"abcdefg", 6, "fg", false, 6}
+                , new Object[]{"abcdefg", 5, "fg", true, 5}
+                , new Object[]{"abcdefg", 2, "cd", true, 2}
+                , new Object[]{"abcdefg", 2, "fg", false, 2}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isOnTextTest(String string, int pos, String text, boolean result, int endPos) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        assertThat(parser.isOnText(text)).isEqualTo(result);
         assertThat(parser.getPos()).isEqualTo(endPos);
     }
 }

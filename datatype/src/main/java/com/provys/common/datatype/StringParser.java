@@ -18,6 +18,7 @@ import java.util.Objects;
  * moment.
  *
  */
+@SuppressWarnings("WeakerAccess") // published library class
 public class StringParser {
 
     private static final Logger LOG = LogManager.getLogger(StringParser.class);
@@ -236,6 +237,17 @@ public class StringParser {
     }
 
     /**
+     * Read rest of parser and return retrieved string; place position after end of parser.
+     *
+     * @return substring from current position to end of string
+     */
+    public String readString() {
+        String result = string.substring(pos);
+        pos = string.length();
+        return result;
+    }
+
+    /**
      * Read supplied number of characters and return resulting String
      *
      * @param chars is number of characters to be read
@@ -269,5 +281,19 @@ public class StringParser {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Check if parser is positioned at the start of supplied string; do not change position of parser
+     *
+     * @param text is text to be checked
+     * @return true if value has been found and read, false otherwise
+     */
+    public boolean isOnText(String text) {
+        if (pos + text.length() > string.length()) {
+            // text cannot be present - not enough characters remain
+            return false;
+        }
+        return (string.substring(pos, pos + text.length()).equals(text));
     }
 }
