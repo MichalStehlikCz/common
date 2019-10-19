@@ -226,6 +226,24 @@ class DtDateTest {
     }
 
     @Nonnull
+    static Stream<Object[]> toIsoTest() {
+        return Stream.of(
+                new Object[]{DtDate.of(2012, 10, 25), "2012-10-25"}
+                , new Object[]{DtDate.of(2025, (short) 11, (short) 30), "2025-11-30"}
+                , new Object[]{DtDate.PRIV, "1000-01-02"}
+                , new Object[]{DtDate.ME, "1000-01-01"}
+                , new Object[]{DtDate.MIN, "1000-01-03"}
+                , new Object[]{DtDate.MAX, "5000-01-01"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toIsoTest(DtDate date, String result) {
+        assertThat(date.toIso()).isEqualTo(result);
+    }
+
+    @Nonnull
     static Stream<Object[]> toProvysValueTest() {
         return Stream.of(
                 new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),

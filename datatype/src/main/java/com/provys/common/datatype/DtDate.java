@@ -121,6 +121,7 @@ public final class DtDate implements Comparable<DtDate> {
      * Retrieves instance of {@code DtDate} corresponding to given {@code LocalDate}.
      *
      * @param value is {@code LocalDate} value to be represented by this date
+     * @return converted value
      */
     @Nonnull
     public static DtDate ofLocalDate(LocalDate value) {
@@ -129,6 +130,11 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Retrieves instance of {@code DtDate} corresponding to given year, month and day.
+     *
+     * @param year is year of date to be created
+     * @param month is calendar month of date to be created
+     * @param day is day in month of date to be created
+     * @return date value corresponding to supplied data
      */
     @Nonnull
     public static DtDate of(int year, short month, short day) {
@@ -137,6 +143,12 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Retrieves instance of {@code DtDate} corresponding to given year, month and day.
+     *
+     * @param year is year of date to be created
+     * @param month is calendar month of date to be created
+     * @param day is day in month of date to be created
+     * @param allowSpecial indicates if special date values can be returned from this function
+     * @return date value corresponding to supplied data
      */
     @Nonnull
     public static DtDate of(int year, short month, short day, boolean allowSpecial) {
@@ -163,6 +175,11 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Retrieves instance of {@code DtDate} corresponding to given year, month and day as {@code int} values.
+     *
+     * @param year is year of date to be created
+     * @param month is calendar month of date to be created
+     * @param day is day in month of date to be created
+     * @return date value corresponding to supplied data
      */
     @Nonnull
     public static DtDate of(int year, int month, int day) {
@@ -171,6 +188,12 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Retrieves instance of {@code DtDate} corresponding to given year, month and day.
+     *
+     * @param year is year of date to be created
+     * @param month is calendar month of date to be created
+     * @param day is day in month of date to be created
+     * @param allowSpecial indicates if special date values can be returned from this function
+     * @return date value corresponding to supplied data
      */
     @Nonnull
     public static DtDate of(int year, int month, int day, boolean allowSpecial) {
@@ -179,6 +202,8 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Retrieve instance of {@code DtDate} corresponding to current date (in default time-zone).
+     *
+     * @return date value corresponding to current date
      */
     @Nonnull
     public static DtDate now() {
@@ -213,6 +238,9 @@ public final class DtDate implements Comparable<DtDate> {
      * parser is moved after last character read as part of date values.
      *
      * @param parser is parser containing text to be read
+     * @param allowSpecialText defines if parser should recognise special texts (indicating special values)
+     * @param allowSpecialValue defines if special values should be possible to parse (in regular date format); ignored
+     *                         if allowSpecialText is set and position is on special value's textual representation
      * @return datetime value read from parser
      */
     @Nonnull
@@ -333,6 +361,8 @@ public final class DtDate implements Comparable<DtDate> {
      *
      * @param parser is parser containing text in ISO-8601 format for local date (e.g. YYYY-MM-DD); also accepts date
      *              with zero time or with zero time with timezone
+     * @param allowTime defines if time following date information is to be parsed. If so, it parses time and throws
+     *                 exception if it is different from zero or 24 hours
      * @return datetime value read from parser
      */
     @Nonnull
@@ -606,6 +636,8 @@ public final class DtDate implements Comparable<DtDate> {
     /**
      * Converts {@code DtDate} value to ISO date string representation. Unlike toString, special values are also
      * converted to normal Iso date format, as special strings would not pass document validation
+     *
+     * @return string representation of this value in ISO format
      */
     @Nonnull
     public String toIso() {
@@ -626,6 +658,8 @@ public final class DtDate implements Comparable<DtDate> {
 
     /**
      * Converts {@code DtDate} value to Provys string representation (format DD.MM.YYYY)
+     *
+     * @return string representation of this value in PROVYS date format
      */
     @Nonnull
     public String toProvysValue() {

@@ -11,22 +11,22 @@ public class DtDateTime implements Comparable<DtDateTime> {
     /**
      * Date value, returned when user doesn't have the rights to access the value
      */
-    public static final DtDateTime PRIV = new DtDateTime(DtDate.PRIV, DtTimeS.ofSeconds(0));
+    public static final DtDateTime PRIV = new DtDateTime(DtDate.PRIV, DtTimeS.zero());
 
     /**
      * Date value, returned as indication of multi-value
      */
-    public static final DtDateTime ME = new DtDateTime(DtDate.ME, DtTimeS.ofSeconds(0));
+    public static final DtDateTime ME = new DtDateTime(DtDate.ME, DtTimeS.zero());
 
     /**
      * Minimal date value, valid in Provys
      */
-    public static final DtDateTime MIN = new DtDateTime(DtDate.MIN, DtTimeS.ofSeconds(0));
+    public static final DtDateTime MIN = new DtDateTime(DtDate.MIN, DtTimeS.zero());
 
     /**
      * Maximal date value, valid in Provys
      */
-    public static final DtDateTime MAX =  new DtDateTime(DtDate.MAX, DtTimeS.ofSeconds(0));
+    public static final DtDateTime MAX =  new DtDateTime(DtDate.MAX, DtTimeS.zero());
 
     /**
      * Text representing PRIV value
@@ -108,7 +108,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
         if (date.isMax()) {
             return MAX;
         }
-        return new DtDateTime(date, DtTimeS.ofSeconds(0));
+        return new DtDateTime(date, DtTimeS.zero());
     }
 
     /**
@@ -298,7 +298,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
             return DtTimeS.ME;
         }
         if ((isMax() && baseDate.isMax()) || (isMin() && baseDate.isMin())) {
-            return DtTimeS.ofSeconds(0);
+            return DtTimeS.zero();
         }
         if (isMax() || baseDate.isMin()) {
             return DtTimeS.MAX;
@@ -502,6 +502,29 @@ public class DtDateTime implements Comparable<DtDateTime> {
             return DtDouble.MAX;
         }
         return ((double) Duration.between(date.getLocalDateTime(), this.getLocalDateTime()).toSeconds()) / 86400;
+    }
+
+    /**
+     * Converts {@code DtDateTime} value to ISO datetime string representation. Unlike toString, special values are also
+     * converted to normal Iso date format, as special strings would not pass document validation
+     *
+     * @return string representation of this value in ISO format
+     */
+    @Nonnull
+    public String toIso() {
+        if (isPriv()) {
+            return "1000-01-02T00:00:00";
+        }
+        if (isME()) {
+            return "1000-01-01T00:00:00";
+        }
+        if (isMin()) {
+            return "1000-01-03T00:00:00";
+        }
+        if (isMax()) {
+            return "5000-01-01T00:00:00";
+        }
+        return toString();
     }
 
     /**

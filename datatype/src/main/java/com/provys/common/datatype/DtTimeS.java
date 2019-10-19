@@ -201,6 +201,14 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
+     * @return zero time. Shorter version of call to ofSeconds(0)
+     */
+    @Nonnull
+    public static DtTimeS zero() {
+        return HOURS[0];
+    }
+
+    /**
      * Return time object representing given time value (in seconds)
      *
      * @param time is time value to be represented
@@ -1272,6 +1280,8 @@ public class DtTimeS implements Comparable<DtTimeS> {
 
     /**
      * Converts {@code DtTimeS} value to Provys string representation (format [-]HH:MI:SS)
+     *
+     * @return provys string representation (HH:MI:SS) of this value
      */
     @Nonnull
     public String toProvysValue() {

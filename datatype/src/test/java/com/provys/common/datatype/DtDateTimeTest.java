@@ -335,6 +335,25 @@ class DtDateTimeTest {
     }
 
     @Nonnull
+    static Stream<Object[]> toIsoTest() {
+        return Stream.of(
+                new Object[]{DtDateTime.of(2012, 10, 25, 12, 25), "2012-10-25T12:25:00"}
+                , new Object[]{DtDateTime.of(2025, 11, 30, 15, 57, 24),
+                        "2025-11-30T15:57:24"}
+                , new Object[]{DtDateTime.PRIV, "1000-01-02T00:00:00"}
+                , new Object[]{DtDateTime.ME, "1000-01-01T00:00:00"}
+                , new Object[]{DtDateTime.MIN, "1000-01-03T00:00:00"}
+                , new Object[]{DtDateTime.MAX, "5000-01-01T00:00:00"}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toIsoTest(DtDateTime dateTime, String result) {
+        assertThat(dateTime.toIso()).isEqualTo(result);
+    }
+
+    @Nonnull
     static Stream<Object[]> toProvysValueTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 26, 13, 5), "26.11.1989 13:05:00"}

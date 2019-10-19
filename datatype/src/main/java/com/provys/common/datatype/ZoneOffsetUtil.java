@@ -58,6 +58,9 @@ public class ZoneOffsetUtil {
 
     /**
      * Parsing of zone offset text; should accept all values that pass at least lenient validation
+     *
+     * @param text is text to be parsed
+     * @return parsed zone offset
      */
     public static ZoneOffset parseIso(String text) {
         try {
