@@ -296,4 +296,37 @@ public class StringParser {
         }
         return (string.substring(pos, pos + text.length()).equals(text));
     }
+
+    /**
+     * If parser is positioned at the start of supplied string (with case ignored), read this string and return true.
+     * Otherwise return false and keep current position.
+     *
+     * @param text is text to be read from parser (ignoring case)
+     * @return true if value has been found and read, false otherwise
+     */
+    public boolean onTextIgnoreCase(String text) {
+        if (pos + text.length() > string.length()) {
+            // text cannot be present - not enough characters remain
+            return false;
+        }
+        if (string.substring(pos, pos + text.length()).equalsIgnoreCase(text)) {
+            pos += text.length();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if parser is positioned at the start of supplied string (case ignored); do not change position of parser
+     *
+     * @param text is text to be checked
+     * @return true if value has been found (ignoring case) and read, false otherwise
+     */
+    public boolean isOnTextIgnoreCase(String text) {
+        if (pos + text.length() > string.length()) {
+            // text cannot be present - not enough characters remain
+            return false;
+        }
+        return (string.substring(pos, pos + text.length()).equalsIgnoreCase(text));
+    }
 }

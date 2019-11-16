@@ -325,7 +325,9 @@ class StringParserTest {
         return Stream.of(
                 new Object[]{"abcdefg", 6, "fg", false, 6}
                 , new Object[]{"abcdefg", 5, "fg", true, 7}
+                , new Object[]{"abcdeFg", 5, "fg", false, 5}
                 , new Object[]{"abcdefg", 2, "cd", true, 4}
+                , new Object[]{"abcdefg", 2, "cD", false, 2}
                 , new Object[]{"abcdefg", 2, "fg", false, 2}
         );
     }
@@ -345,7 +347,9 @@ class StringParserTest {
         return Stream.of(
                 new Object[]{"abcdefg", 6, "fg", false, 6}
                 , new Object[]{"abcdefg", 5, "fg", true, 5}
+                , new Object[]{"abcdeFg", 5, "fg", false, 5}
                 , new Object[]{"abcdefg", 2, "cd", true, 2}
+                , new Object[]{"abcdefg", 2, "Cd", false, 2}
                 , new Object[]{"abcdefg", 2, "fg", false, 2}
         );
     }
@@ -356,6 +360,50 @@ class StringParserTest {
         var parser = new StringParser(string);
         parser.setPos(pos);
         assertThat(parser.isOnText(text)).isEqualTo(result);
+        assertThat(parser.getPos()).isEqualTo(endPos);
+    }
+
+    @Nonnull
+    @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
+    static Stream<Object[]> onTextIgnoreCaseTest() {
+        return Stream.of(
+                new Object[]{"abcdefg", 6, "fg", false, 6}
+                , new Object[]{"abcdefg", 5, "fg", true, 7}
+                , new Object[]{"abcdeFg", 5, "fg", true, 7}
+                , new Object[]{"abcdefg", 2, "cd", true, 4}
+                , new Object[]{"abcdefg", 2, "cD", true, 4}
+                , new Object[]{"abcdefg", 2, "fg", false, 2}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void onTextIgnoreCaseTest(String string, int pos, String text, boolean result, int endPos) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        assertThat(parser.onTextIgnoreCase(text)).isEqualTo(result);
+        assertThat(parser.getPos()).isEqualTo(endPos);
+    }
+
+    @Nonnull
+    @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
+    static Stream<Object[]> isOnTextIgnoreCaseTest() {
+        return Stream.of(
+                new Object[]{"abcdefg", 6, "fg", false, 6}
+                , new Object[]{"abcdefg", 5, "fg", true, 5}
+                , new Object[]{"abcdefG", 5, "fg", true, 5}
+                , new Object[]{"abcdefg", 2, "cd", true, 2}
+                , new Object[]{"abcdefg", 2, "Cd", true, 2}
+                , new Object[]{"abcdefg", 2, "fg", false, 2}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void isOnTextIgnoreCaseTest(String string, int pos, String text, boolean result, int endPos) {
+        var parser = new StringParser(string);
+        parser.setPos(pos);
+        assertThat(parser.isOnTextIgnoreCase(text)).isEqualTo(result);
         assertThat(parser.getPos()).isEqualTo(endPos);
     }
 }
