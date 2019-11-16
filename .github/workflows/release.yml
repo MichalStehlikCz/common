@@ -2,7 +2,7 @@ name: Deploy on Release
 
 on:
   release:
-    types: published
+    types: [created, published]
 
 jobs:
   build:
@@ -16,4 +16,7 @@ jobs:
       with:
         java-version: 11
     - name: Deploy with Maven
-      run: mvn deploy -Dregistry=https://maven.pkg.github.com/MichalStehlikCz -Dtoken=GH_TOKEN
+      run: mvn deploy -Dregistry=https://maven.pkg.github.com/MichalStehlikCz -Dtoken=$TOKEN
+      env:
+        token: ${{secrets.GPA}}
+
