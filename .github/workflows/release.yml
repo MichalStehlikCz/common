@@ -16,7 +16,10 @@ jobs:
       with:
         java-version: 11
     - name: Deploy with Maven
-      run: mvn deploy -Dregistry=https://maven.pkg.github.com/MichalStehlikCz -Dtoken=$TOKEN
       env:
         token: ${{secrets.GPA}}
+      run:
+        mkdir ~/.m2
+        echo "<settings><servers><server><id>github</id><username>MichalStehlikCz</username><password>${TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml
+        mvn deploy
 
