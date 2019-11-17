@@ -15,10 +15,10 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Deploy with Maven
+    - name: Create settings.xml
       env:
         token: ${{secrets.GPA}}
-      run:
+      run: |
         mkdir ~/.m2
         echo "<settings><servers><server><id>github</id><username>MichalStehlikCz</username><password>${TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml
         mvn deploy
