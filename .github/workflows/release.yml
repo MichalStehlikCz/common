@@ -18,7 +18,7 @@ jobs:
     - name: Set up settings.xml
       run: |
         mkdir ~/.m2
-        echo "<settings><servers><server><id>github</id><username>MichalStehlikCz</username><password>${env.TOKEN}</password></server></servers></settings>" > ~/.m2/settings.xml
+        echo '<settings><servers><server><id>github</id><username>MichalStehlikCz</username><password>${env.TOKEN}</password></server></servers></settings>' > ~/.m2/settings.xml
     - name: Maven deploy
       env:
         TOKEN: ${{secrets.GPA}}
