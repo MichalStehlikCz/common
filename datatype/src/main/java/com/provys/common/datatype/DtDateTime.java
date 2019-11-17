@@ -57,6 +57,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param hour is hour (0-23)
      * @param minute is minute (0-59)
      * @param second is second (0-59)
+     * @return datetime value representing supplied date and time
      */
     @Nonnull
     public static DtDateTime of(int year, int month, int day, int hour, int minute, int second) {
@@ -71,6 +72,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param day is day in month
      * @param hour is hour (0-23)
      * @param minute is minute (0-59)
+     * @return datetime value representing supplied date and time
      */
     @Nonnull
     public static DtDateTime of(int year, int month, int day, int hour, int minute) {
@@ -83,6 +85,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param year is year of the date
      * @param month is month of the date
      * @param day is day in month
+     * @return datetime value representing supplied date and time
      */
     @Nonnull
     public static DtDateTime of(int year, int month, int day) {
@@ -93,6 +96,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * Creates DtDateTime value based on supplied date.
      *
      * @param date is date value; time will be set to 0
+     * @return datetime value representing supplied date
      */
     @Nonnull
     public static DtDateTime ofDate(DtDate date) {
@@ -119,6 +123,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param date is date value
      * @param time is time value; it can be outside 0-24h interval, days are moved to date part and datetime is stored
      *             in canonical form
+     * @return datetime value representing supplied date and time
      */
     @Nonnull
     public static DtDateTime ofDateTime(DtDate date, DtTimeS time) {
