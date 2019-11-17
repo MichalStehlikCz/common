@@ -23,5 +23,5 @@ jobs:
       env:
         TOKEN: ${{secrets.GPA}}
       run:
-        mvn deploy
+        mvn -Dmaven.wagon.http.pool=false deploy
 
