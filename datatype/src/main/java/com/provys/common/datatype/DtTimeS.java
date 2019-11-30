@@ -289,6 +289,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param minutes is number of minutes, in range 0 .. 59
      * @param seconds is number of seconds, in range 0 .. 59
      * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofDayToNano(int days, int hours, int minutes, int seconds, int nanoSeconds) {
@@ -307,6 +308,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param hours is number of hours, in range 0 .. 23
      * @param minutes is number of minutes, in range 0 .. 59
      * @param seconds is number of seconds, in range 0 .. 59
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofDayToSecond(int days, int hours, int minutes, int seconds) {
@@ -320,6 +322,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      *             negative
      * @param hours is number of hours, in range 0 .. 23
      * @param minutes is number of minutes, in range 0 .. 59
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofDayToMinute(int days, int hours, int minutes) {
@@ -334,6 +337,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param minutes is number of minutes, in range 0 .. 59
      * @param seconds is number of seconds, in range 0 .. 59
      * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofHourToNano(boolean negative, int hours, int minutes, int seconds, int nanoSeconds) {
@@ -348,6 +352,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param minutes is number of minutes, in range 0 .. 59
      * @param seconds is number of seconds, in range 0 .. 59
      * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofHourToNano(int hours, int minutes, int seconds, int nanoSeconds) {
@@ -361,6 +366,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param hours is number of hours, must be positive or zero
      * @param minutes is number of minutes, in range 0 .. 59
      * @param seconds is number of seconds, in range 0 .. 59
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofHourToSecond(boolean negative, int hours, int minutes, int seconds) {
@@ -373,6 +379,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param hours is number of hours, must be positive or zero
      * @param minutes is number of minutes, in range 0 .. 59
      * @param seconds is number of seconds, in range 0 .. 59
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofHourToSecond(int hours, int minutes, int seconds) {
@@ -385,6 +392,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param negative indicates if time is negative (bellow zero) or positive
      * @param hours is number of hours, must be positive or zero
      * @param minutes is number of minutes, in range 0 .. 59
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofHourToMinute(boolean negative, int hours, int minutes) {
@@ -396,6 +404,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      *
      * @param hours is number of hours, must be positive or zero
      * @param minutes is number of minutes, in range 0 .. 59
+     * @return time object representing supplied values
      */
     @Nonnull
     public static DtTimeS ofHourToMinute(int hours, int minutes) {
@@ -442,6 +451,11 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * parser is moved after last character read as part of time value.
      *
      * @param parser is parser containing text to be read
+     * @param allowNegative defines if parser should parse negative time values or raise exception
+     * @param allowSpecialText specifies if parser should interpret texts, representing special values, or throw an
+     *                        exception
+     * @param allowSpecialValue specifies if special values can be parsed from supplid text or only regular values are
+     *                         allowed
      * @return datetime value read from parser
      */
     @Nonnull
@@ -554,6 +568,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * Lenient validation of Iso time value, without 24 hour limit
      *
      * @param text is supplied text to be validated
+     * @param allowNegative specifies if negative values can be successfully validated
      * @return if supplied text is valid time information (including potential zone offset)
      */
     public static boolean isValidIsoTimeInfoLenient(String text, boolean allowNegative) {
@@ -576,6 +591,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * potentially negative
      *
      * @param text is supplied text
+     * @param allowNegative specifies if negative values can be successfully parsed
      * @return time parsed from supplied text
      */
     @Nonnull
@@ -715,7 +731,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     /**
-     * Retrieve instance of {@code DtTimeS} corresponding to current time (in default time-zone).
+     * @return instance of {@code DtTimeS} corresponding to current time (in default time-zone).
      */
     @Nonnull
     public static DtTimeS now() {
@@ -917,6 +933,9 @@ public class DtTimeS implements Comparable<DtTimeS> {
 
     /**
      * Add or subtract given amount of days from time
+     *
+     * @param daysToAdd is number of days that should be added to given time, can have fractional part
+     * @return time shifted by specified offset
      */
     public DtTimeS plusDays(double daysToAdd) {
         if (isPriv() || (daysToAdd == DtDouble.PRIV)) {

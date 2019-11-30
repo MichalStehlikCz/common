@@ -179,6 +179,9 @@ public class DtDateTime implements Comparable<DtDateTime> {
 
     /**
      * Retrieve instance of {@code DtDateTime} corresponding to given LocalDateTime value
+     *
+     * @param dateTime is LocalDateTime value to be converted to DtDateTime
+     * @return datetime value corresponding to supplied LocalDateTime
      */
     @Nonnull
     public static DtDateTime ofLocalDateTime(LocalDateTime dateTime) {
@@ -186,7 +189,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
     }
 
     /**
-     * Retrieve instance of {@code DtDateTime} corresponding to current date and time (in default time-zone).
+     * @return instance of {@code DtDateTime} corresponding to current date and time (in default time-zone).
      */
     @Nonnull
     public static DtDateTime now() {
@@ -533,7 +536,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
     }
 
     /**
-     * Converts {@code DtDate} value to Provys string representation (format DD.MM.YYYY HH:MI:SS)
+     * @return Provys string representation (format DD.MM.YYYY HH:MI:SS) of {@code DtDateTime} value
      */
     @Nonnull
     public String toProvysValue() {
