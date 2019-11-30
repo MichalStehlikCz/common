@@ -28,4 +28,6 @@ jobs:
         mkdir -p ~/.m2
         echo '<settings><servers><server><id>github</id><username>MichalStehlikCz</username><password>${env.TOKEN}</password></server></servers></settings>' > ~/.m2/settings.xml
     - name: Build with Maven
+      env:
+        TOKEN: ${{secrets.GPA}}
       run: mvn -B package --file pom.xml
