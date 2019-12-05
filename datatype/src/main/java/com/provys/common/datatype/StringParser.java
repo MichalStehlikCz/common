@@ -46,7 +46,7 @@ public class StringParser {
 
         private final boolean included;
 
-        private SignHandling(boolean included) {
+        SignHandling(boolean included) {
             this.included = included;
         }
 
@@ -167,7 +167,7 @@ public class StringParser {
             }
         }
         if (pos < minPos) {
-            throw new InternalException(LOG, "Invalid character " + Character.toString(peek()) + " reading number," +
+            throw new InternalException(LOG, "Invalid character " + peek() + " reading number," +
                     " minimal length " + minChars + ", current position " + (pos - minPos + minChars));
         }
         return (int) result;

@@ -483,7 +483,7 @@ class DtTimeSTest {
                         DtTimeS.ofHourToSecond(12, 15, 24)}
                 , new Object[]{"12:15:24-01", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
                         DtTimeS.ofHourToSecond(14, 15, 24)}
-                , new Object[]{"12:15:24Z", DtDate.of(1984, 06, 16), ZoneId.of("Europe/Prague"),
+                , new Object[]{"12:15:24Z", DtDate.of(1984, 6, 16), ZoneId.of("Europe/Prague"),
                         DtTimeS.ofHourToSecond(14, 15, 24)}
                 , new Object[]{"12:15:24Z", DtDate.of(1984, 12, 16), ZoneId.of("Europe/Prague"),
                         DtTimeS.ofHourToSecond(13, 15, 24)}

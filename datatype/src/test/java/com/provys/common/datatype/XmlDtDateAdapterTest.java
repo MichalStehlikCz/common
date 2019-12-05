@@ -2,8 +2,6 @@ package com.provys.common.datatype;
 
 import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -11,10 +9,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 

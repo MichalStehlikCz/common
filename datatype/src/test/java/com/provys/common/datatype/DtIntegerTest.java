@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
+@SuppressWarnings("unused")
 class DtIntegerTest {
 
     @Nonnull
@@ -117,6 +118,7 @@ class DtIntegerTest {
         assertThat(DtInteger.isMin(value)).isEqualTo(result);
     }
 
+    @Nonnull
     static Stream<Object[]> isMaxTest() {
         return Stream.of(
                 new Object[]{15482, false}

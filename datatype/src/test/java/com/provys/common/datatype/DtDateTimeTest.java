@@ -5,12 +5,12 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.time.DateTimeException;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
+@SuppressWarnings("unused")
 class DtDateTimeTest {
 
     @Nonnull

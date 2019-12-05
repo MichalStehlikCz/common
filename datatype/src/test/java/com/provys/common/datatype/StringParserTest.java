@@ -13,6 +13,7 @@ import static com.provys.common.datatype.StringParser.SignHandling.*;
 
 import static org.assertj.core.api.Assertions.*;
 
+@SuppressWarnings("unused")
 class StringParserTest {
 
     @Nonnull

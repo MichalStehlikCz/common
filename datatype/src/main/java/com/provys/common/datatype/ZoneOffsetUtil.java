@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
  * Utility class that provides methods missing in Java ZoneOffset implementation (like validation without raising
  * exception)
  */
+@SuppressWarnings("WeakerAccess")
 public class ZoneOffsetUtil {
 
     /**
