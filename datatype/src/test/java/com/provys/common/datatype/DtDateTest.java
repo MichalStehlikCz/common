@@ -1,11 +1,17 @@
 package com.provys.common.datatype;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.provys.common.jackson.JacksonMappers;
+import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
@@ -314,5 +320,90 @@ class DtDateTest {
     @MethodSource
     void toStringTest(DtDate date, String result) {
         assertThat(date.toString()).isEqualTo(result);
+    }
+
+    @XmlRootElement(name = "DtDateElement")
+    static class DtDateElement {
+        private DtDate value;
+
+        /**
+         * @return value of field value
+         */
+        @XmlElement
+        DtDate getValue() {
+            return value;
+        }
+
+        /**
+         * Set value of field value
+         *
+         * @param value is new value to be set
+         */
+        DtDateElement setValue(DtDate value) {
+            this.value = value;
+            return this;
+        }
+    }
+
+    @Test
+    void serializeToJson() {
+        try {
+            var value = new DtDateElement().setValue(DtDate.of(2018, 5, 12));
+            assertThat(JacksonMappers.getJsonMapper().writeValueAsString(value))
+                    .isEqualTo("{\"value\":\"2018-05-12\"}");
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
+    }
+
+    @Test
+    void deserializeFromJson() {
+        try {
+            DtDateElement result = JacksonMappers.getJsonMapper().readValue(
+                    "{\"value\":\"2018-05-12\"}", DtDateElement.class);
+            assertThat(result.getValue()).isEqualTo(DtDate.of(2018, 5, 12));
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
+    }
+
+    @Test
+    void serializeToXml() {
+        try {
+            var value = new DtDateElement().setValue(DtDate.of(2018, 5, 12));
+            assertThat(JacksonMappers.getXmlMapper().writeValueAsString(value))
+                    .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                            "<DtDateElement><value>2018-05-12</value></DtDateElement>");
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
+    }
+
+    @Test
+    void deserializeFromXml() {
+        try {
+            DtDateElement result = JacksonMappers.getXmlMapper().readValue(
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                            "<DtDateElement><value>2018-05-12</value></DtDateElement>", DtDateElement.class);
+            assertThat(result.getValue()).isEqualTo(DtDate.of(2018, 5, 12));
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
     }
 }

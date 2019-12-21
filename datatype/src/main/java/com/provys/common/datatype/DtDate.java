@@ -1,5 +1,7 @@
 package com.provys.common.datatype;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
 
 import javax.annotation.Nonnull;
@@ -19,8 +21,10 @@ import java.util.regex.Pattern;
  * {@code LocalDate} functionality, but this behaviour can change later.
  */
 @SuppressWarnings("WeakerAccess")
-@JsonbTypeAdapter(JsonbDtDateAdapter.class)
-@XmlJavaTypeAdapter(XmlDtDateAdapter.class)
+@JsonSerialize(using = DtDateSerializer.class)
+@JsonDeserialize(using = DtDateDeserializer.class)
+//@JsonbTypeAdapter(JsonbDtDateAdapter.class)
+//@XmlJavaTypeAdapter(XmlDtDateAdapter.class)
 public final class DtDate implements Comparable<DtDate> {
 
     /**
