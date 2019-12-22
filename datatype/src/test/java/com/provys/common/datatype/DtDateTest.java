@@ -323,7 +323,7 @@ class DtDateTest {
     }
 
     @XmlRootElement(name = "DtDateElement")
-    static class DtDateElement {
+    private static class DtDateElement {
         private DtDate value;
 
         /**

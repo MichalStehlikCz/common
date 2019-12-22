@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("WeakerAccess")
 @JsonSerialize(using = DtDateSerializer.class)
 @JsonDeserialize(using = DtDateDeserializer.class)
-//@JsonbTypeAdapter(JsonbDtDateAdapter.class)
+@JsonbTypeAdapter(JsonbDtDateAdapter.class)
 //@XmlJavaTypeAdapter(XmlDtDateAdapter.class)
 public final class DtDate implements Comparable<DtDate> {
 

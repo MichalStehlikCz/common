@@ -1,11 +1,17 @@
 package com.provys.common.datatype;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.provys.common.jackson.JacksonMappers;
+import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -1144,5 +1150,92 @@ class DtTimeSTest {
     @MethodSource
     void toStringTest(DtTimeS value, String result) {
         assertThat(value.toString()).isEqualTo(result);
+    }
+
+    @XmlRootElement(name = "DtTimeSElement")
+    private static class DtTimeSElement {
+        private DtTimeS value;
+
+        /**
+         * @return value of field value
+         */
+        @XmlElement
+        DtTimeS getValue() {
+            return value;
+        }
+
+        /**
+         * Set value of field value
+         *
+         * @param value is new value to be set
+         */
+        DtTimeSElement setValue(DtTimeS value) {
+            this.value = value;
+            return this;
+        }
+    }
+
+    @Test
+    void serializeToJson() {
+        try {
+            var value = new DtTimeSElement().setValue(DtTimeS.ofHourToSecond(12, 25, 34));
+            assertThat(JacksonMappers.getJsonMapper().writeValueAsString(value))
+                    .isEqualTo("{\"value\":\"12:25:34\"}");
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
+    }
+
+    @Test
+    void deserializeFromJson() {
+        try {
+            assertThat(JacksonMappers.getJsonMapper()
+                    .readValue("{\"value\":\"12:25:34\"}", DtTimeSElement.class)
+                    .getValue())
+                    .isEqualTo(DtTimeS.ofHourToSecond(12, 25, 34));
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
+    }
+
+    @Test
+    void serializeToXml() {
+        try {
+            var value = new DtTimeSElement().setValue(DtTimeS.ofHourToSecond(12, 25, 34));
+            assertThat(JacksonMappers.getXmlMapper().writeValueAsString(value))
+                    .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                            "<DtTimeSElement><value>12:25:34</value></DtTimeSElement>");
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
+    }
+
+    @Test
+    void deserializeFromXml() {
+        try {
+            assertThat(JacksonMappers.getXmlMapper()
+                    .readValue("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                            "<DtTimeSElement><value>12:25:34</value></DtTimeSElement>", DtTimeSElement.class)
+                    .getValue())
+                    .isEqualTo(DtTimeS.ofHourToSecond(12, 25, 34));
+        } catch (JsonMappingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonMappingException thrown during test", e);
+        } catch (JsonProcessingException e) {
+            //noinspection ResultOfMethodCallIgnored
+            Fail.fail("JsonProcessingException thrown during test", e);
+        }
     }
 }
