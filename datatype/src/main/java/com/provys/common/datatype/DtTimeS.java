@@ -1,7 +1,5 @@
 package com.provys.common.datatype;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,10 +18,8 @@ import java.util.regex.Pattern;
  * Support for Provys domain TIME with subdomain S (time in seconds)
  */
 @SuppressWarnings("WeakerAccess")
-@JsonSerialize(using = DtTimeSSerializer.class)
-@JsonDeserialize(using = DtTimeSDeserializer.class)
 @JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
-//@XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
+@XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
 public class DtTimeS implements Comparable<DtTimeS> {
 
     private static final Logger LOG = LogManager.getLogger(DtTimeS.class);

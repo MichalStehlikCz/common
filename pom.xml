@@ -9,6 +9,7 @@
         <module>exception</module>
         <module>datatype</module>
         <module>jackson</module>
+        <module>ws</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -68,7 +69,6 @@
                 <groupId>org.glassfish.jaxb</groupId>
                 <artifactId>jaxb-runtime</artifactId>
                 <version>2.4.0-b180830.0438</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>jakarta.json.bind</groupId>
@@ -79,13 +79,11 @@
                 <groupId>org.glassfish</groupId>
                 <artifactId>javax.json</artifactId>
                 <version>1.1.4</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.eclipse</groupId>
                 <artifactId>yasson</artifactId>
                 <version>1.0.5</version>
-                <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jboss.resteasy</groupId>
