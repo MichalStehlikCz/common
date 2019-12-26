@@ -8,10 +8,11 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 
+@SuppressWarnings("WeakerAccess")
 public class DtTimeSDeserializer extends JsonDeserializer<DtTimeS> {
     @Override
     public DtTimeS deserialize(JsonParser parser, DeserializationContext deserializationContext)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         if (parser.currentToken() == JsonToken.VALUE_NULL) {
             return null;
         }

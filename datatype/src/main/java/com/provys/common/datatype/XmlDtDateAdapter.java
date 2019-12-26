@@ -2,6 +2,7 @@ package com.provys.common.datatype;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+@SuppressWarnings("WeakerAccess")
 public class XmlDtDateAdapter extends XmlAdapter<String, DtDate> {
 
     @Override

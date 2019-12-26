@@ -10,6 +10,7 @@ import java.io.IOException;
 /**
  * Jackson deserializer for DtDate class
  */
+@SuppressWarnings("WeakerAccess")
 public class DtDateDeserializer extends JsonDeserializer<DtDate> {
 
     @Override

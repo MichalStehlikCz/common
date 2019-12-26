@@ -8,6 +8,7 @@ import javax.json.bind.adapter.JsonbAdapter;
  *
  * @author stehlik
  */
+@SuppressWarnings("WeakerAccess")
 public class JsonbDtDateAdapter implements JsonbAdapter<DtDate, String> {
 
     /**

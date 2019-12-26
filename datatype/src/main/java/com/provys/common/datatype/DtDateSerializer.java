@@ -9,6 +9,7 @@ import java.io.IOException;
 /**
  * Class is Jackson serializer for DtDate class
  */
+@SuppressWarnings("WeakerAccess")
 public class DtDateSerializer extends JsonSerializer<DtDate> {
 
     @Override

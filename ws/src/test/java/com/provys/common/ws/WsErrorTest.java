@@ -2,10 +2,7 @@ package com.provys.common.ws;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.provys.common.jackson.JacksonMappers;
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
@@ -13,9 +10,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -54,7 +51,7 @@ class WsErrorTest {
     }
 
     @Test
-    void fromJsonTest() throws JsonProcessingException {
+    void fromJsonTest() throws IOException {
         assertThat(JacksonMappers.getJsonMapper().readValue(SAMPLE1_JSON, WsError.class)).isEqualTo(SAMPLE1_VALUE);
         assertThat(JacksonMappers.getJsonMapper().readValue(SAMPLE2_JSON, WsError.class)).isEqualTo(SAMPLE2_VALUE);
     }
@@ -66,7 +63,7 @@ class WsErrorTest {
     }
 
     @Test
-    void fromXmlTest() throws JsonProcessingException {
+    void fromXmlTest() throws IOException {
         assertThat(JacksonMappers.getXmlMapper().readValue(SAMPLE1_XML, WsError.class)).isEqualTo(SAMPLE1_VALUE);
         assertThat(JacksonMappers.getXmlMapper().readValue(SAMPLE2_XML, WsError.class)).isEqualTo(SAMPLE2_VALUE);
     }
