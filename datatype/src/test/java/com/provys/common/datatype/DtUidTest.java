@@ -183,15 +183,15 @@ class DtUidTest {
         }
     }
 
-    private static DtUidElement SAMPLE_VALUE = new DtUidElement()
+    private static final DtUidElement SAMPLE_VALUE = new DtUidElement()
             .setValue1(DtUid.ME)
             .setValue3(DtUid.of(BigInteger.valueOf(1234567890123456L)));
-    private static String SAMPLE_JSON = "{\"value1\":-1,\"value3\":\"1234567890123456\"}";
-    private static String SAMPLE_JACKSON = "{\"value1\":-1,\"value3\":1234567890123456}";
-    private static String SAMPLE_JSONB = SAMPLE_JACKSON;
-    private static String SAMPLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DtUidElement><value1>-1</value1>" +
+    private static final String SAMPLE_JSON = "{\"value1\":-1,\"value3\":\"1234567890123456\"}";
+    private static final String SAMPLE_JACKSON = "{\"value1\":-1,\"value3\":1234567890123456}";
+    private static final String SAMPLE_JSONB = SAMPLE_JACKSON;
+    private static final String SAMPLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DtUidElement><value1>-1</value1>" +
             "<value2/><value3>1234567890123456</value3></DtUidElement>";
-    private static String SAMPLE_JAXB = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DtUidElement>" +
+    private static final String SAMPLE_JAXB = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DtUidElement>" +
             "<value1>-1</value1><value3>1234567890123456</value3></DtUidElement>";
 
     @Test

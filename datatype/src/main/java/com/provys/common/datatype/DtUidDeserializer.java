@@ -10,7 +10,7 @@ import java.io.IOException;
 /**
  * Jackson deserializer for DtUid class
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class DtUidDeserializer extends JsonDeserializer<DtUid> {
     @Override
     public DtUid deserialize(JsonParser parser, DeserializationContext deserializationContext)

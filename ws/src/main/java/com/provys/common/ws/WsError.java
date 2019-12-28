@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Class represents result of web-service call in standard PROVYS format (e.g. with data and error sections)
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlRootElement(name = "ERRORSTATUS")
 @JsonbPropertyOrder({"status", "errorNm", "message", "stack"})

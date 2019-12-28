@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 @JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
 @XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
 public class DtTimeS implements Comparable<DtTimeS> {

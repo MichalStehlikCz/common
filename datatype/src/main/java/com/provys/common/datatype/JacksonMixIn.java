@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  * Class defines mapping of Dt classes to their MixIns for proper Jackson serialisation / deserialization.
  * Annotations are not used directly on classes as they would interfere with JAXB annotations
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "unused"})
 public class JacksonMixIn extends SimpleModule {
     public JacksonMixIn() {
         super("ProvysDtMixIn", new Version(1, 0, 0, null, null, null));
