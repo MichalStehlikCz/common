@@ -7,14 +7,18 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 
+/**
+ * Jackson deserializer for DtUid class
+ */
 @SuppressWarnings("WeakerAccess")
-public class DtTimeSDeserializer extends JsonDeserializer<DtTimeS> {
+public class DtUidDeserializer extends JsonDeserializer<DtUid> {
     @Override
-    public DtTimeS deserialize(JsonParser parser, DeserializationContext deserializationContext)
+    public DtUid deserialize(JsonParser parser, DeserializationContext deserializationContext)
             throws IOException {
         if (parser.currentToken() == JsonToken.VALUE_NULL) {
             return null;
         }
-        return DtTimeS.parseIso(parser.getValueAsString());
+        return DtUid.of(parser.getBigIntegerValue());
     }
 }
+

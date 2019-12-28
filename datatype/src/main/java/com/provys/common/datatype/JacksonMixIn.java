@@ -13,5 +13,6 @@ public class JacksonMixIn extends SimpleModule {
         super("ProvysDtMixIn", new Version(1, 0, 0, null, null, null));
         setMixInAnnotation(DtDate.class, DtDateMixIn.class);
         setMixInAnnotation(DtTimeS.class, DtTimeSMixIn.class);
+        setMixInAnnotation(DtUid.class, DtUidMixIn.class);
     }
 }
