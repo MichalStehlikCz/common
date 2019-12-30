@@ -129,8 +129,8 @@ public class DtUid {
 
     @Override
     public String toString() {
-        return "DtUid{" +
-                "value=" + value +
-                '}';
+        if (isME()) return "ID" + DtString.ME;
+        if (isPriv()) return "ID" + DtString.PRIV;
+        return "ID" + value;
     }
 }

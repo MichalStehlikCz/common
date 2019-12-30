@@ -98,6 +98,24 @@ class DtUidTest {
         assertThat(value.isME()).isEqualTo(result);
     }
 
+    @Nonnull
+    static Stream<Object[]> toStringTest() {
+        return Stream.of(
+                new Object[]{DtUid.of(BigInteger.valueOf(25L)), true}
+                , new Object[]{DtUid.of(BigInteger.valueOf(-125L)), false}
+                , new Object[]{DtUid.PRIV, false}
+                , new Object[]{DtUid.of(BigInteger.valueOf(-2L)), false}
+                , new Object[]{DtUid.ME, false}
+                , new Object[]{DtUid.of(BigInteger.valueOf(-1L)), false}
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource
+    void toStringTest(DtUid value, String result) {
+        assertThat(value.toString()).isEqualTo(result);
+    }
+
     @XmlRootElement(name = "DtUidElement")
     public static class DtUidElement {
         private DtUid value1;
