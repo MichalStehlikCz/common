@@ -26,6 +26,13 @@ public class DtUid {
     /** Multi-value indicator for Provys types UID and REF */
     public static final DtUid ME = new DtUid(BigInteger.valueOf(-1L));
 
+    /**
+     * Create DtUid value based on supplied BigInteger. Used when retrieving data from non-Provys source (for example
+     * XML or JSON deserialization)
+     *
+     * @param value is value to be assigned to DtUid
+     * @return DtUid value representing supplied number
+     */
     public static DtUid of(BigInteger value) {
         if (value.equals(PRIV.getValue())) {
             return PRIV;
@@ -35,12 +42,31 @@ public class DtUid {
         return new DtUid(value);
     }
 
+    /**
+     * Create DtUid value based on supplied BigDecimal. Used when retrieving data from non-Provys source (for example
+     * JDBC as it does not support reading BigInteger directly)
+     *
+     * @param value is value to be assigned to DtUid
+     * @return DtUid value representing supplied number
+     */
     public static DtUid of(BigDecimal value) {
         try {
             return of(value.toBigIntegerExact());
         } catch (ArithmeticException e) {
             throw new InternalException(LOG, "Fractional part encountered when reading Uid");
         }
+    }
+
+    /**
+     * Create DtUid value based on supplied long. Note that long cannot represent all allowed values and thus should
+     * not be used for work with Provys Id values, but it is useful when writing tests as it is easier to write long
+     * literal than BigInteger or BigDecimal
+     *
+     * @param value is value to be assigned to DtUid
+     * @return DtUid value representing supplied number
+     */
+    public static DtUid of(long value) {
+        return of(BigInteger.valueOf(value));
     }
 
     private final BigInteger value;
