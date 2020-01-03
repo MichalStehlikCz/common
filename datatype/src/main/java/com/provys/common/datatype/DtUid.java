@@ -33,7 +33,7 @@ public class DtUid {
      * @param value is value to be assigned to DtUid
      * @return DtUid value representing supplied number
      */
-    public static DtUid of(BigInteger value) {
+    public static DtUid valueOf(BigInteger value) {
         if (value.equals(PRIV.getValue())) {
             return PRIV;
         } else if (value.equals(ME.getValue())) {
@@ -49,9 +49,9 @@ public class DtUid {
      * @param value is value to be assigned to DtUid
      * @return DtUid value representing supplied number
      */
-    public static DtUid of(BigDecimal value) {
+    public static DtUid valueOf(BigDecimal value) {
         try {
-            return of(value.toBigIntegerExact());
+            return valueOf(value.toBigIntegerExact());
         } catch (ArithmeticException e) {
             throw new InternalException(LOG, "Fractional part encountered when reading Uid");
         }
@@ -65,8 +65,8 @@ public class DtUid {
      * @param value is value to be assigned to DtUid
      * @return DtUid value representing supplied number
      */
-    public static DtUid of(long value) {
-        return of(BigInteger.valueOf(value));
+    public static DtUid valueOf(String value) {
+        return valueOf(new BigInteger(value));
     }
 
     private final BigInteger value;

@@ -29,12 +29,12 @@ class DtUidTest {
     @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
-                new Object[]{DtUid.of(BigInteger.valueOf(25L)), true}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-125L)), false}
+                new Object[]{DtUid.valueOf("25"), true}
+                , new Object[]{DtUid.valueOf("-125"), false}
                 , new Object[]{DtUid.PRIV, false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-2L)), false}
+                , new Object[]{DtUid.valueOf("-2"), false}
                 , new Object[]{DtUid.ME, false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-1L)), false}
+                , new Object[]{DtUid.valueOf("-1"), false}
         );
     }
 
@@ -47,12 +47,12 @@ class DtUidTest {
     @Nonnull
     static Stream<Object[]> isMultilineTest() {
         return Stream.of(
-                new Object[]{DtUid.of(BigInteger.valueOf(25L)), false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-125L)), true}
+                new Object[]{DtUid.valueOf("25"), false}
+                , new Object[]{DtUid.valueOf("-125"), true}
                 , new Object[]{DtUid.PRIV, false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-2L)), false}
+                , new Object[]{DtUid.valueOf("-2"), false}
                 , new Object[]{DtUid.ME, false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-1L)), false}
+                , new Object[]{DtUid.valueOf("-1"), false}
         );
     }
 
@@ -65,12 +65,12 @@ class DtUidTest {
     @Nonnull
     static Stream<Object[]> isPrivTest() {
         return Stream.of(
-                new Object[]{DtUid.of(BigInteger.valueOf(25L)), false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-125L)), false}
+                new Object[]{DtUid.valueOf("25"), false}
+                , new Object[]{DtUid.valueOf("-125"), false}
                 , new Object[]{DtUid.PRIV, true}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-2L)), true}
+                , new Object[]{DtUid.valueOf("-2"), true}
                 , new Object[]{DtUid.ME, false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-1L)), false}
+                , new Object[]{DtUid.valueOf("-1"), false}
         );
     }
 
@@ -83,12 +83,12 @@ class DtUidTest {
     @Nonnull
     static Stream<Object[]> isMETest() {
         return Stream.of(
-                new Object[]{DtUid.of(BigInteger.valueOf(25L)), false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-125L)), false}
+                new Object[]{DtUid.valueOf("25"), false}
+                , new Object[]{DtUid.valueOf("-125"), false}
                 , new Object[]{DtUid.PRIV, false}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-2L)), false}
+                , new Object[]{DtUid.valueOf("-2"), false}
                 , new Object[]{DtUid.ME, true}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-1L)), true}
+                , new Object[]{DtUid.valueOf("-1"), true}
         );
     }
 
@@ -101,8 +101,8 @@ class DtUidTest {
     @Nonnull
     static Stream<Object[]> toStringTest() {
         return Stream.of(
-                new Object[]{DtUid.of(BigInteger.valueOf(25L)), "ID25"}
-                , new Object[]{DtUid.of(BigInteger.valueOf(-125L)), "ID-125"}
+                new Object[]{DtUid.valueOf("25"), "ID25"}
+                , new Object[]{DtUid.valueOf("-125"), "ID-125"}
                 , new Object[]{DtUid.PRIV, "ID##########"}
                 , new Object[]{DtUid.ME, "ID**********"}
         );
@@ -201,14 +201,14 @@ class DtUidTest {
 
     private static final DtUidElement SAMPLE_VALUE = new DtUidElement()
             .setValue1(DtUid.ME)
-            .setValue3(DtUid.of(BigInteger.valueOf(1234567890123456L)));
-    private static final String SAMPLE_JSON = "{\"value1\":-1,\"value3\":\"1234567890123456\"}";
-    private static final String SAMPLE_JACKSON = "{\"value1\":-1,\"value3\":1234567890123456}";
+            .setValue3(DtUid.valueOf("12345678901234567890123456789"));
+    private static final String SAMPLE_JSON = "{\"value1\":-1,\"value3\":\"12345678901234567890123456789\"}";
+    private static final String SAMPLE_JACKSON = "{\"value1\":-1,\"value3\":12345678901234567890123456789}";
     private static final String SAMPLE_JSONB = SAMPLE_JACKSON;
     private static final String SAMPLE_XML = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DtUidElement><value1>-1</value1>" +
-            "<value2/><value3>1234567890123456</value3></DtUidElement>";
+            "<value2/><value3>12345678901234567890123456789</value3></DtUidElement>";
     private static final String SAMPLE_JAXB = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><DtUidElement>" +
-            "<value1>-1</value1><value3>1234567890123456</value3></DtUidElement>";
+            "<value1>-1</value1><value3>12345678901234567890123456789</value3></DtUidElement>";
 
     @Test
     void serializeToJsonTest() throws JsonProcessingException {

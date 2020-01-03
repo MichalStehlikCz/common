@@ -10,7 +10,7 @@ import java.math.BigInteger;
 public class XmlDtUidAdapter extends XmlAdapter<BigInteger, DtUid> {
     @Override
     public DtUid unmarshal(BigInteger value) {
-        return DtUid.of(value);
+        return DtUid.valueOf(value);
     }
 
     @Override

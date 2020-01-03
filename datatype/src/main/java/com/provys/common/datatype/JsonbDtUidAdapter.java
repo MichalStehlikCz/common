@@ -14,6 +14,6 @@ public class JsonbDtUidAdapter implements JsonbAdapter<DtUid, BigInteger> {
 
     @Override
     public DtUid adaptFromJson(BigInteger adapted) {
-        return DtUid.of(adapted);
+        return DtUid.valueOf(adapted);
     }
 }

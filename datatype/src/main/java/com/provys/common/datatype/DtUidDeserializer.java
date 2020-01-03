@@ -18,7 +18,7 @@ public class DtUidDeserializer extends JsonDeserializer<DtUid> {
         if (parser.currentToken() == JsonToken.VALUE_NULL) {
             return null;
         }
-        return DtUid.of(parser.getBigIntegerValue());
+        return DtUid.valueOf(parser.getBigIntegerValue());
     }
 }
 
