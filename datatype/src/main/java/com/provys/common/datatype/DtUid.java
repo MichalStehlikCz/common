@@ -1,8 +1,6 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nullable;
 import javax.json.bind.annotation.JsonbTypeAdapter;
@@ -18,8 +16,6 @@ import java.util.Objects;
 @JsonbTypeAdapter(JsonbDtUidAdapter.class)
 @XmlJavaTypeAdapter(XmlDtUidAdapter.class)
 public class DtUid {
-
-    private static final Logger LOG = LogManager.getLogger(DtUid.class);
 
     /** Missing privileges indicator for Provys types UID and REF */
     public static final DtUid PRIV = new DtUid(BigInteger.valueOf(-2L));
@@ -53,7 +49,7 @@ public class DtUid {
         try {
             return valueOf(value.toBigIntegerExact());
         } catch (ArithmeticException e) {
-            throw new InternalException(LOG, "Fractional part encountered when reading Uid");
+            throw new InternalException("Fractional part encountered when reading Uid");
         }
     }
 

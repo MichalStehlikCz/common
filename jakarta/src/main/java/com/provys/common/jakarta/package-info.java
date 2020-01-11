@@ -1,4 +1,4 @@
 @ParametersAreNonnullByDefault
-package com.provys.common.ws;
+package com.provys.common.jakarta;
 
 import javax.annotation.ParametersAreNonnullByDefault;

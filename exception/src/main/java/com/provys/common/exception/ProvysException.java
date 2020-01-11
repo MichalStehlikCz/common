@@ -4,21 +4,55 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Common ancestor for exceptions thrown by PROVYS code.
- * Makes it easier to track all defined exceptions, adds mapping to PROVYS registered errors and logs exception.
+ * Makes it easier to track all defined exceptions, adds mapping to PROVYS registered errors.
  *
  * @author stehlik
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class ProvysException extends RuntimeException {
 
+    @Nonnull
+    private final Map<String, String> params;
+
     /**
-     * Constructs a new PROVYS runtime exception with the specified detail
-     * message and cause.
-     * Note that the detail message associated with {@code cause} is not
-     * automatically incorporated in this runtime exception's detail message.
+     * Constructs a new PROVYS runtime exception with the specified detail message, parameters and cause.
+     * Note that the detail message associated with {@code cause} is not automatically incorporated in this runtime
+     * exception's detail message.
+     *
+     * @param message the detail message; displayed to user if translations via database are not available. Message is
+     *               prefixed with internal name
+     * @param params are additional parameters for exception. Parameters are saved and can be retrieved, e.g. when
+     *              creating (translated) message for given exception
+     * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A @{code null}
+     *             value is permitted, and indicates that the cause is nonexistent or unknown.)
+     */
+    public ProvysException(String message, @Nullable Map<String, String> params, @Nullable Throwable cause) {
+        super(message, cause);
+        if (params == null) {
+            this.params = Collections.emptyMap();
+        } else {
+            this.params = Map.copyOf(params);
+        }
+    }
+
+    /**
+     * Constructs a new PROVYS runtime exception with the specified detail message and parameters.
+     *
+     * @param message the detail message; displayed to user if translations via database are not available. Message is
+     *               prefixed with internal name
+     * @param params are additional parameters for exception. Parameters are saved and can be retrieved, e.g. when
+     *              creating (translated) message for given exception
+     */
+    public ProvysException(String message, @Nullable Map<String, String> params) {
+        this(message, params, null);
+    }
+
+    /**
+     * Constructs a new PROVYS runtime exception with the specified detail message and cause.
      *
      * @param message the detail message; displayed to user if translations via database are not available. Message is
      *               prefixed with internal name
@@ -26,7 +60,7 @@ public abstract class ProvysException extends RuntimeException {
      *             value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
     public ProvysException(String message, @Nullable Throwable cause) {
-        super(message, cause);
+        this(message, null, cause);
     }
 
     /**
@@ -35,7 +69,7 @@ public abstract class ProvysException extends RuntimeException {
      * @param message the detail message; displayed to user if translations via database are not available
      */
     public ProvysException(String message) {
-        super(message);
+        this(message, null, null);
     }
 
     /**
@@ -51,7 +85,20 @@ public abstract class ProvysException extends RuntimeException {
      */
     @Nonnull
     public Map<String, String> getParams() {
-        return Collections.emptyMap();
+        return params;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ProvysException that = (ProvysException) o;
+        return params.equals(that.params);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(params);
     }
 
     @Override

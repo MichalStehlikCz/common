@@ -1,6 +1,7 @@
-package com.provys.common.jackson;
+package com.provys.common.jakarta;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.provys.common.jackson.JacksonMappers;
 
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;

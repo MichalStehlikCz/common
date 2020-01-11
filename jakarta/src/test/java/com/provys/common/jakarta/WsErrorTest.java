@@ -1,4 +1,4 @@
-package com.provys.common.ws;
+package com.provys.common.jakarta;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.provys.common.jackson.JacksonMappers;

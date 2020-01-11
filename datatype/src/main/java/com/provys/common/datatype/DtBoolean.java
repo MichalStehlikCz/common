@@ -1,8 +1,6 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 
@@ -12,8 +10,6 @@ import javax.annotation.Nonnull;
  */
 @SuppressWarnings("WeakerAccess")
 public class DtBoolean {
-
-    private static final Logger LOG = LogManager.getLogger(DtBoolean.class);
 
     /**
      * Convert {@code String} retrieved from Provys database to boolean
@@ -27,7 +23,7 @@ public class DtBoolean {
         } else if (value.equals("N")) {
             return false;
         }
-        throw new InternalException(LOG, "Invalid PROVYS boolean value '" + value + "'");
+        throw new InternalException("Invalid PROVYS boolean value '" + value + "'");
     }
 
     /**

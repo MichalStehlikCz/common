@@ -1,8 +1,6 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -21,8 +19,6 @@ import java.util.regex.Pattern;
 @JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
 @XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
 public class DtTimeS implements Comparable<DtTimeS> {
-
-    private static final Logger LOG = LogManager.getLogger(DtTimeS.class);
 
     /**
      * Date value, returned when user doesn't have the rights to access the value
@@ -909,7 +905,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (isMax()) {
             return DtInteger.MAX;
         }
-        throw new InternalException(LOG, "Function can only be used on irregular value");
+        throw new InternalException("Function can only be used on irregular value");
     }
 
     /**
@@ -928,7 +924,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (isMax()) {
             return DtDouble.MAX;
         }
-        throw new InternalException(LOG, "Function can only be used on irregular value");
+        throw new InternalException("Function can only be used on irregular value");
     }
 
     /**
@@ -1146,7 +1142,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     @Nonnull
     public String toIso() {
         if (!isRegular()) {
-            throw new InternalException(LOG, "Cannot export special time value to ISO format");
+            throw new InternalException("Cannot export special time value to ISO format");
         }
         return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(time) / 3600,
                 (Math.abs(time) / 60) % 60, Math.abs(time) % 60);
@@ -1159,7 +1155,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     @Nonnull
     public String toIso24(boolean endTime) {
         if (!isRegular()) {
-            throw new InternalException(LOG, "Cannot export special time value to ISO format");
+            throw new InternalException("Cannot export special time value to ISO format");
         }
         if (endTime && (time % 86400 == 0)) {
             return "24:00:00";

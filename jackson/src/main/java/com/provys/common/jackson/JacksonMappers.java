@@ -14,6 +14,15 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 import javax.annotation.Nonnull;
 
+/**
+ * Jackson mappers (Json, Xml) that should be used in standard Provys libraries. At the moment it is believed that
+ * mappers can be static as Jackson project hopefully solved problems with contention when using mappers simultaneously
+ * from multiple threads. It should be noted that these mappers should NEVER be modified, as it might affect components
+ * that expect behaviour defined here.
+ *
+ * If some modification of mapper is required (for example project needs different date format, timezone etc.), such
+ * mapper should be constructed outside this class but can be customised using supplied methods.
+ */
 public class JacksonMappers {
 
     @Nonnull
@@ -52,4 +61,6 @@ public class JacksonMappers {
     public static XmlMapper getXmlMapper() {
         return XML_MAPPER;
     }
+
+    private JacksonMappers() {}
 }

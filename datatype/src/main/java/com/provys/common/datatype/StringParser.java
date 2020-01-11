@@ -1,8 +1,6 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.annotation.Nonnull;
 import java.security.InvalidParameterException;
@@ -20,8 +18,6 @@ import java.util.Objects;
  */
 @SuppressWarnings("WeakerAccess") // published library class
 public class StringParser {
-
-    private static final Logger LOG = LogManager.getLogger(StringParser.class);
 
     /**
      * Defines sign handling in number parsers.
@@ -160,14 +156,14 @@ public class StringParser {
         while (hasNext() && (peek() >= '0') && (peek() <= '9')) {
             result = result * 10 + next() - '0';
             if (result > Integer.MAX_VALUE) {
-                throw new InternalException(LOG, "Integer overflow parsing number");
+                throw new InternalException("Integer overflow parsing number");
             }
             if (pos == maxPos) {
                 break;
             }
         }
         if (pos < minPos) {
-            throw new InternalException(LOG, "Invalid character " + peek() + " reading number," +
+            throw new InternalException("Invalid character " + peek() + " reading number," +
                     " minimal length " + minChars + ", current position " + (pos - minPos + minChars));
         }
         return (int) result;
@@ -209,14 +205,14 @@ public class StringParser {
                     maxChars = signHandling.adjustCount(maxChars);
                     break;
                 default:
-                    throw new InternalException(LOG, "Invalid first character in read integer " + peek());
+                    throw new InternalException("Invalid first character in read integer " + peek());
             }
             if (signHandling == SignHandling.NONE) {
-                throw new InternalException(LOG, "Sign not expected when parsing with sign-handling NONE");
+                throw new InternalException("Sign not expected when parsing with sign-handling NONE");
             }
         } else {
             if (signHandling == SignHandling.MANDATORY) {
-                throw new InternalException(LOG, "Sign required and missing");
+                throw new InternalException("Sign required and missing");
             }
         }
         int result = readUnsignedInt(minChars, maxChars);

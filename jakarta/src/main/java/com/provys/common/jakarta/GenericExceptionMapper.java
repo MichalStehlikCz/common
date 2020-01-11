@@ -1,4 +1,7 @@
-package com.provys.common.ws;
+package com.provys.common.jakarta;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -7,8 +10,12 @@ import java.util.Arrays;
 
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
+
+    private static final Logger LOG = LogManager.getLogger(GenericExceptionMapper.class);
+
     @Override
     public Response toResponse(Exception e) {
+        LOG.error("Unhandled exception", e);
         return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(new WsError(-1, "INTERNAL_EXCEPTION", e.getMessage(),
