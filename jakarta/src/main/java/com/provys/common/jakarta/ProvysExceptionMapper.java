@@ -16,7 +16,7 @@ public class ProvysExceptionMapper implements ExceptionMapper<ProvysException> {
 
     @Override
     public Response toResponse(ProvysException e) {
-        LOG.error("Unhandler exception", e);
+        LOG.error("Unhandled exception", e);
         return Response
                 .status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity(new WsError(-1, (e).getNameNm(), e.getMessage(), Arrays.toString(e.getStackTrace())))
