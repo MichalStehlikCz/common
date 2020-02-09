@@ -2,7 +2,6 @@ package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
 
-import javax.annotation.Nonnull;
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -250,7 +249,6 @@ public class StringParser {
      * @return substring starting at current position, supplied number of characters long
      * @throws StringIndexOutOfBoundsException in case there are not enough characters available
      */
-    @Nonnull
     public String readString(int chars) {
         if (chars < 0) {
             throw new InvalidParameterException("Number of characters to be read cannot be negative (" + chars + ')');

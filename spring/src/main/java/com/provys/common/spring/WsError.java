@@ -2,15 +2,13 @@ package com.provys.common.spring;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * Class represents result of web-service call in standard PROVYS format (e.g. with data and error sections)
@@ -23,14 +21,11 @@ public class WsError {
     @XmlElement(name = "STATUS")
     private final int status;
     @XmlElement(name = "ERROR_NM")
-    @Nullable
-    private final String errorNm;
+    private final @Nullable String errorNm;
     @XmlElement(name = "ERRORMESSAGE")
-    @Nullable
-    private final String message;
+    private final @Nullable String message;
     @XmlElement(name = "ERRORSTACK")
-    @Nullable
-    private final String stack;
+    private final @Nullable String stack;
 
     /**
      * Private constructor used for JAXB deserialization; preferably Jackson is used and it is not needed, but...
@@ -63,25 +58,22 @@ public class WsError {
     /**
      * @return value of field errorNm
      */
-    @Nonnull
-    public Optional<String> getErrorNm() {
-        return Optional.ofNullable(errorNm);
+    public @Nullable String getErrorNm() {
+        return errorNm;
     }
 
     /**
      * @return value of field message
      */
-    @Nonnull
-    public Optional<String> getMessage() {
-        return Optional.ofNullable(message);
+    public @Nullable String getMessage() {
+        return message;
     }
 
     /**
      * @return value of field stack
      */
-    @Nonnull
-    public Optional<String> getStack() {
-        return Optional.ofNullable(stack);
+    public @Nullable String getStack() {
+        return stack;
     }
 
     @Override

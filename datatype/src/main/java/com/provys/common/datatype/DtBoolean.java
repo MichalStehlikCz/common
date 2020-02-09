@@ -2,8 +2,6 @@ package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
 
-import javax.annotation.Nonnull;
-
 /**
  * Utility class, containing methods relevant for working with Provys domain BOOLEAN. It is represented by boolean
  * values in Provys Java framework
@@ -32,7 +30,6 @@ public class DtBoolean {
      * @param value is source boolean value
      * @return corresponding Provys database boolean value (char Y / N)
      */
-    @Nonnull
     public static String toProvysDb(boolean value) {
         return value ? "Y" : "N";
     }

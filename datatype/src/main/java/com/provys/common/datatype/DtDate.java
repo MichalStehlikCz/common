@@ -1,8 +1,8 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
 import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.*;
@@ -92,7 +92,7 @@ public final class DtDate implements Comparable<DtDate> {
     /**
      * Defines format, supported by Iso parse
      */
-    public static Pattern ISO_DATE_STRICT = Pattern.compile("(" + YEAR_REGEX_STRICT + ")-(" + MONTH_REGEX_STRICT +
+    public static final Pattern ISO_DATE_STRICT = Pattern.compile("(" + YEAR_REGEX_STRICT + ")-(" + MONTH_REGEX_STRICT +
             ")-(" + DAY_REGEX_STRICT + ")");
 
     /**
@@ -114,7 +114,7 @@ public final class DtDate implements Comparable<DtDate> {
     /**
      * Defines format, supported by Iso parse
      */
-    public static Pattern ISO_DATE_LENIENT = Pattern.compile("(" + YEAR_REGEX_LENIENT + ")[-.](" + MONTH_REGEX_LENIENT +
+    public static final Pattern ISO_DATE_LENIENT = Pattern.compile("(" + YEAR_REGEX_LENIENT + ")[-.](" + MONTH_REGEX_LENIENT +
             ")[-.](" + DAY_REGEX_LENIENT + ")(?:00:00(?::00(?:[,.][0]{0,9})))");
 
     /**
@@ -123,7 +123,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param value is {@code LocalDate} value to be represented by this date
      * @return converted value
      */
-    @Nonnull
     public static DtDate ofLocalDate(LocalDate value) {
         return new DtDate(value);
     }
@@ -136,7 +135,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param day is day in month of date to be created
      * @return date value corresponding to supplied data
      */
-    @Nonnull
     public static DtDate of(int year, short month, short day) {
         return new DtDate(LocalDate.of(year, month, day));
     }
@@ -150,7 +148,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param allowSpecial indicates if special date values can be returned from this function
      * @return date value corresponding to supplied data
      */
-    @Nonnull
     public static DtDate of(int year, short month, short day, boolean allowSpecial) {
         if (allowSpecial) {
             if ((year == PRIV.value.getYear()) && (month == PRIV.value.getMonthValue()) &&
@@ -181,7 +178,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param day is day in month of date to be created
      * @return date value corresponding to supplied data
      */
-    @Nonnull
     public static DtDate of(int year, int month, int day) {
         return DtDate.of(year, (short) month, (short) day);
     }
@@ -195,7 +191,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param allowSpecial indicates if special date values can be returned from this function
      * @return date value corresponding to supplied data
      */
-    @Nonnull
     public static DtDate of(int year, int month, int day, boolean allowSpecial) {
         return of(year, (short) month, (short) day, allowSpecial);
     }
@@ -205,7 +200,6 @@ public final class DtDate implements Comparable<DtDate> {
      *
      * @return date value corresponding to current date
      */
-    @Nonnull
     public static DtDate now() {
         return ofLocalDate(LocalDate.now());
     }
@@ -217,7 +211,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param zone is timezone instant is considered to be in
      * @return value representing given instant
      */
-    @Nonnull
     public static DtDate ofInstant(Instant instant, ZoneId zone) {
         return ofLocalDate(LocalDate.ofInstant(instant, zone));
     }
@@ -228,7 +221,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param instant is instant new value represents
      * @return value representing given instant
      */
-    @Nonnull
     public static DtDate ofInstant(Instant instant) {
         return ofLocalDate(LocalDate.ofInstant(instant, ZoneId.systemDefault()));
     }
@@ -243,7 +235,6 @@ public final class DtDate implements Comparable<DtDate> {
      *                         if allowSpecialText is set and position is on special value's textual representation
      * @return datetime value read from parser
      */
-    @Nonnull
     public static DtDate parse(StringParser parser, boolean allowSpecialText, boolean allowSpecialValue) {
         if (!parser.hasNext()) {
             throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
@@ -290,7 +281,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param text is text in ISO-8601 format for local date (e.g. YYYY-MM-DD)
      * @return date value corresponding to provided text
      */
-    @Nonnull
     public static DtDate parse(String text) {
         var parser = new StringParser(text);
         var result = parse(parser, true, false);
@@ -365,7 +355,6 @@ public final class DtDate implements Comparable<DtDate> {
      *                 exception if it is different from zero or 24 hours
      * @return datetime value read from parser
      */
-    @Nonnull
     public static DtDate parseIso(StringParser parser, boolean allowTime) {
         if (!parser.hasNext()) {
             throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
@@ -391,7 +380,6 @@ public final class DtDate implements Comparable<DtDate> {
      *             or with zero time with timezone
      * @return date value corresponding to provided text
      */
-    @Nonnull
     public static DtDate parseIso(String text) {
         var parser = new StringParser(text);
         var result = parseIso(parser, true);
@@ -408,7 +396,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param parser is parser containing value in Provys string representation
      * @return date value corresponding to provided text
      */
-    @Nonnull
     public static DtDate ofProvysValue(StringParser parser) {
         try {
             var day = parser.readUnsignedInt(2);
@@ -443,7 +430,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @param value is value in Provys string representation
      * @return date value corresponding to provided text
      */
-    @Nonnull
     public static DtDate ofProvysValue(String value) {
         var parser = new StringParser(Objects.requireNonNull(value));
         var result = DtDate.ofProvysValue(parser);
@@ -456,7 +442,6 @@ public final class DtDate implements Comparable<DtDate> {
     /**
      * Actual date represented by this DtDate object
      */
-    @Nonnull
     private final LocalDate value;
 
     /**
@@ -580,7 +565,6 @@ public final class DtDate implements Comparable<DtDate> {
      * @return a {@code DtDate} based on this date with the days added, not null
      * @throws DateTimeException if the result exceeds the supported date range
      */
-    @Nonnull
     public DtDate plusDays(int daysToAdd) {
         if (equals(PRIV) || DtInteger.PRIV.equals(daysToAdd)) {
             return PRIV;
@@ -639,7 +623,6 @@ public final class DtDate implements Comparable<DtDate> {
      *
      * @return string representation of this value in ISO format
      */
-    @Nonnull
     public String toIso() {
         if (isPriv()) {
             return "1000-01-02";
@@ -661,7 +644,6 @@ public final class DtDate implements Comparable<DtDate> {
      *
      * @return string representation of this value in PROVYS date format
      */
-    @Nonnull
     public String toProvysValue() {
         return String.format((Locale) null, "%02d", value.getDayOfMonth()) + '.' +
                 String.format((Locale) null, "%02d", value.getMonthValue()) + '.' +
@@ -675,7 +657,7 @@ public final class DtDate implements Comparable<DtDate> {
      * @return true / false indicating if two dates are the same
      */
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
@@ -697,7 +679,6 @@ public final class DtDate implements Comparable<DtDate> {
     /**
      * @return ISO-8601 representation of date, represented by this object
      */
-    @Nonnull
     @Override
     public String toString() {
         if (equals(PRIV)) {

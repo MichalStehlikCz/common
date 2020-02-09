@@ -1,14 +1,13 @@
 package com.provys.common.exception;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Collections;
 import java.util.Map;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
 public final class RegularException extends ProvysException {
 
-    @Nonnull
     private final String nameNm;
 
     /**
@@ -68,7 +67,6 @@ public final class RegularException extends ProvysException {
         this(nameNm, message, (Throwable) null);
     }
 
-    @Nonnull
     @Override
     public String getNameNm() {
         return nameNm;

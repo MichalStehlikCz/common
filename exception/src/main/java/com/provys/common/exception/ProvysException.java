@@ -1,7 +1,7 @@
 package com.provys.common.exception;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -15,7 +15,6 @@ import java.util.Objects;
 @SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class ProvysException extends RuntimeException {
 
-    @Nonnull
     private final Map<String, String> params;
 
     /**
@@ -75,7 +74,6 @@ public abstract class ProvysException extends RuntimeException {
     /**
      * @return internal name of exception for mapping with provys ERROR object
      */
-    @Nonnull
     public abstract String getNameNm();
 
     /**
@@ -83,7 +81,6 @@ public abstract class ProvysException extends RuntimeException {
      *
      * @return empty map in this default implementation
      */
-    @Nonnull
     public Map<String, String> getParams() {
         return params;
     }

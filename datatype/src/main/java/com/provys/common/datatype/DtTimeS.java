@@ -1,9 +1,8 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.*;
@@ -191,7 +190,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return Provys time value corresponding to supplied {@code LocalTime} value. Fractional part is rounded to whole
      * seconds.
      */
-    @Nonnull
     public static DtTimeS ofLocalTime(LocalTime time) {
         return ofHourToNano(time.getHour(), time.getMinute(), time.getSecond(), time.getNano());
     }
@@ -199,7 +197,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
     /**
      * @return zero time. Shorter version of call to ofSeconds(0)
      */
-    @Nonnull
     public static DtTimeS zero() {
         return HOURS[0];
     }
@@ -210,7 +207,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param time is time value to be represented
      * @return resulting value
      */
-    @Nonnull
     public static DtTimeS ofSeconds(int time) {
         if (DtInteger.isRegular(time)) {
             if ((time >= 0) && (time % 3600 == 0) && (time / 3600 < HOURS.length)) {
@@ -266,7 +262,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
         checkMinuteToNano(minutes, seconds, nanoSeconds);
     }
 
-    @Nonnull
     private static DtTimeS ofDayToNanoNoCheck(boolean negative, int days, int hours, int minutes, int seconds,
                                               int nanoSeconds) {
         int time = days * 86400 + hours*3600 + minutes*60 + seconds + (nanoSeconds >= 500000000 ? 1 : 0);
@@ -287,7 +282,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofDayToNano(int days, int hours, int minutes, int seconds, int nanoSeconds) {
         if (hours >= 24) {
             throw new DateTimeException("Number of hours in day is limited by 24");
@@ -306,7 +300,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param seconds is number of seconds, in range 0 .. 59
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofDayToSecond(int days, int hours, int minutes, int seconds) {
         return ofDayToNano(days, hours, minutes, seconds, 0);
     }
@@ -320,7 +313,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param minutes is number of minutes, in range 0 .. 59
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofDayToMinute(int days, int hours, int minutes) {
         return ofDayToSecond(days, hours, minutes, 0);
     }
@@ -335,7 +327,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofHourToNano(boolean negative, int hours, int minutes, int seconds, int nanoSeconds) {
         checkHourToNano(hours, minutes, seconds, nanoSeconds);
         return ofDayToNanoNoCheck(negative, 0, hours, minutes, seconds, nanoSeconds);
@@ -350,7 +341,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param nanoSeconds is number of nanoseconds in range 0 .. 999999999
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofHourToNano(int hours, int minutes, int seconds, int nanoSeconds) {
         return ofHourToNano(false, hours, minutes, seconds, nanoSeconds);
     }
@@ -364,7 +354,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param seconds is number of seconds, in range 0 .. 59
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofHourToSecond(boolean negative, int hours, int minutes, int seconds) {
         return ofHourToNano(negative, hours, minutes, seconds, 0);
     }
@@ -377,7 +366,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param seconds is number of seconds, in range 0 .. 59
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofHourToSecond(int hours, int minutes, int seconds) {
         return ofHourToSecond(false, hours, minutes, seconds);
     }
@@ -390,7 +378,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param minutes is number of minutes, in range 0 .. 59
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofHourToMinute(boolean negative, int hours, int minutes) {
         return ofHourToSecond(negative, hours, minutes, 0);
     }
@@ -402,7 +389,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param minutes is number of minutes, in range 0 .. 59
      * @return time object representing supplied values
      */
-    @Nonnull
     public static DtTimeS ofHourToMinute(int hours, int minutes) {
         return ofHourToMinute(false, hours, minutes);
     }
@@ -425,8 +411,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     /**
      * Parse special text if present, return null if special text was not found
      */
-    @Nullable
-    private static DtTimeS parseSpecialText(StringParser parser) {
+    private static @Nullable DtTimeS parseSpecialText(StringParser parser) {
         if (parser.onText(PRIV_TEXT)) {
             return DtTimeS.PRIV;
         }
@@ -454,7 +439,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      *                         allowed
      * @return datetime value read from parser
      */
-    @Nonnull
     public static DtTimeS parse(StringParser parser, boolean allowNegative, boolean allowSpecialText,
                                 boolean allowSpecialValue) {
         if (!parser.hasNext()) {
@@ -504,7 +488,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param value is text to be parsed
      * @return valid {@code DtTimeS} value corresponding to supplied text
      */
-    @Nonnull
     public static DtTimeS parse(String value) {
         if (value.isEmpty()) {
             throw new DateTimeParseException("String to be parsed as time value is empty", value, 0);
@@ -551,7 +534,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text
      * @return time parsed from supplied text
      */
-    @Nonnull
     public static DtTimeS parseIsoTime(String text) {
         var result = parseIsoTimeInfo(text, false);
         if (result.compareTo(DtTimeS.ofHourToMinute(24, 0)) > 0) {
@@ -590,7 +572,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param allowNegative specifies if negative values can be successfully parsed
      * @return time parsed from supplied text
      */
-    @Nonnull
     public static DtTimeS parseIsoTimeInfo(String text, boolean allowNegative) {
         if (text.isBlank()) {
             throw new DateTimeParseException("Empty text supplied to parse time", text, 0);
@@ -673,7 +654,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is timezone for resulting time
      * @return if supplied text is valid time, including potential zone offset
      */
-    @Nonnull
     public static DtTimeS parseIso(String text, DtDate date, ZoneId localZoneId) {
         if (text.isBlank()) {
             throw new DateTimeParseException("Empty text supplied to parse time", text, 0);
@@ -697,7 +677,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param date is date, used to look up offset for timezone
      * @return if supplied text is valid time, including potential zone offset
      */
-    @Nonnull
     public static DtTimeS parseIso(String text, DtDate date) {
         return parseIso(text, date, ZoneId.systemDefault());
     }
@@ -709,7 +688,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is timezone for resulting time
      * @return if supplied text is valid time, including potential zone offset
      */
-    @Nonnull
     public static DtTimeS parseIso(String text, ZoneId localZoneId) {
         return parseIso(text, DtDate.now());
     }
@@ -721,7 +699,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param text is supplied text to be validated
      * @return if supplied text is valid time, including potential zone offset
      */
-    @Nonnull
     public static DtTimeS parseIso(String text) {
         return parseIso(text, DtDate.now(), ZoneId.systemDefault());
     }
@@ -729,7 +706,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
     /**
      * @return instance of {@code DtTimeS} corresponding to current time (in default time-zone).
      */
-    @Nonnull
     public static DtTimeS now() {
         return ofLocalTime(LocalTime.now());
     }
@@ -742,7 +718,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param parser is parser containing value in Provys string representation
      * @return time value corresponding to provided text
      */
-    @Nonnull
     public static DtTimeS ofProvysValue(StringParser parser) {
         try {
             var hours = parser.readInt(2, 3, StringParser.SignHandling.EXTEND);
@@ -795,7 +770,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param value is value in Provys string representation
      * @return time value corresponding to provided text
      */
-    @Nonnull
     public static DtTimeS ofProvysValue(String value) {
         var parser = new StringParser(Objects.requireNonNull(value));
         var result = ofProvysValue(parser);
@@ -1130,7 +1104,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return LocalTime value represented by this DtTimeS; throws exception if such conversion is not possible (because
      * LocalTime is limited to 0-24h)
      */
-    @Nonnull
     public LocalTime getLocalTime() {
         return LocalTime.of(getHours(), getMinutes(), getSeconds());
     }
@@ -1139,7 +1112,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return time value in iso format without timezone; it is callers responsibility to verify if value corresponds to
      * range, supported by iso times (e.g. 0-24h)
      */
-    @Nonnull
     public String toIso() {
         if (!isRegular()) {
             throw new InternalException("Cannot export special time value to ISO format");
@@ -1152,7 +1124,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
      * @return time value in iso format without timezone. Time is cut to 0-24 hour interval
      */
-    @Nonnull
     public String toIso24(boolean endTime) {
         if (!isRegular()) {
             throw new InternalException("Cannot export special time value to ISO format");
@@ -1167,7 +1138,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
     /**
      * @return time value in iso format without timezone. Time is cut to 0-24 hour interval
      */
-    @Nonnull
     public String toIso24() {
         return toIso24(false);
     }
@@ -1202,7 +1172,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @return time value in iso format with timezone; it is callers responsibility to verify if value corresponds to
      * range, supported by iso times (e.g. 0-24h). Note that time might get out of this interval during conversion
      */
-    @Nonnull
     public String toIso(ZoneOffset zoneOffset, DtDate date, ZoneId localZoneId) {
         var convertedTime = shiftToOffset(zoneOffset, date, localZoneId);
         return convertedTime.toIso() + zoneOffset.getId();
@@ -1215,7 +1184,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is local timezone used to interpret supplied time
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, boolean endTime, DtDate date, ZoneId localZoneId) {
         var convertedTime = shiftToOffset(zoneOffset, date, localZoneId);
         return convertedTime.toIso24(endTime) + zoneOffset.getId();
@@ -1227,7 +1195,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is local timezone used to interpret supplied time
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, DtDate date, ZoneId localZoneId) {
         return toIso24(zoneOffset, false, date, localZoneId);
     }
@@ -1238,7 +1205,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is local timezone used to interpret supplied time
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, boolean endTime, ZoneId localZoneId) {
         return toIso24(zoneOffset, endTime, DtDate.now(), localZoneId);
     }
@@ -1248,7 +1214,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is local timezone used to interpret supplied time
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, ZoneId localZoneId) {
         return toIso24(zoneOffset, false, DtDate.now(), localZoneId);
     }
@@ -1259,7 +1224,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param date is date on which conversion to timezone is performed
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, boolean endTime, DtDate date) {
         return toIso24(zoneOffset, endTime, date, ZoneId.systemDefault());
     }
@@ -1269,7 +1233,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param zoneOffset is zone offset that should be used in resulting text representation
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, DtDate date) {
         return toIso24(zoneOffset, date, ZoneId.systemDefault());
     }
@@ -1279,7 +1242,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset, boolean endTime) {
         return toIso24(zoneOffset, endTime, DtDate.now(), ZoneId.systemDefault());
     }
@@ -1288,7 +1250,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param zoneOffset is zone offset that should be used in resulting text representation
      * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
      */
-    @Nonnull
     public String toIso24(ZoneOffset zoneOffset) {
         return toIso24(zoneOffset, DtDate.now(), ZoneId.systemDefault());
     }
@@ -1298,7 +1259,6 @@ public class DtTimeS implements Comparable<DtTimeS> {
      *
      * @return provys string representation (HH:MI:SS) of this value
      */
-    @Nonnull
     public String toProvysValue() {
         return toIso();
     }

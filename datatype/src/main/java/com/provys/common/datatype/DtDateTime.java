@@ -1,6 +1,5 @@
 package com.provys.common.datatype;
 
-import javax.annotation.Nonnull;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -59,7 +58,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param second is second (0-59)
      * @return datetime value representing supplied date and time
      */
-    @Nonnull
     public static DtDateTime of(int year, int month, int day, int hour, int minute, int second) {
         return ofDateTime(DtDate.of(year, month, day), DtTimeS.ofHourToSecond(hour, minute, second));
     }
@@ -74,7 +72,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param minute is minute (0-59)
      * @return datetime value representing supplied date and time
      */
-    @Nonnull
     public static DtDateTime of(int year, int month, int day, int hour, int minute) {
         return of(year, month, day, hour, minute, 0);
     }
@@ -87,7 +84,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param day is day in month
      * @return datetime value representing supplied date and time
      */
-    @Nonnull
     public static DtDateTime of(int year, int month, int day) {
         return of(year, month, day, 0, 0);
     }
@@ -98,7 +94,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param date is date value; time will be set to 0
      * @return datetime value representing supplied date
      */
-    @Nonnull
     public static DtDateTime ofDate(DtDate date) {
         if (date.isPriv()) {
             return PRIV;
@@ -125,7 +120,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      *             in canonical form
      * @return datetime value representing supplied date and time
      */
-    @Nonnull
     public static DtDateTime ofDateTime(DtDate date, DtTimeS time) {
         if (date.isPriv() || time.isPriv()) {
             return PRIV;
@@ -150,10 +144,8 @@ public class DtDateTime implements Comparable<DtDateTime> {
     }
 
     /** Date part of datetime value */
-    @Nonnull
     private final DtDate date;
     /** Time part of datetime value; valid values between 0-24 hours */
-    @Nonnull
     private final DtTimeS time;
 
     /**
@@ -162,7 +154,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param date - date value
      * @param time - time value; must be 0 for special values and 0-24 for regular dates
      */
-    @Nonnull
     private DtDateTime(DtDate date, DtTimeS time) {
         if (!date.isRegular()) {
             if (time.getSeconds() != 0) {
@@ -183,7 +174,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param dateTime is LocalDateTime value to be converted to DtDateTime
      * @return datetime value corresponding to supplied LocalDateTime
      */
-    @Nonnull
     public static DtDateTime ofLocalDateTime(LocalDateTime dateTime) {
         return new DtDateTime(DtDate.ofLocalDate(dateTime.toLocalDate()), DtTimeS.ofLocalTime(dateTime.toLocalTime()));
     }
@@ -191,7 +181,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
     /**
      * @return instance of {@code DtDateTime} corresponding to current date and time (in default time-zone).
      */
-    @Nonnull
     public static DtDateTime now() {
         // via LocalDateTime to ensure date and time part correspond to same moment
         return ofLocalDateTime(LocalDateTime.now());
@@ -204,7 +193,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param zone is timezone instant is considered to be in
      * @return value representing given instant
      */
-    @Nonnull
     public static DtDateTime ofInstant(Instant instant, ZoneId zone) {
         return ofLocalDateTime(LocalDateTime.ofInstant(instant, zone));
     }
@@ -215,7 +203,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param instant is instant new value represents
      * @return value representing given instant
      */
-    @Nonnull
     public static DtDateTime ofInstant(Instant instant) {
         return ofLocalDateTime(LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
     }
@@ -227,7 +214,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param parser is parser containing text to be read
      * @return datetime value read from parser
      */
-    @Nonnull
     public static DtDateTime parse(StringParser parser) {
         if (!parser.hasNext()) {
             throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
@@ -260,7 +246,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @param text is text in ISO-8601 format for local date (e.g. YYYY-MM-DD)
      * @return date value corresponding to provided text
      */
-    @Nonnull
     public static DtDateTime parse(String text) {
         var parser = new StringParser(text);
         var result = DtDateTime.parse(parser);
@@ -273,7 +258,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
     /**
      * @return value of field date
      */
-    @Nonnull
     public DtDate getDate() {
         return date;
     }
@@ -281,7 +265,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
     /**
      * @return value of field time
      */
-    @Nonnull
     public DtTimeS getTime() {
         if (isPriv()) {
             return DtTimeS.PRIV;
@@ -424,7 +407,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @return a {@code DtDate} based on this date with the days added, not null
      * @throws DateTimeException if the result exceeds the supported date range
      */
-    @Nonnull
     public DtDateTime plusDays(int daysToAdd) {
         if (isPriv() || DtInteger.PRIV.equals(daysToAdd)) {
             return DtDateTime.PRIV;
@@ -458,7 +440,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      * @return a {@code DtDate} based on this date with the days added, not null
      * @throws DateTimeException if the result exceeds the supported date range
      */
-    @Nonnull
     public DtDateTime plusDays(double daysToAdd) {
         if (isPriv() || DtDouble.PRIV.equals(daysToAdd)) {
             return DtDateTime.PRIV;
@@ -518,7 +499,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
      *
      * @return string representation of this value in ISO format
      */
-    @Nonnull
     public String toIso() {
         if (isPriv()) {
             return "1000-01-02T00:00:00";
@@ -538,7 +518,6 @@ public class DtDateTime implements Comparable<DtDateTime> {
     /**
      * @return Provys string representation (format DD.MM.YYYY HH:MI:SS) of {@code DtDateTime} value
      */
-    @Nonnull
     public String toProvysValue() {
         return date.toProvysValue() + " " + time.toProvysValue();
     }

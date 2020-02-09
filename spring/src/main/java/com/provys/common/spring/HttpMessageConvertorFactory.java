@@ -10,11 +10,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
+@SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 class HttpMessageConvertorFactory {
 
     private static final Logger LOG = LogManager.getLogger(HttpMessageConvertorFactory.class);
 
+    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Bean
     public MappingJackson2XmlHttpMessageConverter provysJackson2XmlHttpMessageConverter(
             Jackson2ObjectMapperBuilder builder) {

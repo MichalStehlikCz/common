@@ -1,8 +1,9 @@
 package com.provys.common.exception;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Represents internal exception. This exception can be used in internal checks, where other code should ensure
@@ -25,7 +26,7 @@ public final class InternalException extends ProvysException {
      *             value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
     public InternalException(String message, @Nullable Map<String, String> params, @Nullable Throwable cause) {
-        super(message, params, cause);
+        super(Objects.requireNonNull(message), params, cause);
     }
 
     /**
@@ -63,9 +64,19 @@ public final class InternalException extends ProvysException {
         this(message, (Throwable) null);
     }
 
-    @Nonnull
     @Override
     public String getNameNm() {
         return NAME_NM;
+    }
+
+    /**
+     * Returns the detail message string of this throwable.
+     *
+     * @return the detail message string of this {@code Throwable} instance
+     * (which may be {@code null}).
+     */
+    @Override
+    public String getMessage() {
+        return Objects.requireNonNull(super.getMessage()); // We do not allow creation without message
     }
 }

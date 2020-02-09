@@ -11,6 +11,7 @@
         <module>jackson</module>
         <module>jakarta</module>
         <module>spring</module>
+        <module>parent</module>
     </modules>
     <packaging>pom</packaging>
     <properties>
@@ -49,9 +50,9 @@
                 <scope>import</scope>
             </dependency>
             <dependency>
-                <groupId>com.google.code.findbugs</groupId>
-                <artifactId>jsr305</artifactId>
-                <version>3.0.2</version>
+                <groupId>org.checkerframework</groupId>
+                <artifactId>checker-qual</artifactId>
+                <version>3.1.1</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.woodstox</groupId>
@@ -112,8 +113,23 @@
                     <version>3.8.0</version>
                     <configuration>
                         <release>11</release>
-                        <source>11</source>
-                        <target>11</target>
+                        <compilerArguments>
+                            <Xmaxerrs>10000</Xmaxerrs>
+                            <Xmaxwarns>10000</Xmaxwarns>
+                        </compilerArguments>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.checkerframework</groupId>
+                                <artifactId>checker</artifactId>
+                                <version>3.1.1</version>
+                            </path>
+                        </annotationProcessorPaths>
+                        <annotationProcessors>
+                            <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
+                        </annotationProcessors>
+                        <compilerArgs>
+                            <arg>-J- -add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+                        </compilerArgs>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -133,14 +149,6 @@
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-war-plugin</artifactId>
-                    <version>3.2.0</version>
-                    <configuration>
-                        <failOnMissingWebXml>false</failOnMissingWebXml>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0-M1</version>
                 </plugin>
@@ -148,6 +156,14 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-failsafe-plugin</artifactId>
                     <version>3.0.0-M1</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>integration-test</goal>
+                                <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -171,21 +187,6 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-deploy-plugin</artifactId>
                     <version>3.0.0-M1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.jooq.pro</groupId>
-                    <artifactId>jooq-codegen-maven</artifactId>
-                    <version>3.11.9</version>
-                </plugin>
-                <plugin>
-                    <groupId>io.swagger.core.v3</groupId>
-                    <artifactId>swagger-maven-plugin</artifactId>
-                    <version>2.0.6</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>1.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

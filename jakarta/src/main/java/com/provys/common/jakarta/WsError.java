@@ -2,9 +2,8 @@ package com.provys.common.jakarta;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.bind.annotation.JsonbCreator;
 import javax.json.bind.annotation.JsonbProperty;
 import javax.json.bind.annotation.JsonbPropertyOrder;
@@ -27,14 +26,11 @@ public class WsError {
     @XmlElement(name = "STATUS")
     private final int status;
     @XmlElement(name = "ERROR_NM")
-    @Nullable
-    private final String errorNm;
+    private final @Nullable String errorNm;
     @XmlElement(name = "ERRORMESSAGE")
-    @Nullable
-    private final String message;
+    private final @Nullable String message;
     @XmlElement(name = "ERRORSTACK")
-    @Nullable
-    private final String stack;
+    private final @Nullable String stack;
 
     /**
      * Private constructor used for JAXB deserialization; preferably Jackson is used and it is not needed, but...
@@ -70,27 +66,24 @@ public class WsError {
      * @return value of field errorNm
      */
     @JsonbProperty("ERROR_NM")
-    @Nonnull
-    public Optional<String> getErrorNm() {
-        return Optional.ofNullable(errorNm);
+    public @Nullable String getErrorNm() {
+        return errorNm;
     }
 
     /**
      * @return value of field message
      */
     @JsonbProperty("ERRORMESSAGE")
-    @Nonnull
-    public Optional<String> getMessage() {
-        return Optional.ofNullable(message);
+    public @Nullable String getMessage() {
+        return message;
     }
 
     /**
      * @return value of field stack
      */
     @JsonbProperty("ERRORSTACK")
-    @Nonnull
-    public Optional<String> getStack() {
-        return Optional.ofNullable(stack);
+    public @Nullable String getStack() {
+        return stack;
     }
 
     @Override

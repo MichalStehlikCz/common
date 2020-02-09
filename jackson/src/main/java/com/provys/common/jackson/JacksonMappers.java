@@ -12,8 +12,6 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
-import javax.annotation.Nonnull;
-
 /**
  * Jackson mappers (Json, Xml) that should be used in standard Provys libraries. At the moment it is believed that
  * mappers can be static as Jackson project hopefully solved problems with contention when using mappers simultaneously
@@ -25,7 +23,6 @@ import javax.annotation.Nonnull;
  */
 public class JacksonMappers {
 
-    @Nonnull
     private static final ObjectMapper JSON_MAPPER;
 
     static {
@@ -37,12 +34,10 @@ public class JacksonMappers {
                 .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
     }
 
-    @Nonnull
     public static ObjectMapper getJsonMapper() {
         return JSON_MAPPER;
     }
 
-    @Nonnull
     private static final XmlMapper XML_MAPPER;
 
     static {
@@ -57,7 +52,6 @@ public class JacksonMappers {
                 .registerModules(new Jdk8Module(), new JavaTimeModule());
     }
 
-    @Nonnull
     public static XmlMapper getXmlMapper() {
         return XML_MAPPER;
     }

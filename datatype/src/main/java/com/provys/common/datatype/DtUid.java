@@ -1,8 +1,8 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
-import javax.annotation.Nullable;
 import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;

@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -1192,7 +1191,7 @@ class DtTimeSTest {
     }
 
     @Test
-    void deserializeFromJson() throws IOException {
+    void deserializeFromJson() {
         try {
             assertThat(JacksonMappers.getJsonMapper()
                     .readValue("{\"value\":\"12:25:34\"}", DtTimeSElement.class)
@@ -1224,7 +1223,7 @@ class DtTimeSTest {
     }
 
     @Test
-    void deserializeFromXml() throws IOException {
+    void deserializeFromXml() {
         try {
             assertThat(JacksonMappers.getXmlMapper()
                     .readValue("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +

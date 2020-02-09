@@ -12,7 +12,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.IOException;
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
@@ -362,7 +361,7 @@ class DtDateTest {
     }
 
     @Test
-    void deserializeFromJson() throws IOException {
+    void deserializeFromJson() {
         try {
             DtDateElement result = JacksonMappers.getJsonMapper().readValue(
                     "{\"value\":\"2018-05-12\"}", DtDateElement.class);
@@ -393,7 +392,7 @@ class DtDateTest {
     }
 
     @Test
-    void deserializeFromXml() throws IOException {
+    void deserializeFromXml() {
         try {
             DtDateElement result = JacksonMappers.getXmlMapper().readValue(
                     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
