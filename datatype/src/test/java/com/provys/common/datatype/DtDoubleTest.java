@@ -3,7 +3,6 @@ package com.provys.common.datatype;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
@@ -11,7 +10,6 @@ import static org.assertj.core.api.Assertions.*;
 @SuppressWarnings("unused")
 class DtDoubleTest {
 
-    @Nonnull
     static Stream<Object[]> isValidTest() {
         return Stream.of(
                 new Object[]{15482d, true}
@@ -31,7 +29,6 @@ class DtDoubleTest {
         assertThat(DtDouble.isValid(value)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{15482d, true}
@@ -49,7 +46,6 @@ class DtDoubleTest {
         assertThat(DtDouble.isRegular(value)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidValueTest() {
         return Stream.of(
                 new Object[]{15482d, true}
@@ -118,7 +114,6 @@ class DtDoubleTest {
         assertThat(DtDouble.isMin(value)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isMaxTest() {
         return Stream.of(
                 new Object[]{15482d, false}

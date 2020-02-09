@@ -1,10 +1,9 @@
 package com.provys.common.datatype;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.stream.Stream;
@@ -14,7 +13,6 @@ import static org.assertj.core.api.Assertions.*;
 @SuppressWarnings("unused")
 class ZoneOffsetUtilTest {
 
-    @Nonnull
     static Stream<Object[]> isValidIsoStrictTest() {
         return Stream.of(
                 new Object[]{"Z", true}
@@ -46,7 +44,6 @@ class ZoneOffsetUtilTest {
         assertThat(ZoneOffsetUtil.isValidIsoStrict(text)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidIsoLenientTest() {
         return Stream.of(
                 new Object[]{"Z", true}
@@ -80,7 +77,6 @@ class ZoneOffsetUtilTest {
         assertThat(ZoneOffsetUtil.isValidIsoLenient(text)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> parseIsoTest() {
         return Stream.of(
                 new Object[]{"Z", ZoneOffset.ofHours(0)}

@@ -1,5 +1,7 @@
 package com.provys.common.datatype;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
+
 import java.time.*;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
@@ -523,7 +525,7 @@ public class DtDateTime implements Comparable<DtDateTime> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 

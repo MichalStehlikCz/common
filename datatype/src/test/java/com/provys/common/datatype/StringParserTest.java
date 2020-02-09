@@ -1,10 +1,9 @@
 package com.provys.common.datatype;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.stream.Stream;
@@ -13,10 +12,8 @@ import static com.provys.common.datatype.StringParser.SignHandling.*;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SuppressWarnings("unused")
 class StringParserTest {
 
-    @Nonnull
     static Stream<Object[]> setPosTest() {
         return Stream.of(
                 new Object[]{"abcdefg", 5, null}
@@ -38,7 +35,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> hasNextTest() {
         return Stream.of(
                 new Object[]{"abcdefg", 6, true}
@@ -56,7 +52,6 @@ class StringParserTest {
         assertThat(parser.hasNext()).isEqualTo(hasNext);
     }
 
-    @Nonnull
     static Stream<Object[]> nextTest() {
         return Stream.of(
                 new Object[]{"abcdefg", 6, false, 'g'}
@@ -79,7 +74,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> peekTest() {
         return Stream.of(
                 new Object[]{"abcdefg", 6, false, 'g'}
@@ -102,7 +96,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> currentTest() {
         return Stream.of(
                 new Object[]{"abcdefg", 7, false, 'g'}
@@ -126,7 +119,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readUnsignedIntTest() {
         return Stream.of(
@@ -159,7 +151,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> readUnsignedIntTest2() {
         return Stream.of(
                 new Object[]{"abcdefg", 6, 2, true, 0, 0}
@@ -190,7 +181,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readIntTest() {
         return Stream.of(
@@ -231,7 +221,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readIntTest2() {
         return Stream.of(
@@ -271,7 +260,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readString0Test() {
         return Stream.of(
@@ -295,7 +283,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> readStringTest() {
         return Stream.of(
@@ -320,7 +307,6 @@ class StringParserTest {
         }
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> onTextTest() {
         return Stream.of(
@@ -342,7 +328,6 @@ class StringParserTest {
         assertThat(parser.getPos()).isEqualTo(endPos);
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> isOnTextTest() {
         return Stream.of(
@@ -364,7 +349,6 @@ class StringParserTest {
         assertThat(parser.getPos()).isEqualTo(endPos);
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> onTextIgnoreCaseTest() {
         return Stream.of(
@@ -386,7 +370,6 @@ class StringParserTest {
         assertThat(parser.getPos()).isEqualTo(endPos);
     }
 
-    @Nonnull
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
     static Stream<Object[]> isOnTextIgnoreCaseTest() {
         return Stream.of(

@@ -3,7 +3,6 @@ package com.provys.common.datatype;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.util.stream.Stream;
@@ -13,7 +12,6 @@ import static org.assertj.core.api.Assertions.*;
 @SuppressWarnings("unused")
 class JsonbDtDateAdapterTest {
 
-    @Nonnull
     static Stream<Object[]> toJsonTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), "\"1989-11-25\""}
@@ -31,7 +29,6 @@ class JsonbDtDateAdapterTest {
         assertThat(jsonb.toJson(value)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> fromJsonTest() {
         return Stream.of(
                 new Object[]{"\"1989-11-25\"", DtDate.of(1989, 11, 25)}

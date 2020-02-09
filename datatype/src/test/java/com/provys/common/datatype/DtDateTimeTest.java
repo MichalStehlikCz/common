@@ -1,10 +1,9 @@
 package com.provys.common.datatype;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.util.stream.Stream;
 
@@ -13,7 +12,6 @@ import static org.assertj.core.api.Assertions.*;
 @SuppressWarnings("unused")
 class DtDateTimeTest {
 
-    @Nonnull
     static Stream<Object[]> ofDateTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25)}
@@ -34,7 +32,6 @@ class DtDateTimeTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> ofDateTimeTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), DtTimeS.ofSeconds(58421),
@@ -67,7 +64,6 @@ class DtDateTimeTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> ofLocalDateTimeTest() {
         return Stream.of(
                 new Object[]{LocalDateTime.of(1989, 11, 25, 15, 20),
@@ -84,7 +80,6 @@ class DtDateTimeTest {
         assertThat(DtDateTime.ofLocalDateTime(value)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> parseTest() {
         return Stream.of(
                 new Object[]{"2005-07-15T03:11:54",
@@ -113,7 +108,6 @@ class DtDateTimeTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> getTimeBaseTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 28, 1, 25),
@@ -141,7 +135,6 @@ class DtDateTimeTest {
         assertThat(value.getTime(baseDate)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtDateTime.ofDate(DtDate.of(1989, 11, 25)), true}
@@ -158,7 +151,6 @@ class DtDateTimeTest {
         assertThat(value.isRegular()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidValueTest() {
         return Stream.of(
                 new Object[]{DtDateTime.ofDate(DtDate.of(1989, 11, 25)), true}
@@ -175,7 +167,6 @@ class DtDateTimeTest {
         assertThat(value.isValidValue()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getLocalDateTimeTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 25, 15, 20),
@@ -191,7 +182,6 @@ class DtDateTimeTest {
         assertThat(value.getLocalDateTime()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getYearTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 25), 1989}
@@ -206,7 +196,6 @@ class DtDateTimeTest {
         assertThat(value.getYear()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getMonthValueTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 25), 11}
@@ -221,7 +210,6 @@ class DtDateTimeTest {
         assertThat(value.getMonthValue()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getDayOfMonthTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 25), 25}
@@ -236,7 +224,6 @@ class DtDateTimeTest {
         assertThat(value.getDayOfMonth()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> plusDaysTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 25, 10, 5), 10,
@@ -270,7 +257,6 @@ class DtDateTimeTest {
         assertThat(value.plusDays(days)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> plusDaysDTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 25, 10, 5), 27d/24d,
@@ -300,7 +286,6 @@ class DtDateTimeTest {
         assertThat(value.plusDays(days)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> minusTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 26, 13, 5),
@@ -334,7 +319,6 @@ class DtDateTimeTest {
         assertThat(first.minus(second)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toIsoTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(2012, 10, 25, 12, 25), "2012-10-25T12:25:00"}
@@ -353,7 +337,6 @@ class DtDateTimeTest {
         assertThat(dateTime.toIso()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toProvysValueTest() {
         return Stream.of(
                 new Object[]{DtDateTime.of(1989, 11, 26, 13, 5), "26.11.1989 13:05:00"}

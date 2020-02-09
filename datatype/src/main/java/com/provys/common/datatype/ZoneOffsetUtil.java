@@ -5,6 +5,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
 import java.util.regex.Pattern;
 
+import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
+
 /**
  * Utility class that provides methods missing in Java ZoneOffset implementation (like validation without raising
  * exception)
@@ -70,7 +72,7 @@ public class ZoneOffsetUtil {
             }
             return ZoneOffset.of(text);
         } catch (DateTimeException e) {
-            throw new DateTimeParseException(e.getMessage(), text, 0, e);
+            throw new DateTimeParseException(castNonNull(e.getMessage()), text, 0, e);
         }
     }
 

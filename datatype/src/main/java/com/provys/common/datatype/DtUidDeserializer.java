@@ -15,9 +15,6 @@ public class DtUidDeserializer extends JsonDeserializer<DtUid> {
     @Override
     public DtUid deserialize(JsonParser parser, DeserializationContext deserializationContext)
             throws IOException {
-        if (parser.currentToken() == JsonToken.VALUE_NULL) {
-            return null;
-        }
         return DtUid.valueOf(parser.getBigIntegerValue());
     }
 }

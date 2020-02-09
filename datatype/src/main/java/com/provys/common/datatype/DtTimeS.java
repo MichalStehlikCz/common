@@ -11,6 +11,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
+import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
+
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds)
  */
@@ -476,7 +478,8 @@ public class DtTimeS implements Comparable<DtTimeS> {
             throw new DateTimeParseException("End of string reached prematurely",
                     parser.getString(), parser.getPos());
         } catch (DateTimeException | InternalException e) {
-            throw new DateTimeParseException(e.getMessage(),
+            var message = e.getMessage();
+            throw new DateTimeParseException((message == null) ? "Error parsing time" : message,
                     parser.getString(), parser.getPos());
         }
     }
@@ -580,27 +583,38 @@ public class DtTimeS implements Comparable<DtTimeS> {
         if (!matcher.matches()) {
             throw new DateTimeParseException("Supplied expression does not match any recognised time format", text, 0);
         }
-        boolean negative = matcher.group(1).equals("-");
+        boolean negative = castNonNull(matcher.group(1)).equals("-"); // expression has been matched
         if (negative && !allowNegative) {
             throw new DateTimeParseException("Negative time not allowed", text, 0);
         }
-        int hours = Integer.parseInt((matcher.group(2) != null) ? matcher.group(2) : matcher.group(6));
-        int minutes = Integer.parseInt((matcher.group(3) != null) ? matcher.group(3) : matcher.group(7));
+        // when expression is matched, it must have matched groups 2+3 or 6+7
+        var group2 = matcher.group(2);
+        int hours = Integer.parseInt((group2 != null) ? group2 : castNonNull(matcher.group(6)));
+        var group3 = matcher.group(3);
+        int minutes = Integer.parseInt((group3 != null) ? group3 : castNonNull(matcher.group(7)));
         int seconds;
-        if (matcher.group(4) != null) {
-            seconds = Integer.parseInt(matcher.group(4));
-        } else if (matcher.group(8) != null) {
-            seconds = Integer.parseInt(matcher.group(8));
+        var group4 = matcher.group(4);
+        if (group4 != null) {
+            seconds = Integer.parseInt(group4);
         } else {
-            seconds = 0;
+            var group8 = matcher.group(8);
+            if (group8 != null) {
+                seconds = Integer.parseInt(group8);
+            } else {
+                seconds = 0;
+            }
         }
         int nanoSeconds;
-        if (matcher.group(5) != null) {
-            nanoSeconds = parseNanoGroup(matcher.group(5));
-        } else if (matcher.group(9) != null) {
-            nanoSeconds = parseNanoGroup(matcher.group(9));
+        var group5 = matcher.group(5);
+        if (group5 != null) {
+            nanoSeconds = parseNanoGroup(group5);
         } else {
-            nanoSeconds = 0;
+            var group9 = matcher.group(9);
+            if (group9 != null) {
+                nanoSeconds = parseNanoGroup(group9);
+            } else {
+                nanoSeconds = 0;
+            }
         }
         return DtTimeS.ofHourToNano(negative, hours, minutes, seconds, nanoSeconds);
     }
@@ -663,9 +677,10 @@ public class DtTimeS implements Comparable<DtTimeS> {
             throw new DateTimeParseException("Supplied expression " + text + " does not match any recognised time " +
                     "with offset format", text, 0);
         }
-        var time = parseIsoTime(matcher.group(1));
-        if (matcher.group(2) != null) {
-            time = shiftFromOffset(time, date, ZoneOffsetUtil.parseIso(matcher.group(2)), localZoneId);
+        var time = parseIsoTime(castNonNull(matcher.group(1))); // valid when matcher matches
+        var group2 = matcher.group(2);
+        if (group2 != null) {
+            time = shiftFromOffset(time, date, ZoneOffsetUtil.parseIso(group2), localZoneId);
         }
         return time;
     }
@@ -1264,7 +1279,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(@Nullable Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 

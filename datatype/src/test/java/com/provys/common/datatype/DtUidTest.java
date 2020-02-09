@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import javax.xml.bind.JAXBContext;
@@ -25,7 +24,6 @@ import static org.assertj.core.api.Assertions.*;
 
 class DtUidTest {
 
-    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtUid.valueOf("25"), true}
@@ -43,7 +41,6 @@ class DtUidTest {
         assertThat(value.isRegular()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isMultilineTest() {
         return Stream.of(
                 new Object[]{DtUid.valueOf("25"), false}
@@ -61,7 +58,6 @@ class DtUidTest {
         assertThat(value.isMultiline()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isPrivTest() {
         return Stream.of(
                 new Object[]{DtUid.valueOf("25"), false}
@@ -79,7 +75,6 @@ class DtUidTest {
         assertThat(value.isPriv()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isMETest() {
         return Stream.of(
                 new Object[]{DtUid.valueOf("25"), false}
@@ -97,7 +92,6 @@ class DtUidTest {
         assertThat(value.isME()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toStringTest() {
         return Stream.of(
                 new Object[]{DtUid.valueOf("25"), "ID25"}

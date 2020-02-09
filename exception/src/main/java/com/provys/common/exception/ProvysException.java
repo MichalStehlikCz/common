@@ -58,7 +58,7 @@ public abstract class ProvysException extends RuntimeException {
      * @param cause the cause (which is saved for later retrieval by the {@link #getCause()} method). (A @{code null}
      *             value is permitted, and indicates that the cause is nonexistent or unknown.)
      */
-    public ProvysException(String message, @Nullable Throwable cause) {
+    public ProvysException(String message, Throwable cause) {
         this(message, null, cause);
     }
 
@@ -71,7 +71,7 @@ public abstract class ProvysException extends RuntimeException {
         this(message, null, null);
     }
 
-    /**
+     /**
      * @return internal name of exception for mapping with provys ERROR object
      */
     public abstract String getNameNm();
@@ -83,6 +83,17 @@ public abstract class ProvysException extends RuntimeException {
      */
     public Map<String, String> getParams() {
         return params;
+    }
+
+    /**
+     * Returns the detail message string of this throwable.
+     *
+     * @return the detail message string of this {@code Throwable} instance
+     * (which may be {@code null}).
+     */
+    @Override
+    public String getMessage() {
+        return Objects.requireNonNull(super.getMessage()); // We do not allow creation without message
     }
 
     @Override

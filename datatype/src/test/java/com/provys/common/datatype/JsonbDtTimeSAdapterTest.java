@@ -1,10 +1,9 @@
 package com.provys.common.datatype;
 
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 import java.util.stream.Stream;
@@ -15,7 +14,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SuppressWarnings("unused")
 class JsonbDtTimeSAdapterTest {
 
-    @Nonnull
     static Stream<Object[]> toJsonTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 25, 25), "\"12:25:25\""}
@@ -37,7 +35,6 @@ class JsonbDtTimeSAdapterTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> fromJsonTest() {
         return Stream.of(
                 new Object[]{"\"12:25:25\"", DtTimeS.ofHourToSecond(12, 25, 25)}

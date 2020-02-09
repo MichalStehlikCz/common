@@ -68,15 +68,4 @@ public final class InternalException extends ProvysException {
     public String getNameNm() {
         return NAME_NM;
     }
-
-    /**
-     * Returns the detail message string of this throwable.
-     *
-     * @return the detail message string of this {@code Throwable} instance
-     * (which may be {@code null}).
-     */
-    @Override
-    public String getMessage() {
-        return Objects.requireNonNull(super.getMessage()); // We do not allow creation without message
-    }
 }

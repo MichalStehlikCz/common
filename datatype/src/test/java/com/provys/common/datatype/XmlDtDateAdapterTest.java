@@ -18,6 +18,7 @@ class XmlDtDateAdapterTest {
 
     @XmlRootElement(name = "DtDateElement")
     static class DtDateElement {
+        
         private DtDate value;
 
         /**

@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.provys.common.jackson.JacksonMappers;
 import org.assertj.core.api.Fail;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.*;
@@ -64,7 +63,6 @@ class DtDateTest {
                 dateTime.getDayOfMonth()));
     }
 
-    @Nonnull
     static Stream<Object[]> parseTest() {
         return Stream.of(
                 new Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
@@ -86,7 +84,6 @@ class DtDateTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> parseIsoTest() {
         return Stream.of(
                 new Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
@@ -112,7 +109,6 @@ class DtDateTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> ofProvysValueTest() {
         return Stream.of(
                 new Object[]{"25.11.1989", LocalDate.of(1989, 11, 25)}
@@ -136,7 +132,6 @@ class DtDateTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), true}
@@ -153,7 +148,6 @@ class DtDateTest {
         assertThat(date.isRegular()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidValueTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), true}
@@ -185,7 +179,6 @@ class DtDateTest {
         assertThat(DtDate.of(1987, 12, 5).getDayOfMonth()).isEqualTo(5);
     }
 
-    @Nonnull
     static Stream<Object[]> plusDaysTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 11, 25), 10,
@@ -209,7 +202,6 @@ class DtDateTest {
         assertThat(date.plusDays(days)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> minusTest() {
         return Stream.of(
                 new Object[]{DtDate.of(1989, 12, 5), DtDate.of(1989, 11, 25), 10}
@@ -232,7 +224,6 @@ class DtDateTest {
         assertThat(date.minus(second)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toIsoTest() {
         return Stream.of(
                 new Object[]{DtDate.of(2012, 10, 25), "2012-10-25"}
@@ -250,7 +241,6 @@ class DtDateTest {
         assertThat(date.toIso()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toProvysValueTest() {
         return Stream.of(
                 new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
@@ -265,7 +255,6 @@ class DtDateTest {
         assertThat(date.toProvysValue()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> equalsTest() {
         return Stream.of(
                 new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
@@ -289,7 +278,6 @@ class DtDateTest {
                 isEqualTo(DtDate.of(1989, (short) 11, (short) 25).hashCode());
     }
 
-    @Nonnull
     static Stream<Object[]> compareToTest() {
         return Stream.of(
                 new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
@@ -307,7 +295,6 @@ class DtDateTest {
         assertThat(date.compareTo(other)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toStringTest() {
         return Stream.of(
                 new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),

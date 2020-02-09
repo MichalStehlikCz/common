@@ -4,12 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.provys.common.jackson.JacksonMappers;
 import org.assertj.core.api.Fail;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.time.LocalTime;
@@ -22,7 +21,6 @@ import static org.assertj.core.api.Assertions.*;
 
 class DtTimeSTest {
 
-    @Nonnull
     static Stream<Object[]> ofLocalTimeTest() {
         return Stream.of(
                 new Object[]{LocalTime.of(12, 15, 24),
@@ -47,7 +45,6 @@ class DtTimeSTest {
         assertThat(DtTimeS.zero()).isEqualTo(DtTimeS.ofSeconds(0));
     }
 
-    @Nonnull
     static Stream<Object[]> parseTest() {
         return Stream.of(
                 new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
@@ -80,7 +77,6 @@ class DtTimeSTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> isValidIsoTimeStrictTest() {
         return Stream.of(
                 new Object[]{"12:15:24", true}
@@ -124,7 +120,6 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoTimeStrict(text)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidIsoTimeLenientTest() {
         return Stream.of(
                 new Object[]{"12:15:24", true}
@@ -169,7 +164,6 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoTimeLenient(text)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> parseIsoTimeTest() {
         return Stream.of(
                 new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
@@ -218,7 +212,6 @@ class DtTimeSTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> isValidIsoTimeInfoLenientTest() {
         return Stream.of(
                 new Object[]{"12:15:24", false, true}
@@ -264,7 +257,6 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoTimeInfoLenient(text, allowNegative)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> parseIsoTimeInfoTest() {
         return Stream.of(
                 new Object[]{"12:15:24", false, DtTimeS.ofHourToSecond(12, 15, 24)}
@@ -314,7 +306,6 @@ class DtTimeSTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> isValidIsoStrictTest() {
         return Stream.of(
                 new Object[]{"12:15:24", true}
@@ -362,7 +353,6 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoStrict(text)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidIsoLenientTest() {
         return Stream.of(
                 new Object[]{"12:15:24", true}
@@ -410,7 +400,6 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoLenient(text)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> parseIsoTest() {
         return Stream.of(
                 new Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
@@ -507,7 +496,6 @@ class DtTimeSTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> ofDaysToNanoErrorTest() {
         return Stream.of(
                 new Object[]{0, 25, 0, 0, 0, ".*hours.*24.*"}
@@ -528,7 +516,6 @@ class DtTimeSTest {
                 .hasMessageMatching(message);
     }
 
-    @Nonnull
     static Stream<Object[]> ofProvysValueTest() {
         return Stream.of(
                 new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
@@ -561,7 +548,6 @@ class DtTimeSTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> isRegularTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), true}
@@ -578,7 +564,6 @@ class DtTimeSTest {
         assertThat(value.isRegular()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isValidValueTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), true}
@@ -595,7 +580,6 @@ class DtTimeSTest {
         assertThat(value.isValidValue()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isPrivTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
@@ -612,7 +596,6 @@ class DtTimeSTest {
         assertThat(value.isPriv()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isMETest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
@@ -629,7 +612,6 @@ class DtTimeSTest {
         assertThat(value.isME()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isMinTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
@@ -646,7 +628,6 @@ class DtTimeSTest {
         assertThat(value.isMin()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> isMaxTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToMinute(12, 25), false}
@@ -663,7 +644,6 @@ class DtTimeSTest {
         assertThat(value.isMax()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> plusDaysTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 12.4/86400d,
@@ -695,7 +675,6 @@ class DtTimeSTest {
         assertThat(value.plusDays(plusDays)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getDaysTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 0}
@@ -718,7 +697,6 @@ class DtTimeSTest {
         assertThat(value.getDays()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toDaysTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
@@ -741,7 +719,6 @@ class DtTimeSTest {
         assertThat(value.toDays()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getTime24Test() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
@@ -770,7 +747,6 @@ class DtTimeSTest {
         assertThat(value.getTime24()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getHoursTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 12}
@@ -793,7 +769,6 @@ class DtTimeSTest {
         assertThat(value.getHours()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getHours24Test() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 12}
@@ -816,7 +791,6 @@ class DtTimeSTest {
         assertThat(value.getHours24()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toHoursTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
@@ -839,7 +813,6 @@ class DtTimeSTest {
         assertThat(value.toHours()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getMinutesTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 15}
@@ -862,7 +835,6 @@ class DtTimeSTest {
         assertThat(value.getMinutes()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getMinutes24Test() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 15}
@@ -885,7 +857,6 @@ class DtTimeSTest {
         assertThat(value.getMinutes24()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toMinutesTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
@@ -908,7 +879,6 @@ class DtTimeSTest {
         assertThat(value.toMinutes()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getSecondsTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 24}
@@ -931,7 +901,6 @@ class DtTimeSTest {
         assertThat(value.getSeconds()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> getSeconds24Test() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), 24}
@@ -954,7 +923,6 @@ class DtTimeSTest {
         assertThat(value.getSeconds24()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toSecondsTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
@@ -977,7 +945,6 @@ class DtTimeSTest {
         assertThat(value.toSeconds()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toLocalTimeTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
@@ -1002,7 +969,6 @@ class DtTimeSTest {
         }
     }
 
-    @Nonnull
     static Stream<Object[]> toIsoTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}
@@ -1021,7 +987,6 @@ class DtTimeSTest {
         assertThat(value.toIso()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toIso24ETest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), true, "12:15:24"}
@@ -1046,7 +1011,6 @@ class DtTimeSTest {
         assertThat(value.toIso24(endTime)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toIso24Test() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}
@@ -1065,7 +1029,6 @@ class DtTimeSTest {
         assertThat(value.toIso24()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toIso24ZTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), ZoneOffset.of("Z"), true,
@@ -1110,7 +1073,6 @@ class DtTimeSTest {
         assertThat(value.toIso24(zoneOffset, endTime, date, localZoneId)).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toProvysValueTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}
@@ -1129,7 +1091,6 @@ class DtTimeSTest {
         assertThat(value.toProvysValue()).isEqualTo(result);
     }
 
-    @Nonnull
     static Stream<Object[]> toStringTest() {
         return Stream.of(
                 new Object[]{DtTimeS.ofHourToSecond(12, 15, 24), "12:15:24"}

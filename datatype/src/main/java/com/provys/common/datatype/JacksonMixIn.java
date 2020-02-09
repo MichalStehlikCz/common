@@ -1,6 +1,5 @@
 package com.provys.common.datatype;
 
-import com.fasterxml.jackson.core.Version;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
@@ -9,8 +8,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 @SuppressWarnings({"WeakerAccess", "unused"})
 public class JacksonMixIn extends SimpleModule {
+    @SuppressWarnings("nullness")
     public JacksonMixIn() {
-        super("ProvysDtMixIn", new Version(1, 0, 0, null, null, null));
+        super("ProvysDtMixIn");
         setMixInAnnotation(DtDate.class, DtDateMixIn.class);
         setMixInAnnotation(DtTimeS.class, DtTimeSMixIn.class);
         setMixInAnnotation(DtUid.class, DtUidMixIn.class);
