@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.provys.common.jackson.JacksonMappers;
 import org.assertj.core.api.Fail;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -27,8 +28,8 @@ class DtDateTest {
     }
 
     @Test
+    @SuppressWarnings("nullness") // we want to test passing null even though it is not allowed by checker framework
     void ofLocalDateNullTest() {
-        //noinspection ConstantConditions
         assertThatThrownBy(() -> DtDate.ofLocalDate(null)).isInstanceOf(NullPointerException.class);
     }
 
@@ -63,14 +64,14 @@ class DtDateTest {
                 dateTime.getDayOfMonth()));
     }
 
-    static Stream<Object[]> parseTest() {
+    static Stream<@Nullable Object[]> parseTest() {
         return Stream.of(
-                new Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
-                , new Object[]{"1989:21:25", null}
-                , new Object[]{"1989-21:25", null}
-                , new Object[]{"1989-21", null}
-                , new Object[]{"1989-1-1", null}
-                , new Object[]{"1989-11-25Z", null}
+                new @Nullable Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989:21:25", null}
+                , new @Nullable Object[]{"1989-21:25", null}
+                , new @Nullable Object[]{"1989-21", null}
+                , new @Nullable Object[]{"1989-1-1", null}
+                , new @Nullable Object[]{"1989-11-25Z", null}
         );
     }
 
@@ -84,18 +85,18 @@ class DtDateTest {
         }
     }
 
-    static Stream<Object[]> parseIsoTest() {
+    static Stream<@Nullable Object[]> parseIsoTest() {
         return Stream.of(
-                new Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
-                , new Object[]{"1989:21:25", null}
-                , new Object[]{"1989-21:25", null}
-                , new Object[]{"1989-21", null}
-                , new Object[]{"1989-1-1", null}
-                , new Object[]{"1989-11-25Z", DtDate.of(1989, 11, 25)}
-                , new Object[]{"1989-11-25T00:00:00.000Z", DtDate.of(1989, 11, 25)}
-                , new Object[]{"1989-11-25T00:00:00,000Z", DtDate.of(1989, 11, 25)}
-                , new Object[]{"1989-11-25T00:00:00Z", DtDate.of(1989, 11, 25)}
-                , new Object[]{"1989-11-25T00:00Z", DtDate.of(1989, 11, 25)}
+                new @Nullable Object[]{"1989-11-25", DtDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989:21:25", null}
+                , new @Nullable Object[]{"1989-21:25", null}
+                , new @Nullable Object[]{"1989-21", null}
+                , new @Nullable Object[]{"1989-1-1", null}
+                , new @Nullable Object[]{"1989-11-25Z", DtDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989-11-25T00:00:00.000Z", DtDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989-11-25T00:00:00,000Z", DtDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989-11-25T00:00:00Z", DtDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989-11-25T00:00Z", DtDate.of(1989, 11, 25)}
         );
     }
 
@@ -109,16 +110,16 @@ class DtDateTest {
         }
     }
 
-    static Stream<Object[]> ofProvysValueTest() {
+    static Stream<@Nullable Object[]> ofProvysValueTest() {
         return Stream.of(
-                new Object[]{"25.11.1989", LocalDate.of(1989, 11, 25)}
-                , new Object[]{"25.11.1989 00:00:00", LocalDate.of(1989, 11, 25)}
-                , new Object[]{"1989-01-01", null}
-                , new Object[]{"25.1.2018", null}
-                , new Object[]{"2.01.2018", null}
-                , new Object[]{"02.01.2018 05:00:00", null}
-                , new Object[]{"02.01.2018 00:00", null}
-                , new Object[]{null, null}
+                new @Nullable Object[]{"25.11.1989", LocalDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"25.11.1989 00:00:00", LocalDate.of(1989, 11, 25)}
+                , new @Nullable Object[]{"1989-01-01", null}
+                , new @Nullable Object[]{"25.1.2018", null}
+                , new @Nullable Object[]{"2.01.2018", null}
+                , new @Nullable Object[]{"02.01.2018 05:00:00", null}
+                , new @Nullable Object[]{"02.01.2018 00:00", null}
+                , new @Nullable Object[]{null, null}
         );
     }
 
@@ -132,13 +133,13 @@ class DtDateTest {
         }
     }
 
-    static Stream<Object[]> isRegularTest() {
+    static Stream<@Nullable Object[]> isRegularTest() {
         return Stream.of(
-                new Object[]{DtDate.of(1989, 11, 25), true}
-                , new Object[]{DtDate.MIN, false}
-                , new Object[]{DtDate.MAX, false}
-                , new Object[]{DtDate.PRIV, false}
-                , new Object[]{DtDate.ME, false}
+                new @Nullable Object[]{DtDate.of(1989, 11, 25), true}
+                , new @Nullable Object[]{DtDate.MIN, false}
+                , new @Nullable Object[]{DtDate.MAX, false}
+                , new @Nullable Object[]{DtDate.PRIV, false}
+                , new @Nullable Object[]{DtDate.ME, false}
         );
     }
 
@@ -148,13 +149,13 @@ class DtDateTest {
         assertThat(date.isRegular()).isEqualTo(result);
     }
 
-    static Stream<Object[]> isValidValueTest() {
+    static Stream<@Nullable Object[]> isValidValueTest() {
         return Stream.of(
-                new Object[]{DtDate.of(1989, 11, 25), true}
-                , new Object[]{DtDate.MIN, true}
-                , new Object[]{DtDate.MAX, true}
-                , new Object[]{DtDate.PRIV, false}
-                , new Object[]{DtDate.ME, false}
+                new @Nullable Object[]{DtDate.of(1989, 11, 25), true}
+                , new @Nullable Object[]{DtDate.MIN, true}
+                , new @Nullable Object[]{DtDate.MAX, true}
+                , new @Nullable Object[]{DtDate.PRIV, false}
+                , new @Nullable Object[]{DtDate.ME, false}
         );
     }
 
@@ -179,20 +180,20 @@ class DtDateTest {
         assertThat(DtDate.of(1987, 12, 5).getDayOfMonth()).isEqualTo(5);
     }
 
-    static Stream<Object[]> plusDaysTest() {
+    static Stream<@Nullable Object[]> plusDaysTest() {
         return Stream.of(
-                new Object[]{DtDate.of(1989, 11, 25), 10,
+                new @Nullable Object[]{DtDate.of(1989, 11, 25), 10,
                         DtDate.of(1989, 12, 5)}
-                , new Object[]{DtDate.of(1989, 11, 25), -10,
+                , new @Nullable Object[]{DtDate.of(1989, 11, 25), -10,
                         DtDate.of(1989, 11, 15)}
-                , new Object[]{DtDate.of(2011, 12, 31), 1,
+                , new @Nullable Object[]{DtDate.of(2011, 12, 31), 1,
                         DtDate.of(2012, 1, 1)}
-                , new Object[]{DtDate.of(2011, 1, 1), -1,
+                , new @Nullable Object[]{DtDate.of(2011, 1, 1), -1,
                         DtDate.of(2010, 12, 31)}
-                , new Object[]{DtDate.PRIV, -1, DtDate.PRIV}
-                , new Object[]{DtDate.ME, -1, DtDate.ME}
-                , new Object[]{DtDate.MIN, -1, DtDate.MIN}
-                , new Object[]{DtDate.MAX, -1, DtDate.MAX}
+                , new @Nullable Object[]{DtDate.PRIV, -1, DtDate.PRIV}
+                , new @Nullable Object[]{DtDate.ME, -1, DtDate.ME}
+                , new @Nullable Object[]{DtDate.MIN, -1, DtDate.MIN}
+                , new @Nullable Object[]{DtDate.MAX, -1, DtDate.MAX}
         );
     }
 
@@ -202,19 +203,19 @@ class DtDateTest {
         assertThat(date.plusDays(days)).isEqualTo(result);
     }
 
-    static Stream<Object[]> minusTest() {
+    static Stream<@Nullable Object[]> minusTest() {
         return Stream.of(
-                new Object[]{DtDate.of(1989, 12, 5), DtDate.of(1989, 11, 25), 10}
-                , new Object[]{DtDate.of(1989, 11, 15), DtDate.of(1989, 11, 25), -10}
-                , new Object[]{DtDate.of(2012, 1, 1), DtDate.of(2011, 12, 31), 1}
-                , new Object[]{DtDate.of(2010, 12, 31), DtDate.of(2011, 1, 1), -1}
-                , new Object[]{DtDate.of(2010, 12, 31), DtDate.PRIV, DtInteger.PRIV}
-                , new Object[]{DtDate.PRIV, DtDate.ME, DtInteger.PRIV}
-                , new Object[]{DtDate.ME, DtDate.of(2012, 1, 1), DtInteger.ME}
-                , new Object[]{DtDate.MIN, DtDate.of(2010, 12, 31), DtInteger.MIN}
-                , new Object[]{DtDate.MAX, DtDate.of(2010, 12, 31), DtInteger.MAX}
-                , new Object[]{DtDate.of(2010, 12, 31), DtDate.MIN, DtInteger.MAX}
-                , new Object[]{DtDate.of(2010, 12, 31), DtDate.MAX, DtInteger.MIN}
+                new @Nullable Object[]{DtDate.of(1989, 12, 5), DtDate.of(1989, 11, 25), 10}
+                , new @Nullable Object[]{DtDate.of(1989, 11, 15), DtDate.of(1989, 11, 25), -10}
+                , new @Nullable Object[]{DtDate.of(2012, 1, 1), DtDate.of(2011, 12, 31), 1}
+                , new @Nullable Object[]{DtDate.of(2010, 12, 31), DtDate.of(2011, 1, 1), -1}
+                , new @Nullable Object[]{DtDate.of(2010, 12, 31), DtDate.PRIV, DtInteger.PRIV}
+                , new @Nullable Object[]{DtDate.PRIV, DtDate.ME, DtInteger.PRIV}
+                , new @Nullable Object[]{DtDate.ME, DtDate.of(2012, 1, 1), DtInteger.ME}
+                , new @Nullable Object[]{DtDate.MIN, DtDate.of(2010, 12, 31), DtInteger.MIN}
+                , new @Nullable Object[]{DtDate.MAX, DtDate.of(2010, 12, 31), DtInteger.MAX}
+                , new @Nullable Object[]{DtDate.of(2010, 12, 31), DtDate.MIN, DtInteger.MAX}
+                , new @Nullable Object[]{DtDate.of(2010, 12, 31), DtDate.MAX, DtInteger.MIN}
         );
     }
 
@@ -224,14 +225,14 @@ class DtDateTest {
         assertThat(date.minus(second)).isEqualTo(result);
     }
 
-    static Stream<Object[]> toIsoTest() {
+    static Stream<@Nullable Object[]> toIsoTest() {
         return Stream.of(
-                new Object[]{DtDate.of(2012, 10, 25), "2012-10-25"}
-                , new Object[]{DtDate.of(2025, (short) 11, (short) 30), "2025-11-30"}
-                , new Object[]{DtDate.PRIV, "1000-01-02"}
-                , new Object[]{DtDate.ME, "1000-01-01"}
-                , new Object[]{DtDate.MIN, "1000-01-03"}
-                , new Object[]{DtDate.MAX, "5000-01-01"}
+                new @Nullable Object[]{DtDate.of(2012, 10, 25), "2012-10-25"}
+                , new @Nullable Object[]{DtDate.of(2025, (short) 11, (short) 30), "2025-11-30"}
+                , new @Nullable Object[]{DtDate.PRIV, "1000-01-02"}
+                , new @Nullable Object[]{DtDate.ME, "1000-01-01"}
+                , new @Nullable Object[]{DtDate.MIN, "1000-01-03"}
+                , new @Nullable Object[]{DtDate.MAX, "5000-01-01"}
         );
     }
 
@@ -241,11 +242,11 @@ class DtDateTest {
         assertThat(date.toIso()).isEqualTo(result);
     }
 
-    static Stream<Object[]> toProvysValueTest() {
+    static Stream<@Nullable Object[]> toProvysValueTest() {
         return Stream.of(
-                new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
+                new @Nullable Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
                         "25.11.1989"}
-                , new Object[]{DtDate.of(2012, (short) 11, (short) 30), "30.11.2012"}
+                , new @Nullable Object[]{DtDate.of(2012, (short) 11, (short) 30), "30.11.2012"}
         );
     }
 
@@ -255,13 +256,13 @@ class DtDateTest {
         assertThat(date.toProvysValue()).isEqualTo(result);
     }
 
-    static Stream<Object[]> equalsTest() {
+    static Stream<@Nullable Object[]> equalsTest() {
         return Stream.of(
-                new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
+                new @Nullable Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
                         DtDate.of(1989, (short) 11, (short) 25), true}
-                , new Object[]{DtDate.of(1989, (short) 11, (short) 25), null, false}
-                , new Object[]{DtDate.of(1989, (short) 11, (short) 25), "1989-11-25", false}
-                , new Object[]{DtDate.of(1989, (short) 11, (short) 25),
+                , new @Nullable Object[]{DtDate.of(1989, (short) 11, (short) 25), null, false}
+                , new @Nullable Object[]{DtDate.of(1989, (short) 11, (short) 25), "1989-11-25", false}
+                , new @Nullable Object[]{DtDate.of(1989, (short) 11, (short) 25),
                         DtDate.of(1989, (short) 11, (short) 24), false}
         );
     }
@@ -278,13 +279,13 @@ class DtDateTest {
                 isEqualTo(DtDate.of(1989, (short) 11, (short) 25).hashCode());
     }
 
-    static Stream<Object[]> compareToTest() {
+    static Stream<@Nullable Object[]> compareToTest() {
         return Stream.of(
-                new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
+                new @Nullable Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
                         DtDate.of(1989, (short) 11, (short) 25), 0}
-                , new Object[]{DtDate.of(1989, (short) 11, (short) 25),
+                , new @Nullable Object[]{DtDate.of(1989, (short) 11, (short) 25),
                         DtDate.of(1989, (short) 11, (short) 24), 1}
-                , new Object[]{DtDate.of(1989, (short) 10, (short) 25),
+                , new @Nullable Object[]{DtDate.of(1989, (short) 10, (short) 25),
                         DtDate.of(1989, (short) 11, (short) 24), -1}
         );
     }
@@ -295,11 +296,11 @@ class DtDateTest {
         assertThat(date.compareTo(other)).isEqualTo(result);
     }
 
-    static Stream<Object[]> toStringTest() {
+    static Stream<@Nullable Object[]> toStringTest() {
         return Stream.of(
-                new Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
+                new @Nullable Object[]{DtDate.ofLocalDate(LocalDate.of(1989, 11, 25)),
                         "1989-11-25"}
-                , new Object[]{DtDate.of(2012, (short) 11, (short) 30), "2012-11-30"}
+                , new @Nullable Object[]{DtDate.of(2012, (short) 11, (short) 30), "2012-11-30"}
         );
     }
 
@@ -311,13 +312,14 @@ class DtDateTest {
 
     @XmlRootElement(name = "DtDateElement")
     private static class DtDateElement {
-        private DtDate value;
+
+        private @MonotonicNonNull DtDate value;
 
         /**
          * @return value of field value
          */
         @XmlElement
-        DtDate getValue() {
+        @Nullable DtDate getValue() {
             return value;
         }
 
