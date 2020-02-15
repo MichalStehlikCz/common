@@ -2,6 +2,8 @@ package com.provys.common.datatype;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.provys.common.jackson.JacksonMappers;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -109,15 +111,16 @@ class DtUidTest {
 
     @XmlRootElement(name = "DtUidElement")
     public static class DtUidElement {
-        private DtUid value1;
-        private DtUid value2;
-        private DtUid value3;
+
+        private @MonotonicNonNull DtUid value1;
+        private @MonotonicNonNull DtUid value2;
+        private @MonotonicNonNull DtUid value3;
 
         /**
          * @return value of field value1
          */
         @XmlElement
-        public DtUid getValue1() {
+        public @Nullable DtUid getValue1() {
             return value1;
         }
 
@@ -135,7 +138,7 @@ class DtUidTest {
          * @return value of field value2
          */
         @XmlElement
-        public DtUid getValue2() {
+        public @Nullable DtUid getValue2() {
             return value2;
         }
 
@@ -153,7 +156,7 @@ class DtUidTest {
          * @return value of field value3
          */
         @XmlElement
-        public DtUid getValue3() {
+        public @Nullable DtUid getValue3() {
             return value3;
         }
 
@@ -169,17 +172,24 @@ class DtUidTest {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
             DtUidElement that = (DtUidElement) o;
             return Objects.equals(value1, that.value1) &&
-                    Objects.equals(value2, that.value2) &&
-                    Objects.equals(value3, that.value3);
+                Objects.equals(value2, that.value2) &&
+                Objects.equals(value3, that.value3);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(value1, value2, value3);
+            int result = value1 != null ? value1.hashCode() : 0;
+            result = 31 * result + (value2 != null ? value2.hashCode() : 0);
+            result = 31 * result + (value3 != null ? value3.hashCode() : 0);
+            return result;
         }
 
         @Override

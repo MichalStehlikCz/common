@@ -77,27 +77,27 @@ class ZoneOffsetUtilTest {
         assertThat(ZoneOffsetUtil.isValidIsoLenient(text)).isEqualTo(result);
     }
 
-    static Stream<Object[]> parseIsoTest() {
+    static Stream<@Nullable Object[]> parseIsoTest() {
         return Stream.of(
-                new Object[]{"Z", ZoneOffset.ofHours(0)}
-                , new Object[]{"+10:00", ZoneOffset.ofHours(10)}
-                , new Object[]{"-05:30", ZoneOffset.ofHoursMinutes(-5, -30)}
-                , new Object[]{"+00:00", ZoneOffset.ofHours(0)}
-                , new Object[]{"+14:00", ZoneOffset.ofHours(14)}
-                , new Object[]{"-14:00", ZoneOffset.ofHours(-14)}
-                , new Object[]{"+15:00", ZoneOffset.ofHours(15)}
-                , new Object[]{"-16:00", ZoneOffset.ofHours(-16)}
-                , new Object[]{"+12", ZoneOffset.ofHours(12)}
-                , new Object[]{"-05", ZoneOffset.ofHours(-5)}
-                , new Object[]{"x-05", null}
-                , new Object[]{"-05x", null}
-                , new Object[]{"z", ZoneOffset.ofHours(0)}
-                , new Object[]{"+1000", ZoneOffset.ofHours(10)}
-                , new Object[]{"-0900", ZoneOffset.ofHours(-9)}
-                , new Object[]{"+10:0", null}
-                , new Object[]{"+5:00", null}
-                , new Object[]{"+5", ZoneOffset.ofHours(5)}
-                , new Object[]{"-05:30:00", ZoneOffset.ofHoursMinutes(-5, -30)}
+                new @Nullable Object[]{"Z", ZoneOffset.ofHours(0)}
+                , new @Nullable Object[]{"+10:00", ZoneOffset.ofHours(10)}
+                , new @Nullable Object[]{"-05:30", ZoneOffset.ofHoursMinutes(-5, -30)}
+                , new @Nullable Object[]{"+00:00", ZoneOffset.ofHours(0)}
+                , new @Nullable Object[]{"+14:00", ZoneOffset.ofHours(14)}
+                , new @Nullable Object[]{"-14:00", ZoneOffset.ofHours(-14)}
+                , new @Nullable Object[]{"+15:00", ZoneOffset.ofHours(15)}
+                , new @Nullable Object[]{"-16:00", ZoneOffset.ofHours(-16)}
+                , new @Nullable Object[]{"+12", ZoneOffset.ofHours(12)}
+                , new @Nullable Object[]{"-05", ZoneOffset.ofHours(-5)}
+                , new @Nullable Object[]{"x-05", null}
+                , new @Nullable Object[]{"-05x", null}
+                , new @Nullable Object[]{"z", ZoneOffset.ofHours(0)}
+                , new @Nullable Object[]{"+1000", ZoneOffset.ofHours(10)}
+                , new @Nullable Object[]{"-0900", ZoneOffset.ofHours(-9)}
+                , new @Nullable Object[]{"+10:0", null}
+                , new @Nullable Object[]{"+5:00", null}
+                , new @Nullable Object[]{"+5", ZoneOffset.ofHours(5)}
+                , new @Nullable Object[]{"-05:30:00", ZoneOffset.ofHoursMinutes(-5, -30)}
         );
     }
 

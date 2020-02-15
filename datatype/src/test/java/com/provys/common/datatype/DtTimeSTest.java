@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.provys.common.jackson.JacksonMappers;
 import org.assertj.core.api.Fail;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,25 +46,25 @@ class DtTimeSTest {
         assertThat(DtTimeS.zero()).isEqualTo(DtTimeS.ofSeconds(0));
     }
 
-    static Stream<Object[]> parseTest() {
+    static Stream<@Nullable Object[]> parseTest() {
         return Stream.of(
-                new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"3:27", DtTimeS.ofHourToMinute(3, 27)}
-                , new Object[]{"-1:15:4:00", DtTimeS.ofHourToSecond(true, 1, 15, 4)}
-                , new Object[]{"124:7:56:00", DtTimeS.ofHourToSecond(124, 7, 56)}
-                , new Object[]{"10", null}
-                , new Object[]{"10:74:00:00", null}
-                , new Object[]{"10:00:60:00", null}
-                , new Object[]{"10:00:00:05", null}
-                , new Object[]{"12#15:24", null}
-                , new Object[]{"12:15#24", null}
-                , new Object[]{"12:15:24#10", null}
-                , new Object[]{"x12:15:24", null}
-                , new Object[]{"12:15:24x", null}
-                , new Object[]{DtTimeS.PRIV_TEXT, DtTimeS.PRIV}
-                , new Object[]{DtTimeS.ME_TEXT, DtTimeS.ME}
-                , new Object[]{DtTimeS.MIN_TEXT, DtTimeS.MIN}
-                , new Object[]{DtTimeS.MAX_TEXT, DtTimeS.MAX}
+                new @Nullable Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new @Nullable Object[]{"3:27", DtTimeS.ofHourToMinute(3, 27)}
+                , new @Nullable Object[]{"-1:15:4:00", DtTimeS.ofHourToSecond(true, 1, 15, 4)}
+                , new @Nullable Object[]{"124:7:56:00", DtTimeS.ofHourToSecond(124, 7, 56)}
+                , new @Nullable Object[]{"10", null}
+                , new @Nullable Object[]{"10:74:00:00", null}
+                , new @Nullable Object[]{"10:00:60:00", null}
+                , new @Nullable Object[]{"10:00:00:05", null}
+                , new @Nullable Object[]{"12#15:24", null}
+                , new @Nullable Object[]{"12:15#24", null}
+                , new @Nullable Object[]{"12:15:24#10", null}
+                , new @Nullable Object[]{"x12:15:24", null}
+                , new @Nullable Object[]{"12:15:24x", null}
+                , new @Nullable Object[]{DtTimeS.PRIV_TEXT, DtTimeS.PRIV}
+                , new @Nullable Object[]{DtTimeS.ME_TEXT, DtTimeS.ME}
+                , new @Nullable Object[]{DtTimeS.MIN_TEXT, DtTimeS.MIN}
+                , new @Nullable Object[]{DtTimeS.MAX_TEXT, DtTimeS.MAX}
         );
     }
 
@@ -164,41 +165,41 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoTimeLenient(text)).isEqualTo(result);
     }
 
-    static Stream<Object[]> parseIsoTimeTest() {
+    static Stream<@Nullable Object[]> parseIsoTimeTest() {
         return Stream.of(
-                new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"22:10:18,156", DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
-                , new Object[]{"22:10:18.156", DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
-                , new Object[]{"22:10:18:00", null}
-                , new Object[]{"22:10:18:05", null}
-                , new Object[]{"24:00:00", DtTimeS.ofHourToMinute(24, 0)}
-                , new Object[]{"24:01:00", null}
-                , new Object[]{"25:00:00", null}
-                , new Object[]{"15:60:00", null}
-                , new Object[]{"15:00:60", null}
-                , new Object[]{"22:10", DtTimeS.ofHourToMinute(22, 10)}
-                , new Object[]{"22", null}
-                , new Object[]{"3:27:15", DtTimeS.ofHourToSecond(3, 27, 15)}
-                , new Object[]{"12:5:24", DtTimeS.ofHourToSecond(12, 5, 24)}
-                , new Object[]{"12:15:4", DtTimeS.ofHourToSecond(12, 15, 4)}
-                , new Object[]{"-1:15:04", null}
-                , new Object[]{"121524,123", DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
-                , new Object[]{"121524", DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"12152", null}
-                , new Object[]{"1215", DtTimeS.ofHourToMinute(12, 15)}
-                , new Object[]{"121", null}
-                , new Object[]{"12", null}
-                , new Object[]{"1", null}
-                , new Object[]{"124:07:56", null}
-                , new Object[]{"12#15:24", null}
-                , new Object[]{"12:15#24", null}
-                , new Object[]{"12:15:24#10", null}
-                , new Object[]{"x12:15:24", null}
-                , new Object[]{"12:15:24x", null}
-                , new Object[]{DtTimeS.PRIV_TEXT, null}
-                , new Object[]{DtTimeS.ME_TEXT, null}
-                , new Object[]{DtTimeS.MIN_TEXT, null}
-                , new Object[]{DtTimeS.MAX_TEXT, null}
+                new @Nullable Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new @Nullable Object[]{"22:10:18,156", DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
+                , new @Nullable Object[]{"22:10:18.156", DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
+                , new @Nullable Object[]{"22:10:18:00", null}
+                , new @Nullable Object[]{"22:10:18:05", null}
+                , new @Nullable Object[]{"24:00:00", DtTimeS.ofHourToMinute(24, 0)}
+                , new @Nullable Object[]{"24:01:00", null}
+                , new @Nullable Object[]{"25:00:00", null}
+                , new @Nullable Object[]{"15:60:00", null}
+                , new @Nullable Object[]{"15:00:60", null}
+                , new @Nullable Object[]{"22:10", DtTimeS.ofHourToMinute(22, 10)}
+                , new @Nullable Object[]{"22", null}
+                , new @Nullable Object[]{"3:27:15", DtTimeS.ofHourToSecond(3, 27, 15)}
+                , new @Nullable Object[]{"12:5:24", DtTimeS.ofHourToSecond(12, 5, 24)}
+                , new @Nullable Object[]{"12:15:4", DtTimeS.ofHourToSecond(12, 15, 4)}
+                , new @Nullable Object[]{"-1:15:04", null}
+                , new @Nullable Object[]{"121524,123", DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
+                , new @Nullable Object[]{"121524", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new @Nullable Object[]{"12152", null}
+                , new @Nullable Object[]{"1215", DtTimeS.ofHourToMinute(12, 15)}
+                , new @Nullable Object[]{"121", null}
+                , new @Nullable Object[]{"12", null}
+                , new @Nullable Object[]{"1", null}
+                , new @Nullable Object[]{"124:07:56", null}
+                , new @Nullable Object[]{"12#15:24", null}
+                , new @Nullable Object[]{"12:15#24", null}
+                , new @Nullable Object[]{"12:15:24#10", null}
+                , new @Nullable Object[]{"x12:15:24", null}
+                , new @Nullable Object[]{"12:15:24x", null}
+                , new @Nullable Object[]{DtTimeS.PRIV_TEXT, null}
+                , new @Nullable Object[]{DtTimeS.ME_TEXT, null}
+                , new @Nullable Object[]{DtTimeS.MIN_TEXT, null}
+                , new @Nullable Object[]{DtTimeS.MAX_TEXT, null}
         );
     }
 
@@ -257,42 +258,42 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoTimeInfoLenient(text, allowNegative)).isEqualTo(result);
     }
 
-    static Stream<Object[]> parseIsoTimeInfoTest() {
+    static Stream<@Nullable Object[]> parseIsoTimeInfoTest() {
         return Stream.of(
-                new Object[]{"12:15:24", false, DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"22:10:18,156", false, DtTimeS.ofHourToNano(22, 10, 18, 156)}
-                , new Object[]{"22:10:18.156", false, DtTimeS.ofHourToNano(22, 10, 18, 156)}
-                , new Object[]{"22:10:18:00", false, null}
-                , new Object[]{"22:10:18:05", false, null}
-                , new Object[]{"24:00:00", false, DtTimeS.ofHourToMinute(24, 0)}
-                , new Object[]{"24:01:00", false, DtTimeS.ofHourToMinute(24, 1)}
-                , new Object[]{"25:00:00", false, DtTimeS.ofHourToMinute(25, 0)}
-                , new Object[]{"15:60:00", false, null}
-                , new Object[]{"15:00:60", false, null}
-                , new Object[]{"22:10", false, DtTimeS.ofHourToMinute(22, 10)}
-                , new Object[]{"22", false, null}
-                , new Object[]{"3:27:15", false, DtTimeS.ofHourToSecond(3, 27, 15)}
-                , new Object[]{"12:5:24", false, DtTimeS.ofHourToSecond(12, 5, 24)}
-                , new Object[]{"12:15:4", false, DtTimeS.ofHourToSecond(12, 15, 4)}
-                , new Object[]{"-1:15:04", false, null}
-                , new Object[]{"-1:15:04", true, DtTimeS.ofHourToSecond(true, 1, 15, 4)}
-                , new Object[]{"121524,123", false, DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
-                , new Object[]{"121524", false, DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"12152", false, null}
-                , new Object[]{"1215", false, DtTimeS.ofHourToMinute(12, 15)}
-                , new Object[]{"121", false, null}
-                , new Object[]{"12", false, null}
-                , new Object[]{"1", false, null}
-                , new Object[]{"124:07:56", false, DtTimeS.ofHourToSecond(124, 7, 56)}
-                , new Object[]{"12#15:24", false, null}
-                , new Object[]{"12:15#24", false, null}
-                , new Object[]{"12:15:24#10", false, null}
-                , new Object[]{"x12:15:24", true, null}
-                , new Object[]{"12:15:24x", true, null}
-                , new Object[]{DtTimeS.PRIV_TEXT, false, null}
-                , new Object[]{DtTimeS.ME_TEXT, false, null}
-                , new Object[]{DtTimeS.MIN_TEXT, false, null}
-                , new Object[]{DtTimeS.MAX_TEXT, false, null}
+                new @Nullable Object[]{"12:15:24", false, DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new @Nullable Object[]{"22:10:18,156", false, DtTimeS.ofHourToNano(22, 10, 18, 156)}
+                , new @Nullable Object[]{"22:10:18.156", false, DtTimeS.ofHourToNano(22, 10, 18, 156)}
+                , new @Nullable Object[]{"22:10:18:00", false, null}
+                , new @Nullable Object[]{"22:10:18:05", false, null}
+                , new @Nullable Object[]{"24:00:00", false, DtTimeS.ofHourToMinute(24, 0)}
+                , new @Nullable Object[]{"24:01:00", false, DtTimeS.ofHourToMinute(24, 1)}
+                , new @Nullable Object[]{"25:00:00", false, DtTimeS.ofHourToMinute(25, 0)}
+                , new @Nullable Object[]{"15:60:00", false, null}
+                , new @Nullable Object[]{"15:00:60", false, null}
+                , new @Nullable Object[]{"22:10", false, DtTimeS.ofHourToMinute(22, 10)}
+                , new @Nullable Object[]{"22", false, null}
+                , new @Nullable Object[]{"3:27:15", false, DtTimeS.ofHourToSecond(3, 27, 15)}
+                , new @Nullable Object[]{"12:5:24", false, DtTimeS.ofHourToSecond(12, 5, 24)}
+                , new @Nullable Object[]{"12:15:4", false, DtTimeS.ofHourToSecond(12, 15, 4)}
+                , new @Nullable Object[]{"-1:15:04", false, null}
+                , new @Nullable Object[]{"-1:15:04", true, DtTimeS.ofHourToSecond(true, 1, 15, 4)}
+                , new @Nullable Object[]{"121524,123", false, DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
+                , new @Nullable Object[]{"121524", false, DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new @Nullable Object[]{"12152", false, null}
+                , new @Nullable Object[]{"1215", false, DtTimeS.ofHourToMinute(12, 15)}
+                , new @Nullable Object[]{"121", false, null}
+                , new @Nullable Object[]{"12", false, null}
+                , new @Nullable Object[]{"1", false, null}
+                , new @Nullable Object[]{"124:07:56", false, DtTimeS.ofHourToSecond(124, 7, 56)}
+                , new @Nullable Object[]{"12#15:24", false, null}
+                , new @Nullable Object[]{"12:15#24", false, null}
+                , new @Nullable Object[]{"12:15:24#10", false, null}
+                , new @Nullable Object[]{"x12:15:24", true, null}
+                , new @Nullable Object[]{"12:15:24x", true, null}
+                , new @Nullable Object[]{DtTimeS.PRIV_TEXT, false, null}
+                , new @Nullable Object[]{DtTimeS.ME_TEXT, false, null}
+                , new @Nullable Object[]{DtTimeS.MIN_TEXT, false, null}
+                , new @Nullable Object[]{DtTimeS.MAX_TEXT, false, null}
         );
     }
 
@@ -400,87 +401,87 @@ class DtTimeSTest {
         assertThat(DtTimeS.isValidIsoLenient(text)).isEqualTo(result);
     }
 
-    static Stream<Object[]> parseIsoTest() {
+    static Stream<@Nullable Object[]> parseIsoTest() {
         return Stream.of(
-                new Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                new @Nullable Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"22:10:18,156", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"22:10:18,156", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
-                , new Object[]{"22:10:18.156", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"22:10:18.156", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToNano(22, 10, 18, 156000000)}
-                , new Object[]{"22:10:18:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"22:10:18:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"22:10:18:05", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"22:10:18:05", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"24:00:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"24:00:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToMinute(24, 0)}
-                , new Object[]{"24:01:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"24:01:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"25:00:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"25:00:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"15:60:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"15:60:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"15:00:60", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"15:00:60", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"22:10", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"22:10", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToMinute(22, 10)}
-                , new Object[]{"22", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"22", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"3:27:15", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"3:27:15", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(3, 27, 15)}
-                , new Object[]{"12:5:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:5:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(12, 5, 24)}
-                , new Object[]{"12:15:4", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15:4", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(12, 15, 4)}
-                , new Object[]{"-1:15:04", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"-1:15:04", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"121524,123", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"121524,123", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToNano(12, 15, 24, 123000000)}
-                , new Object[]{"121524", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"121524", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"12152", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12152", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"1215", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"1215", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToMinute(12, 15)}
-                , new Object[]{"121", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"121", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"12", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"1", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"1", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"124:07:56", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"124:07:56", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"12#15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12#15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"12:15#24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15#24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"12:15:24#10", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15:24#10", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"x12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"x12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"12:15:24x", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15:24x", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{DtTimeS.PRIV_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{DtTimeS.PRIV_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{DtTimeS.ME_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{DtTimeS.ME_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{DtTimeS.MIN_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{DtTimeS.MIN_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{DtTimeS.MAX_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{DtTimeS.MAX_TEXT, DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         null}
-                , new Object[]{"12:15:24Z", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15:24Z", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"12:15:24+01", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15:24+01", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(11, 15, 24)}
-                , new Object[]{"12:15:24-12:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
+                , new @Nullable Object[]{"12:15:24-12:00", DtDate.of(1984, 10, 16), ZoneId.of("Z"),
                         DtTimeS.ofHourToSecond(24, 15, 24)}
-                , new Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
+                , new @Nullable Object[]{"12:15:24", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
                         DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"12:15:24-01", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
+                , new @Nullable Object[]{"12:15:24-01", DtDate.of(1984, 10, 16), ZoneId.of("+01:00"),
                         DtTimeS.ofHourToSecond(14, 15, 24)}
-                , new Object[]{"12:15:24Z", DtDate.of(1984, 6, 16), ZoneId.of("Europe/Prague"),
+                , new @Nullable Object[]{"12:15:24Z", DtDate.of(1984, 6, 16), ZoneId.of("Europe/Prague"),
                         DtTimeS.ofHourToSecond(14, 15, 24)}
-                , new Object[]{"12:15:24Z", DtDate.of(1984, 12, 16), ZoneId.of("Europe/Prague"),
+                , new @Nullable Object[]{"12:15:24Z", DtDate.of(1984, 12, 16), ZoneId.of("Europe/Prague"),
                         DtTimeS.ofHourToSecond(13, 15, 24)}
         );
     }
@@ -516,25 +517,25 @@ class DtTimeSTest {
                 .hasMessageMatching(message);
     }
 
-    static Stream<Object[]> ofProvysValueTest() {
+    static Stream<@Nullable Object[]> ofProvysValueTest() {
         return Stream.of(
-                new Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
-                , new Object[]{"03:27", DtTimeS.ofHourToMinute(3, 27)}
-                , new Object[]{"-01:15:04:00", DtTimeS.ofHourToSecond(true, 1, 15, 4)}
-                , new Object[]{"124:07:56:00", DtTimeS.ofHourToSecond(124, 7, 56)}
-                , new Object[]{"03:27+1", DtTimeS.ofDayToMinute(1, 3, 27)}
-                , new Object[]{"03:27-1", DtTimeS.ofDayToMinute(-1, 3, 27)}
-                , new Object[]{"10", null}
-                , new Object[]{"10:74:00:00", null}
-                , new Object[]{"10:00:60:00", null}
-                , new Object[]{"10:00:00:05", null}
-                , new Object[]{"12#15:24", null}
-                , new Object[]{"12:15#24", null}
-                , new Object[]{"12:15:24#10", null}
-                , new Object[]{DtTimeS.PRIV_TEXT, null}
-                , new Object[]{DtTimeS.ME_TEXT, null}
-                , new Object[]{DtTimeS.MIN_TEXT, null}
-                , new Object[]{DtTimeS.MAX_TEXT, null}
+                new @Nullable Object[]{"12:15:24", DtTimeS.ofHourToSecond(12, 15, 24)}
+                , new @Nullable Object[]{"03:27", DtTimeS.ofHourToMinute(3, 27)}
+                , new @Nullable Object[]{"-01:15:04:00", DtTimeS.ofHourToSecond(true, 1, 15, 4)}
+                , new @Nullable Object[]{"124:07:56:00", DtTimeS.ofHourToSecond(124, 7, 56)}
+                , new @Nullable Object[]{"03:27+1", DtTimeS.ofDayToMinute(1, 3, 27)}
+                , new @Nullable Object[]{"03:27-1", DtTimeS.ofDayToMinute(-1, 3, 27)}
+                , new @Nullable Object[]{"10", null}
+                , new @Nullable Object[]{"10:74:00:00", null}
+                , new @Nullable Object[]{"10:00:60:00", null}
+                , new @Nullable Object[]{"10:00:00:05", null}
+                , new @Nullable Object[]{"12#15:24", null}
+                , new @Nullable Object[]{"12:15#24", null}
+                , new @Nullable Object[]{"12:15:24#10", null}
+                , new @Nullable Object[]{DtTimeS.PRIV_TEXT, null}
+                , new @Nullable Object[]{DtTimeS.ME_TEXT, null}
+                , new @Nullable Object[]{DtTimeS.MIN_TEXT, null}
+                , new @Nullable Object[]{DtTimeS.MAX_TEXT, null}
         );
     }
 
@@ -945,17 +946,17 @@ class DtTimeSTest {
         assertThat(value.toSeconds()).isEqualTo(result);
     }
 
-    static Stream<Object[]> toLocalTimeTest() {
+    static Stream<@Nullable Object[]> toLocalTimeTest() {
         return Stream.of(
-                new Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
+                new @Nullable Object[]{DtTimeS.ofHourToSecond(12, 15, 24),
                         LocalTime.of(12, 15, 24)}
-                , new Object[]{DtTimeS.ofHourToMinute(3, 27), LocalTime.of(3, 27)}
-                , new Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), null}
-                , new Object[]{DtTimeS.ofHourToSecond(124, 7, 56), null}
-                , new Object[]{DtTimeS.ofSeconds(DtInteger.PRIV), null}
-                , new Object[]{DtTimeS.ofSeconds(DtInteger.ME), null}
-                , new Object[]{DtTimeS.ofSeconds(DtInteger.MIN), null}
-                , new Object[]{DtTimeS.ofSeconds(DtInteger.MAX), null}
+                , new @Nullable Object[]{DtTimeS.ofHourToMinute(3, 27), LocalTime.of(3, 27)}
+                , new @Nullable Object[]{DtTimeS.ofHourToSecond(true, 1, 15, 4), null}
+                , new @Nullable Object[]{DtTimeS.ofHourToSecond(124, 7, 56), null}
+                , new @Nullable Object[]{DtTimeS.ofSeconds(DtInteger.PRIV), null}
+                , new @Nullable Object[]{DtTimeS.ofSeconds(DtInteger.ME), null}
+                , new @Nullable Object[]{DtTimeS.ofSeconds(DtInteger.MIN), null}
+                , new @Nullable Object[]{DtTimeS.ofSeconds(DtInteger.MAX), null}
         );
     }
 
@@ -1115,13 +1116,14 @@ class DtTimeSTest {
 
     @XmlRootElement(name = "DtTimeSElement")
     private static class DtTimeSElement {
-        private DtTimeS value;
+
+        private @MonotonicNonNull DtTimeS value;
 
         /**
          * @return value of field value
          */
         @XmlElement
-        DtTimeS getValue() {
+        @Nullable DtTimeS getValue() {
             return value;
         }
 

@@ -128,7 +128,8 @@
                             <annotationProcessor>org.checkerframework.checker.nullness.NullnessChecker</annotationProcessor>
                         </annotationProcessors>
                         <compilerArgs>
-                            <arg>-J- -add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED -AskipUses="org\.assertj\."</arg>
+                            <arg>-J--add-opens=jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED</arg>
+                            <arg>-AskipUses=org\.assertj\.</arg>
                         </compilerArgs>
                     </configuration>
                 </plugin>

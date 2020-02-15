@@ -46,7 +46,7 @@ public class StringParser {
         }
 
         public int adjustCount(int count) {
-            return included ? count - 1 : count;
+            return included ? (count - 1) : count;
             }
     }
 
@@ -185,23 +185,25 @@ public class StringParser {
      * character or end of string is reached
      *
      * @param minChars is minimal number of characters (see also signHandling)
-     * @param maxChars is amximal number of characters (see also signHandling)
+     * @param maxChars is maximal number of characters (see also signHandling)
      * @param signHandling defines how should sign be handled. It might be forbidden, required and it might be included
      *                    in number of characters specified in minChars / maxChars or added on top of that
      * @return number read from String
      */
     public int readInt(int minChars, int maxChars, SignHandling signHandling) {
         boolean negative = false;
+        int adjMinChars = minChars;
+        int adjMaxChars = maxChars;
         if (peek() < '0') {
             switch (next()) {
                 case '-':
                     negative = true;
-                    minChars = signHandling.adjustCount(minChars);
-                    maxChars = signHandling.adjustCount(maxChars);
+                    adjMinChars = signHandling.adjustCount(adjMinChars);
+                    adjMaxChars = signHandling.adjustCount(adjMaxChars);
                     break;
                 case '+':
-                    minChars = signHandling.adjustCount(minChars);
-                    maxChars = signHandling.adjustCount(maxChars);
+                    adjMinChars = signHandling.adjustCount(adjMinChars);
+                    adjMaxChars = signHandling.adjustCount(adjMaxChars);
                     break;
                 default:
                     throw new InternalException("Invalid first character in read integer " + peek());
@@ -214,7 +216,7 @@ public class StringParser {
                 throw new InternalException("Sign required and missing");
             }
         }
-        int result = readUnsignedInt(minChars, maxChars);
+        int result = readUnsignedInt(adjMinChars, adjMaxChars);
         return negative ? -result : result;
     }
 
@@ -288,7 +290,7 @@ public class StringParser {
             // text cannot be present - not enough characters remain
             return false;
         }
-        return (string.substring(pos, pos + text.length()).equals(text));
+        return string.substring(pos, pos + text.length()).equals(text);
     }
 
     /**
@@ -321,6 +323,14 @@ public class StringParser {
             // text cannot be present - not enough characters remain
             return false;
         }
-        return (string.substring(pos, pos + text.length()).equalsIgnoreCase(text));
+        return string.substring(pos, pos + text.length()).equalsIgnoreCase(text);
+    }
+
+    @Override
+    public String toString() {
+        return "StringParser{" +
+            "string='" + string + '\'' +
+            ", pos=" + pos +
+            '}';
     }
 }

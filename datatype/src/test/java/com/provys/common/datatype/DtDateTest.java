@@ -18,7 +18,6 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SuppressWarnings("unused")
 class DtDateTest {
 
     @Test

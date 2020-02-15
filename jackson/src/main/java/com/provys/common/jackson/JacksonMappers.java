@@ -21,7 +21,7 @@ import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
  * If some modification of mapper is required (for example project needs different date format, timezone etc.), such
  * mapper should be constructed outside this class but can be customised using supplied methods.
  */
-public class JacksonMappers {
+public final class JacksonMappers {
 
     private static final ObjectMapper JSON_MAPPER;
 

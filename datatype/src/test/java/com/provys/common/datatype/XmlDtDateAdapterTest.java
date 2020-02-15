@@ -2,7 +2,6 @@ package com.provys.common.datatype;
 
 import org.assertj.core.api.Fail;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -21,8 +20,7 @@ class XmlDtDateAdapterTest {
     @XmlRootElement(name = "DtDateElement")
     static class DtDateElement {
 
-        @MonotonicNonNull
-        private DtDate value = null;
+        private @MonotonicNonNull DtDate value = null;
 
         /**
          * @return value of field value

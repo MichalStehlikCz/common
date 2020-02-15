@@ -1,6 +1,8 @@
 package com.provys.common.datatype;
 
 import org.assertj.core.api.Fail;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -18,13 +20,14 @@ class XmlDtTimeSAdapterTest {
 
     @XmlRootElement(name = "DtTimeSElement")
     static class DtTimeSElement {
-        private DtTimeS value;
+
+        private @MonotonicNonNull DtTimeS value = null;
 
         /**
          * @return value of field value
          */
         @XmlElement
-        DtTimeS getValue() {
+        @Nullable DtTimeS getValue() {
             return value;
         }
 
@@ -43,11 +46,11 @@ class XmlDtTimeSAdapterTest {
     void marshalTest() {
         try {
             var context = JAXBContext.newInstance(DtTimeSElement.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             var value = new DtTimeSElement().setValue(DtTimeS.ofHourToSecond(15, 5, 48));
             var resultWriter = new StringWriter();
-            m.marshal(value, resultWriter);
+            marshaller.marshal(value, resultWriter);
             assertThat(resultWriter.toString())
                     .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                             "<DtTimeSElement><value>15:05:48</value></DtTimeSElement>");

@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import org.assertj.core.api.Fail;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -14,24 +15,27 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 @SuppressWarnings("unused")
 class JsonbDtTimeSAdapterTest {
 
-    static Stream<Object[]> toJsonTest() {
+    static Stream<@Nullable Object[]> toJsonTest() {
         return Stream.of(
-                new Object[]{DtTimeS.ofHourToSecond(12, 25, 25), "\"12:25:25\""}
-                , new Object[]{DtTimeS.PRIV, null}
-                , new Object[]{DtTimeS.ME, null}
-                , new Object[]{DtTimeS.MIN, null}
-                , new Object[]{DtTimeS.MAX, null}
+                new @Nullable Object[]{DtTimeS.ofHourToSecond(12, 25, 25), "\"12:25:25\""}
+                , new @Nullable Object[]{DtTimeS.PRIV, null}
+                , new @Nullable Object[]{DtTimeS.ME, null}
+                , new @Nullable Object[]{DtTimeS.MIN, null}
+                , new @Nullable Object[]{DtTimeS.MAX, null}
         );
     }
 
     @ParameterizedTest
     @MethodSource
     void toJsonTest(DtTimeS value, @Nullable String result) {
-        Jsonb jsonb = JsonbBuilder.create();
-        if (result == null) {
-            assertThatThrownBy(() -> jsonb.toJson(value));
-        } else {
-            assertThat(jsonb.toJson(value)).isEqualTo(result);
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            if (result == null) {
+                assertThatThrownBy(() -> jsonb.toJson(value));
+            } else {
+                assertThat(jsonb.toJson(value)).isEqualTo(result);
+            }
+        } catch (Exception e) {
+            Fail.fail("Failed to close Jsonb");
         }
     }
 
@@ -45,7 +49,10 @@ class JsonbDtTimeSAdapterTest {
     @ParameterizedTest
     @MethodSource
     void fromJsonTest(String value, DtTimeS result) {
-        Jsonb jsonb = JsonbBuilder.create();
-        assertThat(jsonb.fromJson(value, DtTimeS.class)).isEqualTo(result);
+        try (Jsonb jsonb = JsonbBuilder.create()) {
+            assertThat(jsonb.fromJson(value, DtTimeS.class)).isEqualTo(result);
+        } catch (Exception e) {
+            Fail.fail("Failed to close Jsonb");
+        }
     }
 }

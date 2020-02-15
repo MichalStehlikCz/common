@@ -32,22 +32,22 @@ class DtDateTimeTest {
         }
     }
 
-    static Stream<Object[]> ofDateTimeTest() {
+    static Stream<@Nullable Object[]> ofDateTimeTest() {
         return Stream.of(
-                new Object[]{DtDate.of(1989, 11, 25), DtTimeS.ofSeconds(58421),
+                new @Nullable Object[]{DtDate.of(1989, 11, 25), DtTimeS.ofSeconds(58421),
                         null, DtDate.of(1989, 11, 25), DtTimeS.ofSeconds(58421)}
-                , new Object[]{DtDate.of(2005, 7, 15), DtTimeS.ofDayToMinute(3, 11, 54),
+                , new @Nullable Object[]{DtDate.of(2005, 7, 15), DtTimeS.ofDayToMinute(3, 11, 54),
                         null, DtDate.of(2005, 7, 18), DtTimeS.ofHourToMinute(11, 54)}
-                , new Object[]{DtDate.MIN, DtTimeS.ofSeconds(150), null, DtDate.MIN, DtTimeS.ofSeconds(0)}
-                , new Object[]{DtDate.MIN, DtTimeS.MIN, null, DtDate.MIN, DtTimeS.ofSeconds(0)}
-                , new Object[]{DtDate.MIN, DtTimeS.MAX, "Cannot create datetime from min date and max time", null, null}
-                , new Object[]{DtDate.MAX, DtTimeS.ofSeconds(150), null, DtDate.MAX, DtTimeS.ofSeconds(0)}
-                , new Object[]{DtDate.MAX, DtTimeS.MAX, null, DtDate.MAX, DtTimeS.ofSeconds(0)}
-                , new Object[]{DtDate.MAX, DtTimeS.MIN, "Cannot create datetime from max date and min time", null, null}
-                , new Object[]{DtDate.PRIV, DtTimeS.ME, null, DtDate.PRIV, DtTimeS.PRIV}
-                , new Object[]{DtDate.of(1989, 11, 25), DtTimeS.PRIV, null, DtDate.PRIV, DtTimeS.PRIV}
-                , new Object[]{DtDate.ME, DtTimeS.MIN, null, DtDate.ME, DtTimeS.ME}
-                , new Object[]{DtDate.MAX, DtTimeS.ME, null, DtDate.ME, DtTimeS.ME}
+                , new @Nullable Object[]{DtDate.MIN, DtTimeS.ofSeconds(150), null, DtDate.MIN, DtTimeS.ofSeconds(0)}
+                , new @Nullable Object[]{DtDate.MIN, DtTimeS.MIN, null, DtDate.MIN, DtTimeS.ofSeconds(0)}
+                , new @Nullable Object[]{DtDate.MIN, DtTimeS.MAX, "Cannot create datetime from min date and max time", null, null}
+                , new @Nullable Object[]{DtDate.MAX, DtTimeS.ofSeconds(150), null, DtDate.MAX, DtTimeS.ofSeconds(0)}
+                , new @Nullable Object[]{DtDate.MAX, DtTimeS.MAX, null, DtDate.MAX, DtTimeS.ofSeconds(0)}
+                , new @Nullable Object[]{DtDate.MAX, DtTimeS.MIN, "Cannot create datetime from max date and min time", null, null}
+                , new @Nullable Object[]{DtDate.PRIV, DtTimeS.ME, null, DtDate.PRIV, DtTimeS.PRIV}
+                , new @Nullable Object[]{DtDate.of(1989, 11, 25), DtTimeS.PRIV, null, DtDate.PRIV, DtTimeS.PRIV}
+                , new @Nullable Object[]{DtDate.ME, DtTimeS.MIN, null, DtDate.ME, DtTimeS.ME}
+                , new @Nullable Object[]{DtDate.MAX, DtTimeS.ME, null, DtDate.ME, DtTimeS.ME}
         );
     }
 
@@ -80,18 +80,18 @@ class DtDateTimeTest {
         assertThat(DtDateTime.ofLocalDateTime(value)).isEqualTo(result);
     }
 
-    static Stream<Object[]> parseTest() {
+    static Stream<@Nullable Object[]> parseTest() {
         return Stream.of(
-                new Object[]{"2005-07-15T03:11:54",
+                new @Nullable Object[]{"2005-07-15T03:11:54",
                         null, DtDate.of(2005, 7, 15),
                         DtTimeS.ofHourToSecond(3, 11, 54)}
-                , new Object[]{"2005-07-15 03:11:54", "T expected as delimiter of date and time part", null, null}
-                , new Object[]{"2005-07-15T03:11:54x", "Value parsed before reading whole text", null, null}
-                , new Object[]{"", "Empty parser supplied to read DtDate", null, null}
-                , new Object[]{DtDateTime.MIN_TEXT, null, DtDate.MIN, DtTimeS.ofSeconds(0)}
-                , new Object[]{DtDateTime.MAX_TEXT, null, DtDate.MAX, DtTimeS.ofSeconds(0)}
-                , new Object[]{DtDateTime.PRIV_TEXT, null, DtDate.PRIV, DtTimeS.PRIV}
-                , new Object[]{DtDateTime.ME_TEXT, null, DtDate.ME, DtTimeS.ME}
+                , new @Nullable Object[]{"2005-07-15 03:11:54", "T expected as delimiter of date and time part", null, null}
+                , new @Nullable Object[]{"2005-07-15T03:11:54x", "Value parsed before reading whole text", null, null}
+                , new @Nullable Object[]{"", "Empty parser supplied to read DtDate", null, null}
+                , new @Nullable Object[]{DtDateTime.MIN_TEXT, null, DtDate.MIN, DtTimeS.ofSeconds(0)}
+                , new @Nullable Object[]{DtDateTime.MAX_TEXT, null, DtDate.MAX, DtTimeS.ofSeconds(0)}
+                , new @Nullable Object[]{DtDateTime.PRIV_TEXT, null, DtDate.PRIV, DtTimeS.PRIV}
+                , new @Nullable Object[]{DtDateTime.ME_TEXT, null, DtDate.ME, DtTimeS.ME}
         );
     }
 
