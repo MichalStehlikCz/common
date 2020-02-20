@@ -18,60 +18,61 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class XmlDtTimeSAdapterTest {
 
-    @XmlRootElement(name = "DtTimeSElement")
-    static class DtTimeSElement {
+  @XmlRootElement(name = "DtTimeSElement")
+  static class DtTimeSElement {
 
-        private @MonotonicNonNull DtTimeS value = null;
+    private @MonotonicNonNull DtTimeS value = null;
 
-        /**
-         * @return value of field value
-         */
-        @XmlElement
-        @Nullable DtTimeS getValue() {
-            return value;
-        }
-
-        /**
-         * Set value of field value
-         *
-         * @param value is new value to be set
-         */
-        DtTimeSElement setValue(DtTimeS value) {
-            this.value = value;
-            return this;
-        }
+    /**
+     * @return value of field value
+     */
+    @XmlElement
+    @Nullable DtTimeS getValue() {
+      return value;
     }
 
-    @Test
-    void marshalTest() {
-        try {
-            var context = JAXBContext.newInstance(DtTimeSElement.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-            var value = new DtTimeSElement().setValue(DtTimeS.ofHourToSecond(15, 5, 48));
-            var resultWriter = new StringWriter();
-            marshaller.marshal(value, resultWriter);
-            assertThat(resultWriter.toString())
-                    .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                            "<DtTimeSElement><value>15:05:48</value></DtTimeSElement>");
-        } catch (JAXBException e) {
-            //noinspection ResultOfMethodCallIgnored
-            Fail.fail("JAXBException thrown during test", e);
-        }
+    /**
+     * Set value of field value
+     *
+     * @param value is new value to be set
+     */
+    DtTimeSElement setValue(DtTimeS value) {
+      this.value = value;
+      return this;
     }
+  }
 
-    @Test
-    void unmarshalTest() {
-        try {
-            var context = JAXBContext.newInstance(DtTimeSElement.class);
-            Unmarshaller u = context.createUnmarshaller();
-            var reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                    "<DtTimeSElement><value>05:13:55</value></DtTimeSElement>");
-            DtTimeSElement result = (DtTimeSElement) u.unmarshal(reader);
-            assertThat(result.getValue()).isEqualTo(DtTimeS.ofHourToSecond(5, 13, 55));
-        } catch (JAXBException e) {
-            //noinspection ResultOfMethodCallIgnored
-            Fail.fail("JAXBException thrown during test", e);
-        }
+  @Test
+  void marshalTest() {
+    try {
+      var context = JAXBContext.newInstance(DtTimeSElement.class);
+      Marshaller marshaller = context.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+      var value = new DtTimeSElement().setValue(DtTimeS.ofHourToSecond(15, 5, 48));
+      var resultWriter = new StringWriter();
+      marshaller.marshal(value, resultWriter);
+      assertThat(resultWriter.toString())
+          .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+              "<DtTimeSElement><value>15:05:48</value></DtTimeSElement>");
+    } catch (JAXBException e) {
+      //noinspection ResultOfMethodCallIgnored
+      Fail.fail("JAXBException thrown during test", e);
     }
+  }
+
+  @Test
+  void unmarshalTest() {
+    try {
+      var context = JAXBContext.newInstance(DtTimeSElement.class);
+      Unmarshaller u = context.createUnmarshaller();
+      var reader = new StringReader(
+          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+              "<DtTimeSElement><value>05:13:55</value></DtTimeSElement>");
+      DtTimeSElement result = (DtTimeSElement) u.unmarshal(reader);
+      assertThat(result.getValue()).isEqualTo(DtTimeS.ofHourToSecond(5, 13, 55));
+    } catch (JAXBException e) {
+      //noinspection ResultOfMethodCallIgnored
+      Fail.fail("JAXBException thrown during test", e);
+    }
+  }
 }

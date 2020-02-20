@@ -9,11 +9,11 @@ import java.io.IOException;
 /**
  * Jackson deserializer for DtDate class
  */
-@SuppressWarnings("WeakerAccess")
 public class DtDateDeserializer extends JsonDeserializer<DtDate> {
 
-    @Override
-    public DtDate deserialize(JsonParser parser, DeserializationContext deserializationContext) throws IOException {
-        return DtDate.parseIso(parser.getValueAsString());
-    }
+  @Override
+  public DtDate deserialize(JsonParser parser, DeserializationContext deserializationContext)
+      throws IOException {
+    return DtDate.parseIso(parser.getValueAsString());
+  }
 }

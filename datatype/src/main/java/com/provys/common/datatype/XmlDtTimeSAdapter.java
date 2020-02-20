@@ -2,7 +2,7 @@ package com.provys.common.datatype;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("CyclicClassDependency") // Cyclic dependency of adapters is expected
 public class XmlDtTimeSAdapter extends XmlAdapter<String, DtTimeS> {
 
     @Override

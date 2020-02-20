@@ -9,12 +9,12 @@ import java.io.IOException;
 /**
  * Class is Jackson serializer for DtDate class
  */
-@SuppressWarnings("WeakerAccess")
 public class DtDateSerializer extends JsonSerializer<DtDate> {
 
-    @Override
-    public void serialize(DtDate value, JsonGenerator generator, SerializerProvider serializerProvider)
-            throws IOException {
-        generator.writeString(value.toIso());
-    }
+  @Override
+  public void serialize(DtDate value, JsonGenerator generator,
+      SerializerProvider serializerProvider)
+      throws IOException {
+    generator.writeString(value.toIso());
+  }
 }

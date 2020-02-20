@@ -7,13 +7,14 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import java.io.IOException;
 
 /**
- * Jackson serializer for DtTimeS class
+ * Jackson serializer for {@link DtTimeS} class
  */
-@SuppressWarnings("WeakerAccess")
 public class DtTimeSSerializer extends JsonSerializer<DtTimeS> {
-    @Override
-    public void serialize(DtTimeS value, JsonGenerator generator, SerializerProvider serializerProvider)
-            throws IOException {
-        generator.writeString(value.toIso());
-    }
+
+  @Override
+  public void serialize(DtTimeS value, JsonGenerator generator,
+      SerializerProvider serializerProvider)
+      throws IOException {
+    generator.writeString(value.toIso());
+  }
 }

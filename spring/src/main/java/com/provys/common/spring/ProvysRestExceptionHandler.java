@@ -13,27 +13,31 @@ import org.springframework.web.context.request.WebRequest;
 
 import java.util.Arrays;
 
+/**
+ * Exception interceptor for Spring that logs exception and produces error message in agreed message
+ * format
+ */
 @ControllerAdvice
 @Order(0)
 class ProvysRestExceptionHandler {
 
-    private static final Logger LOG = LogManager.getLogger(ProvysRestExceptionHandler.class);
+  private static final Logger LOG = LogManager.getLogger(ProvysRestExceptionHandler.class);
 
-    @ExceptionHandler({ProvysException.class})
-    public ResponseEntity<Object> handleProvysException(ProvysException e, WebRequest request) {
-        LOG.error("Unhandled Provys exception", e);
-        return new ResponseEntity<>(
-                new WsError(-1, (e).getNameNm(), e.getMessage(), Arrays.toString(e.getStackTrace())),
-                new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  @ExceptionHandler(ProvysException.class)
+  public ResponseEntity<Object> handleProvysException(ProvysException e, WebRequest request) {
+    LOG.error("Unhandled Provys exception", e);
+    return new ResponseEntity<>(
+        new WsError(-1, e.getNameNm(), e.getMessage(), Arrays.toString(e.getStackTrace())),
+        new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+  }
 
-    @ExceptionHandler({Throwable.class})
-    public ResponseEntity<Object> handleGenericException(Throwable e, WebRequest request) {
-        LOG.error("Unhandled exception", e);
-        return new ResponseEntity<>(
-                new WsError(-1, "INTERNAL_EXCEPTION", e.getMessage(),
-                        Arrays.toString(e.getStackTrace())),
-                new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+  @ExceptionHandler(Throwable.class)
+  public ResponseEntity<Object> handleGenericException(Throwable e, WebRequest request) {
+    LOG.error("Unhandled exception", e);
+    return new ResponseEntity<>(
+        new WsError(-1, "INTERNAL_EXCEPTION", e.getMessage(),
+            Arrays.toString(e.getStackTrace())),
+        new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
 
-    }
+  }
 }

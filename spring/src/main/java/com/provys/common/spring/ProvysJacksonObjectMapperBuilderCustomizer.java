@@ -14,19 +14,23 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.stereotype.Component;
 
+/**
+ * Customize Jackson Json mapper for use in Spring
+ */
 @Component
 @Order(-5)
 class ProvysJacksonObjectMapperBuilderCustomizer implements Jackson2ObjectMapperBuilderCustomizer {
 
-    private static final Logger LOG = LogManager.getLogger(ProvysJacksonObjectMapperBuilderCustomizer.class);
+  private static final Logger LOG = LogManager
+      .getLogger(ProvysJacksonObjectMapperBuilderCustomizer.class);
 
-    @Override
-    public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
-        LOG.debug("Use PROVYS Object Mapper customizer");
-        jacksonObjectMapperBuilder.annotationIntrospector(
-                AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
-                        new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())));
-        jacksonObjectMapperBuilder.modules(new Jdk8Module(), new JavaTimeModule());
-        jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
-    }
+  @Override
+  public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
+    LOG.debug("Use PROVYS Object Mapper customizer");
+    jacksonObjectMapperBuilder.annotationIntrospector(
+        AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
+            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())));
+    jacksonObjectMapperBuilder.modules(new Jdk8Module(), new JavaTimeModule());
+    jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
+  }
 }

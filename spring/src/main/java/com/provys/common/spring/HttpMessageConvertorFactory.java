@@ -10,22 +10,25 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
+/**
+ * Configure Jackson Xml mapper for use in Spring
+ */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
 class HttpMessageConvertorFactory {
 
-    private static final Logger LOG = LogManager.getLogger(HttpMessageConvertorFactory.class);
+  private static final Logger LOG = LogManager.getLogger(HttpMessageConvertorFactory.class);
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    @Bean
-    public MappingJackson2XmlHttpMessageConverter provysJackson2XmlHttpMessageConverter(
-            Jackson2ObjectMapperBuilder builder) {
-        LOG.debug("Customize Jackson XML mapper");
-        XmlMapper mapper = builder.createXmlMapper(true).build();
-        mapper.enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION);
-        mapper.getFactory()
-                .getXMLOutputFactory()
-                .setProperty(WstxOutputProperties.P_USE_DOUBLE_QUOTES_IN_XML_DECL, true);
-        return new MappingJackson2XmlHttpMessageConverter(mapper);
-    }
+  @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+  @Bean
+  public MappingJackson2XmlHttpMessageConverter provysJackson2XmlHttpMessageConverter(
+      Jackson2ObjectMapperBuilder builder) {
+    LOG.debug("Customize Jackson XML mapper");
+    XmlMapper mapper = builder.createXmlMapper(true).build();
+    mapper.enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION);
+    mapper.getFactory()
+        .getXMLOutputFactory()
+        .setProperty(WstxOutputProperties.P_USE_DOUBLE_QUOTES_IN_XML_DECL, true);
+    return new MappingJackson2XmlHttpMessageConverter(mapper);
+  }
 }

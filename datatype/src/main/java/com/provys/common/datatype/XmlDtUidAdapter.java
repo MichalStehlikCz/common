@@ -6,7 +6,7 @@ import java.math.BigInteger;
 /**
  * JAXB adapter for serialization / deserialization of DtUid via BigInteger
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings("CyclicClassDependency") // Cyclic dependency of adapters is expected
 public class XmlDtUidAdapter extends XmlAdapter<BigInteger, DtUid> {
     @Override
     public DtUid unmarshal(BigInteger value) {

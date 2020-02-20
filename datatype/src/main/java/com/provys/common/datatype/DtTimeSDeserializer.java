@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 
 import java.io.IOException;
 
-@SuppressWarnings("WeakerAccess")
+/**
+ * Jackson deserializer for {@link DtTimeS} class
+ */
 public class DtTimeSDeserializer extends JsonDeserializer<DtTimeS> {
     @Override
     public DtTimeS deserialize(JsonParser parser, DeserializationContext deserializationContext)

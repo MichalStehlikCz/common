@@ -18,60 +18,61 @@ import static org.assertj.core.api.Assertions.*;
 
 class XmlDtDateAdapterTest {
 
-    @XmlRootElement(name = "DtDateElement")
-    static class DtDateElement {
+  @XmlRootElement(name = "DtDateElement")
+  static class DtDateElement {
 
-        private @MonotonicNonNull DtDate value = null;
+    private @MonotonicNonNull DtDate value = null;
 
-        /**
-         * @return value of field value
-         */
-        @XmlElement
-        @Nullable DtDate getValue() {
-            return value;
-        }
-
-        /**
-         * Set value of field value
-         *
-         * @param value is new value to be set
-         */
-        DtDateElement setValue(DtDate value) {
-            this.value = value;
-            return this;
-        }
+    /**
+     * @return value of field value
+     */
+    @XmlElement
+    @Nullable DtDate getValue() {
+      return value;
     }
 
-    @Test
-    void marshalTest() {
-        try {
-            var context = JAXBContext.newInstance(DtDateElement.class);
-            Marshaller marshaller = context.createMarshaller();
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-            var value = new DtDateElement().setValue(DtDate.of(2010, 12, 1));
-            var resultWriter = new StringWriter();
-            marshaller.marshal(value, resultWriter);
-            assertThat(resultWriter.toString())
-                    .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                            "<DtDateElement><value>2010-12-01</value></DtDateElement>");
-        } catch (JAXBException e) {
-            //noinspection ResultOfMethodCallIgnored
-            Fail.fail("JAXBException thrown during test", e);
-        }
+    /**
+     * Set value of field value
+     *
+     * @param value is new value to be set
+     */
+    DtDateElement setValue(DtDate value) {
+      this.value = value;
+      return this;
     }
+  }
 
-    @Test
-    void unmarshalTest() {
-        try {
-            var context = JAXBContext.newInstance(DtDateElement.class);
-            Unmarshaller u = context.createUnmarshaller();
-            var reader = new StringReader("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
-                    "<DtDateElement><value>2018-05-12</value></DtDateElement>");
-            DtDateElement result = (DtDateElement) u.unmarshal(reader);
-            assertThat(result.getValue()).isEqualTo(DtDate.of(2018, 5, 12));
-        } catch (JAXBException e) {
-            //noinspection ResultOfMethodCallIgnored
-            Fail.fail("JAXBException thrown during test", e);
-        }
+  @Test
+  void marshalTest() {
+    try {
+      var context = JAXBContext.newInstance(DtDateElement.class);
+      Marshaller marshaller = context.createMarshaller();
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+      var value = new DtDateElement().setValue(DtDate.of(2010, 12, 1));
+      var resultWriter = new StringWriter();
+      marshaller.marshal(value, resultWriter);
+      assertThat(resultWriter.toString())
+          .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+              "<DtDateElement><value>2010-12-01</value></DtDateElement>");
+    } catch (JAXBException e) {
+      //noinspection ResultOfMethodCallIgnored
+      Fail.fail("JAXBException thrown during test", e);
     }
+  }
+
+  @Test
+  void unmarshalTest() {
+    try {
+      var context = JAXBContext.newInstance(DtDateElement.class);
+      Unmarshaller u = context.createUnmarshaller();
+      var reader = new StringReader(
+          "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+              "<DtDateElement><value>2018-05-12</value></DtDateElement>");
+      DtDateElement result = (DtDateElement) u.unmarshal(reader);
+      assertThat(result.getValue()).isEqualTo(DtDate.of(2018, 5, 12));
+    } catch (JAXBException e) {
+      //noinspection ResultOfMethodCallIgnored
+      Fail.fail("JAXBException thrown during test", e);
+    }
+  }
 }
