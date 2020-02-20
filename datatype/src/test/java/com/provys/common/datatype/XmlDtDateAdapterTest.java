@@ -2,6 +2,7 @@ package com.provys.common.datatype;
 
 import org.assertj.core.api.Fail;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
 import javax.xml.bind.JAXBContext;
@@ -26,7 +27,7 @@ class XmlDtDateAdapterTest {
          * @return value of field value
          */
         @XmlElement
-        DtDate getValue() {
+        @Nullable DtDate getValue() {
             return value;
         }
 
@@ -45,11 +46,11 @@ class XmlDtDateAdapterTest {
     void marshalTest() {
         try {
             var context = JAXBContext.newInstance(DtDateElement.class);
-            Marshaller m = context.createMarshaller();
-            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
+            Marshaller marshaller = context.createMarshaller();
+            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
             var value = new DtDateElement().setValue(DtDate.of(2010, 12, 1));
             var resultWriter = new StringWriter();
-            m.marshal(value, resultWriter);
+            marshaller.marshal(value, resultWriter);
             assertThat(resultWriter.toString())
                     .isEqualTo("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
                             "<DtDateElement><value>2010-12-01</value></DtDateElement>");

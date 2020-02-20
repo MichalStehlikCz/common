@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.*;
 
 class StringParserTest {
 
-    static Stream<Object[]> setPosTest() {
+    static Stream<@Nullable Object[]> setPosTest() {
         return Stream.of(
-                new Object[]{"abcdefg", 5, null}
-                , new Object[]{"abcdefg", -1, "negative"}
-                , new Object[]{"abcdefg", 0, null}
-                , new Object[]{"abcdefg", 100, null}
+                new @Nullable Object[]{"abcdefg", 5, null}
+                , new @Nullable Object[]{"abcdefg", -1, "negative"}
+                , new @Nullable Object[]{"abcdefg", 0, null}
+                , new @Nullable Object[]{"abcdefg", 100, null}
         );
     }
 
@@ -261,12 +261,12 @@ class StringParserTest {
     }
 
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
-    static Stream<Object[]> readString0Test() {
+    static Stream<@Nullable Object[]> readString0Test() {
         return Stream.of(
-                new Object[]{"abcdefg", 8, null, 8, StringIndexOutOfBoundsException.class}
-                , new Object[]{"abcdefg", 7, "", 7, null}
-                , new Object[]{"abcdefg", 5, "fg", 7, null}
-                , new Object[]{"abcdefg", 3, "defg", 7, null}
+                new @Nullable Object[]{"abcdefg", 8, null, 8, StringIndexOutOfBoundsException.class}
+                , new @Nullable Object[]{"abcdefg", 7, "", 7, null}
+                , new @Nullable Object[]{"abcdefg", 5, "fg", 7, null}
+                , new @Nullable Object[]{"abcdefg", 3, "defg", 7, null}
         );
     }
 
@@ -284,12 +284,12 @@ class StringParserTest {
     }
 
     @SuppressWarnings("squid:S1192") // we do not care about duplicate strings in test data
-    static Stream<Object[]> readStringTest() {
+    static Stream<@Nullable Object[]> readStringTest() {
         return Stream.of(
-                new Object[]{"abcdefg", 6, 2, null, 8, StringIndexOutOfBoundsException.class}
-                , new Object[]{"abcdefg", 5, 2, "fg", 7, null}
-                , new Object[]{"abcdefg", 3, 2, "de", 5, null}
-                , new Object[]{"abcdefg", 5, -1, null, 5, InvalidParameterException.class}
+                new @Nullable Object[]{"abcdefg", 6, 2, null, 8, StringIndexOutOfBoundsException.class}
+                , new @Nullable Object[]{"abcdefg", 5, 2, "fg", 7, null}
+                , new @Nullable Object[]{"abcdefg", 3, 2, "de", 5, null}
+                , new @Nullable Object[]{"abcdefg", 5, -1, null, 5, InvalidParameterException.class}
         );
     }
 
