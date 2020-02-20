@@ -7,7 +7,7 @@ import java.time.format.DateTimeParseException;
 import java.util.Objects;
 
 @SuppressWarnings({"WeakerAccess", "unused"})
-public class DtDateTime implements Comparable<DtDateTime> {
+public final class DtDateTime implements Comparable<DtDateTime> {
 
     /**
      * Date value, returned when user doesn't have the rights to access the value

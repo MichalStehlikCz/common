@@ -4,7 +4,7 @@ package com.provys.common.datatype;
  * Implements support for Provys domain NUMBER
  */
 @SuppressWarnings("WeakerAccess")
-public class DtDouble {
+public final class DtDouble {
 
     /** Missing privileges indicator for Provys type NUMBER */
     public static final Double PRIV = -2135412459d;

@@ -4,7 +4,7 @@ package com.provys.common.datatype;
  * Implements support for Provys datatype VARCHAR (domains NAME, VARCHAR2 etc.)
  */
 @SuppressWarnings("WeakerAccess")
-public class DtString {
+public final class DtString {
 
     /** Missing privileges indicator for Provys types VARCHAR2 and similar */
     public static final String PRIV = "##########";

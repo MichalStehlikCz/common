@@ -5,7 +5,7 @@ package com.provys.common.datatype;
  * Provys domain - this honor belongs to DtCount class
  */
 @SuppressWarnings("WeakerAccess")
-public class DtInteger {
+public final class DtInteger {
 
     /** Missing privileges indicator for Provys type INTEGER */
     public static final Integer PRIV = -2135412459;

@@ -7,7 +7,7 @@ import com.provys.common.exception.InternalException;
  * values in Provys Java framework
  */
 @SuppressWarnings("WeakerAccess")
-public class DtBoolean {
+public final class DtBoolean {
 
     /**
      * Convert {@code String} retrieved from Provys database to boolean

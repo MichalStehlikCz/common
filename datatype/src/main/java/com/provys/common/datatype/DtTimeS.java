@@ -19,7 +19,7 @@ import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 @SuppressWarnings({"WeakerAccess", "unused"})
 @JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
 @XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
-public class DtTimeS implements Comparable<DtTimeS> {
+public final class DtTimeS implements Comparable<DtTimeS> {
 
     /**
      * Date value, returned when user doesn't have the rights to access the value
@@ -1165,7 +1165,7 @@ public class DtTimeS implements Comparable<DtTimeS> {
      * @param localZoneId is local timezone. System expects, that datetime information is valid in this zone
      * @return time in local timezone, corresponding to time with explicitly specified offset
      */
-    private DtTimeS shiftToOffset(ZoneOffset zoneOffset, DtDate date, ZoneId localZoneId) {
+    private DtTimeS shiftToOffset(ZoneId zoneOffset, DtDate date, ZoneId localZoneId) {
         if (!isRegular()) {
             return this;
         }

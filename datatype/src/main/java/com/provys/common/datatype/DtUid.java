@@ -15,7 +15,7 @@ import java.util.Objects;
 @SuppressWarnings("WeakerAccess")
 @JsonbTypeAdapter(JsonbDtUidAdapter.class)
 @XmlJavaTypeAdapter(XmlDtUidAdapter.class)
-public class DtUid {
+public final class DtUid {
 
     /** Missing privileges indicator for Provys types UID and REF */
     public static final DtUid PRIV = new DtUid(BigInteger.valueOf(-2L));

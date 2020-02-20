@@ -658,17 +658,19 @@ public final class DtDate implements Comparable<DtDate> {
      */
     @Override
     public boolean equals(@Nullable Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        DtDate that = (DtDate) o;
-
-        return value.equals(that.value);
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        DtDate dtDate = (DtDate) o;
+        return Objects.equals(value, dtDate.value);
     }
 
     @Override
     public int hashCode() {
-        return value.hashCode();
+        return value != null ? value.hashCode() : 0;
     }
 
     @Override

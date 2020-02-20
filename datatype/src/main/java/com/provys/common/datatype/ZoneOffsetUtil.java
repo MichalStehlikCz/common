@@ -12,7 +12,7 @@ import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
  * exception)
  */
 @SuppressWarnings("WeakerAccess")
-public class ZoneOffsetUtil {
+public final class ZoneOffsetUtil {
 
     /**
      * Regular expression for zone offset part of xsd time information. Strict form (either Z for GMT, [+-]HH:MI and
