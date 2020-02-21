@@ -685,7 +685,9 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     var targetDateTime = ZonedDateTime.ofInstant(LocalDateTime
             .of(date.plusDays(time.getDays()).getLocalDate(), time.getTime24().getLocalTime()),
         zoneOffset, localZoneId).toLocalDateTime();
-    var result = (int) Duration.between(targetDateTime, date.getLocalDate()).toSeconds();
+    var result = (int) Duration
+        .between(LocalDateTime.of(date.getLocalDate(), LocalTime.MIDNIGHT), targetDateTime)
+        .toSeconds();
     if (result == time.time) {
       // no need to maintain multiple instances of the same time...
       return time;
@@ -1216,8 +1218,14 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     }
     var targetDateTime = ZonedDateTime
         .of(LocalDateTime.of(date.plusDays(getDays()).getLocalDate(), getTime24().getLocalTime()),
-            localZoneId).toOffsetDateTime().atZoneSameInstant(ZoneId.of(zoneOffset.getId()));
-    var result = (int) Duration.between(targetDateTime, date.getLocalDate()).getSeconds();
+            localZoneId)
+        .toOffsetDateTime()
+        .atZoneSameInstant(zoneOffset);
+    var result = (int) Duration
+        .between(ZonedDateTime
+                .of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), 0, 0, 0, 0, zoneOffset),
+            targetDateTime)
+        .getSeconds();
     if (result == time) {
       // no need to maintain multiple instances of the same time...
       return this;
