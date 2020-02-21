@@ -1,8 +1,9 @@
 package com.provys.common.spring;
 
 import com.provys.common.exception.ProvysException;
-import org.apache.logging.log4j.LogManager;
+import java.util.Arrays;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,11 +12,9 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-import java.util.Arrays;
-
 /**
- * Exception interceptor for Spring that logs exception and produces error message in agreed message
- * format
+ * Exception interceptor for Spring that logs exception and produces error responses in Provys
+ * format.
  */
 @ControllerAdvice
 @Order(0)

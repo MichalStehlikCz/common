@@ -11,7 +11,7 @@ import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 
 /**
- * Configure Jackson Xml mapper for use in Spring
+ * Configures Jackson Xml mapper for use in Spring.
  */
 @SuppressWarnings("SpringFacetCodeInspection")
 @Configuration
