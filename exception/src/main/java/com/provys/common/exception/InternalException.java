@@ -1,9 +1,8 @@
 package com.provys.common.exception;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.Map;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Represents internal exception. This exception can be used in internal checks, where other code

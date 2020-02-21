@@ -1,12 +1,13 @@
 package com.provys.common.exception;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.Collections;
 import java.util.Map;
+import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Represents regular PROVYS exception - extends exception with supplied internal name
+ * Represents regular PROVYS exception - extends {@link ProvysException} with supplied internal
+ * name.
  */
 public final class RegularException extends ProvysException {
 
@@ -68,6 +69,28 @@ public final class RegularException extends ProvysException {
    */
   public RegularException(String nameNm, String message) {
     this(nameNm, message, (Throwable) null);
+  }
+
+  @Override
+  public boolean equals(@Nullable Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof RegularException)) {
+      return false;
+    }
+    if (!super.equals(o)) {
+      return false;
+    }
+    RegularException that = (RegularException) o;
+    return Objects.equals(nameNm, that.nameNm);
+  }
+
+  @Override
+  public int hashCode() {
+    int result = super.hashCode();
+    result = 31 * result + (nameNm != null ? nameNm.hashCode() : 0);
+    return result;
   }
 
   @Override

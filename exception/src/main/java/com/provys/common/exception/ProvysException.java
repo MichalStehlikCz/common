@@ -1,10 +1,9 @@
 package com.provys.common.exception;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Common ancestor for exceptions thrown by PROVYS code. Makes it easier to track all defined
@@ -76,7 +75,9 @@ public abstract class ProvysException extends RuntimeException {
   }
 
   /**
-   * @return internal name of exception for mapping with provys ERROR object
+   * Get internal name of Exception. Used for mapping to registered ERROR
+   *
+   * @return internal name of exception
    */
   public abstract String getNameNm();
 
@@ -119,8 +120,8 @@ public abstract class ProvysException extends RuntimeException {
 
   @Override
   public String toString() {
-    return "ProvysException{" +
-        "params=" + params +
-        "} " + super.toString();
+    return "ProvysException{"
+        + "params=" + params
+        + ", " + super.toString() + '}';
   }
 }

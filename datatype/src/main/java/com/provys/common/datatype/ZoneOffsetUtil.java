@@ -1,15 +1,15 @@
 package com.provys.common.datatype;
 
 import java.time.DateTimeException;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeParseException;
+import java.time.ZoneOffset;
 import java.util.regex.Pattern;
 
 import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 
 /**
  * Utility class that provides methods missing in Java ZoneOffset implementation (like validation
- * without raising exception)
+ * without raising exception).
  */
 public final class ZoneOffsetUtil {
 
@@ -20,7 +20,7 @@ public final class ZoneOffsetUtil {
   public static final String REGEX_STRICT = "Z|[+-](?:0[0-9]|1[0-4]):[0-5][0-9]|[+-](?:0?[0-9]|1[0-4])";
 
   /**
-   * Pattern for strict zone offset validation
+   * Pattern for strict zone offset validation.
    */
   public static final Pattern PATTERN_STRICT = Pattern.compile(REGEX_STRICT);
 
@@ -35,12 +35,12 @@ public final class ZoneOffsetUtil {
           "[+-](?:(?:0[0-9]|1[0-8])[0-5][0-9](?:[0-5][0-9])?)";
 
   /**
-   * Pattern for lenient zone offset validation
+   * Pattern for lenient zone offset validation.
    */
   public static final Pattern PATTERN_LENIENT = Pattern.compile(REGEX_LENIENT);
 
   /**
-   * Strict validation of zone offset text
+   * Strict validation of zone offset text.
    *
    * @param text is source text
    * @return if supplied text is valid zone offset (strict validation)
@@ -50,7 +50,7 @@ public final class ZoneOffsetUtil {
   }
 
   /**
-   * Strict validation of zone offset text
+   * Strict validation of zone offset text.
    *
    * @param text is source text
    * @return if supplied text is valid zone offset (strict validation)
@@ -60,7 +60,7 @@ public final class ZoneOffsetUtil {
   }
 
   /**
-   * Parsing of zone offset text; should accept all values that pass at least lenient validation
+   * Parsing of zone offset text. Should accept all values that pass at least lenient validation
    *
    * @param text is text to be parsed
    * @return parsed zone offset
@@ -77,7 +77,7 @@ public final class ZoneOffsetUtil {
   }
 
   /**
-   * Non-instantiable utility class
+   * Non-instantiable utility class.
    */
   private ZoneOffsetUtil() {
   }
