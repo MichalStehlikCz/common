@@ -2,13 +2,12 @@ package com.provys.common.spring;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
+import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Class represents result of web-service call in standard PROVYS format (e.g. with data and error
@@ -38,6 +37,14 @@ public class WsError {
     stack = null;
   }
 
+  /**
+   * Default constructor for WsError. Supplying all properties.
+   *
+   * @param status is reported error status
+   * @param errorNm is internal name of error
+   * @param message is error message
+   * @param stack is error stack
+   */
   @JsonCreator
   public WsError(@JsonProperty("STATUS") int status,
       @JsonProperty("ERROR_NM") @Nullable String errorNm,
@@ -50,28 +57,36 @@ public class WsError {
   }
 
   /**
-   * @return value of field status
+   * Value of property status.
+   *
+   * @return value of property status
    */
   public int getStatus() {
     return status;
   }
 
   /**
-   * @return value of field errorNm
+   * Value of property errorNm.
+   *
+   * @return value of property errorNm
    */
   public @Nullable String getErrorNm() {
     return errorNm;
   }
 
   /**
-   * @return value of field message
+   * Value of property message.
+   *
+   * @return value of property message
    */
   public @Nullable String getMessage() {
     return message;
   }
 
   /**
-   * @return value of field stack
+   * Value of property stack.
+   *
+   * @return value of property stack
    */
   public @Nullable String getStack() {
     return stack;
@@ -86,10 +101,10 @@ public class WsError {
       return false;
     }
     WsError wsError = (WsError) o;
-    return status == wsError.status &&
-        Objects.equals(errorNm, wsError.errorNm) &&
-        Objects.equals(message, wsError.message) &&
-        Objects.equals(stack, wsError.stack);
+    return status == wsError.status
+        && Objects.equals(errorNm, wsError.errorNm)
+        && Objects.equals(message, wsError.message)
+        && Objects.equals(stack, wsError.stack);
   }
 
   @Override
@@ -103,11 +118,11 @@ public class WsError {
 
   @Override
   public String toString() {
-    return "WsError{" +
-        "status=" + status +
-        ", errorNm='" + errorNm + '\'' +
-        ", message='" + message + '\'' +
-        ", stack='" + stack + '\'' +
-        '}';
+    return "WsError{"
+        + "status=" + status
+        + ", errorNm='" + errorNm + '\''
+        + ", message='" + message + '\''
+        + ", stack='" + stack + '\''
+        + '}';
   }
 }
