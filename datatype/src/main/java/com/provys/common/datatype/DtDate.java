@@ -1,17 +1,19 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import javax.json.bind.annotation.JsonbTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.Pattern;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Implements support for standard Provys DATE domain. DtDate value is immutable. DATE values are
@@ -24,52 +26,52 @@ import java.util.regex.Pattern;
 public final class DtDate implements Comparable<DtDate> {
 
   /**
-   * Minimal value that can be represented by DtDate; all special values must fall into this range
+   * Minimal value that can be represented by DtDate. All special values must fall into this range
    */
   private static final LocalDate MINVALUE = LocalDate.of(1000, 1, 1);
 
   /**
-   * Maximal value that can be represented by DtDate; all special values must fall to this range
+   * Maximal value that can be represented by DtDate. All special values must fall to this range
    */
   private static final LocalDate MAXVALUE = LocalDate.of(5000, 1, 1);
 
   /**
-   * Date value, returned when user doesn't have the rights to access the value
+   * Date value, returned when user doesn't have the rights to access the value.
    */
   public static final DtDate PRIV = of(1000, 1, 2);
 
   /**
-   * Date value, returned as indication of multi-value
+   * Date value, returned as indication of multi-value.
    */
   public static final DtDate ME = of(1000, 1, 1);
 
   /**
-   * Minimal date value, valid in Provys
+   * Minimal date value, valid in Provys.
    */
   public static final DtDate MIN = of(1000, 1, 3);
 
   /**
-   * Maximal date value, valid in Provys
+   * Maximal date value, valid in Provys.
    */
   public static final DtDate MAX = of(5000, 1, 1);
 
   /**
-   * Text representing PRIV value
+   * Text representing PRIV value.
    */
   public static final String PRIV_TEXT = DtString.PRIV;
 
   /**
-   * Text representing ME value
+   * Text representing ME value.
    */
   public static final String ME_TEXT = DtString.ME;
 
   /**
-   * Text representing MIN value
+   * Text representing MIN value.
    */
   public static final String MIN_TEXT = "<<<<<<<<";
 
   /**
-   * Text representing MAX value
+   * Text representing MAX value.
    */
   public static final String MAX_TEXT = ">>>>>>>>";
 
@@ -80,44 +82,44 @@ public final class DtDate implements Comparable<DtDate> {
   public static final String YEAR_REGEX_STRICT = "[1-5][0-9]{3}";
 
   /**
-   * Regular expression validating month, strict (2 digit)
+   * Regular expression validating month, strict (2 digit).
    */
   public static final String MONTH_REGEX_STRICT = "(?:0[1-9]|1[0-2])";
 
   /**
-   * Regular expression validating day, strict (2 digits)
+   * Regular expression validating day, strict (2 digits).
    */
   public static final String DAY_REGEX_STRICT = "(?:0[1-9]|[1-2][0-9]|3[0-1])";
 
   /**
-   * Defines format, supported by Iso parse
+   * Defines format, supported by Iso parse.
    */
   public static final Pattern ISO_DATE_STRICT = Pattern
-      .compile('(' + YEAR_REGEX_STRICT + ")-(" + MONTH_REGEX_STRICT +
-          ")-(" + DAY_REGEX_STRICT + ')');
+      .compile('(' + YEAR_REGEX_STRICT + ")-(" + MONTH_REGEX_STRICT
+          + ")-(" + DAY_REGEX_STRICT + ')');
 
   /**
-   * Regular expression validating year, lenient; allows 2 digit year (that is then interpreted in
+   * Regular expression validating year, lenient. Allows 2 digit year (that is then interpreted in
    * -50/+50 years window)
    */
   public static final String YEAR_REGEX_LENIENT = "(?:" + YEAR_REGEX_STRICT + "|[0-9]{2})";
 
   /**
-   * Regular expression validating month, lenient (supports 1 or 2 digits)
+   * Regular expression validating month, lenient (supports 1 or 2 digits).
    */
   public static final String MONTH_REGEX_LENIENT = "(?:0?[1-9]|1[0-2])";
 
   /**
-   * Regular expression validating day, lenient (1-2 digits)
+   * Regular expression validating day, lenient (1-2 digits).
    */
   public static final String DAY_REGEX_LENIENT = "(?:0?[1-9]|[1-2][0-9]|3[0-1])";
 
   /**
-   * Defines format, supported by Iso parse
+   * Defines format, supported by Iso parse.
    */
   public static final Pattern ISO_DATE_LENIENT = Pattern
-      .compile('(' + YEAR_REGEX_LENIENT + ")[-.](" + MONTH_REGEX_LENIENT +
-          ")[-.](" + DAY_REGEX_LENIENT + ")(?:00:00(?::00(?:[,.][0]{0,9})))");
+      .compile('(' + YEAR_REGEX_LENIENT + ")[-.](" + MONTH_REGEX_LENIENT
+          + ")[-.](" + DAY_REGEX_LENIENT + ")(?:00:00(?::00(?:[,.][0]{0,9})))");
 
   /**
    * Retrieves instance of {@code DtDate} corresponding to given {@code LocalDate}.
@@ -152,20 +154,20 @@ public final class DtDate implements Comparable<DtDate> {
    */
   public static DtDate of(int year, short month, short day, boolean allowSpecial) {
     if (allowSpecial) {
-      if ((year == PRIV.value.getYear()) && (month == PRIV.value.getMonthValue()) &&
-          (day == PRIV.value.getDayOfMonth())) {
+      if ((year == PRIV.value.getYear()) && (month == PRIV.value.getMonthValue())
+          && (day == PRIV.value.getDayOfMonth())) {
         return PRIV;
       }
-      if ((year == ME.value.getYear()) && (month == ME.value.getMonthValue()) &&
-          (day == ME.value.getDayOfMonth())) {
+      if ((year == ME.value.getYear()) && (month == ME.value.getMonthValue())
+          && (day == ME.value.getDayOfMonth())) {
         return ME;
       }
-      if ((year == MIN.value.getYear()) && (month == MIN.value.getMonthValue()) &&
-          (day == MIN.value.getDayOfMonth())) {
+      if ((year == MIN.value.getYear()) && (month == MIN.value.getMonthValue())
+          && (day == MIN.value.getDayOfMonth())) {
         return MIN;
       }
-      if ((year == MAX.value.getYear()) && (month == MAX.value.getMonthValue()) &&
-          (day == MAX.value.getDayOfMonth())) {
+      if ((year == MAX.value.getYear()) && (month == MAX.value.getMonthValue())
+          && (day == MAX.value.getDayOfMonth())) {
         return MAX;
       }
     }
@@ -228,6 +230,23 @@ public final class DtDate implements Comparable<DtDate> {
     return ofLocalDate(LocalDate.ofInstant(instant, ZoneId.systemDefault()));
   }
 
+  @SuppressWarnings("DuplicatedCode")
+  private static @Nullable DtDate parseSpecialText(StringParser parser) {
+    if (parser.onText(PRIV_TEXT)) {
+      return PRIV;
+    }
+    if (parser.onText(ME_TEXT)) {
+      return ME;
+    }
+    if (parser.onText(MIN_TEXT)) {
+      return MIN;
+    }
+    if (parser.onText(MAX_TEXT)) {
+      return MAX;
+    }
+    return null;
+  }
+
   /**
    * Parse value from StringParser; unlike "normal" String parse, this method can read only part of
    * parser content; parser is moved after last character read as part of date values.
@@ -246,19 +265,11 @@ public final class DtDate implements Comparable<DtDate> {
       throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
           parser.getPos());
     }
-    if (allowSpecialText) //noinspection DuplicatedCode - different static fields used
-    {
-      if (parser.onText(PRIV_TEXT)) {
-        return PRIV;
-      }
-      if (parser.onText(ME_TEXT)) {
-        return ME;
-      }
-      if (parser.onText(MIN_TEXT)) {
-        return MIN;
-      }
-      if (parser.onText(MAX_TEXT)) {
-        return MAX;
+    //noinspection DuplicatedCode - different static fields used
+    if (allowSpecialText) {
+      var result = parseSpecialText(parser);
+      if (result != null) {
+        return result;
       }
     }
     try {
@@ -372,7 +383,7 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
-   * Parse provided text in ISO local date format (lenient); special values are encoded as regular
+   * Parse provided text in ISO local date format (lenient). Special values are encoded as regular
    * date strings
    *
    * @param parser    is parser containing text in ISO-8601 format for local date (e.g. YYYY-MM-DD);
@@ -400,7 +411,7 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
-   * Parse provided text in ISO local date format (lenient); special values are encoded as regular
+   * Parse provided text in ISO local date format (lenient). Special values are encoded as regular
    * date strings
    *
    * @param text is text in ISO-8601 format for local date (e.g. YYYY-MM-DD); also accepts date with
@@ -427,19 +438,19 @@ public final class DtDate implements Comparable<DtDate> {
    */
   public static DtDate ofProvysValue(StringParser parser) {
     try {
-      var day = parser.readUnsignedInt(2);
+      final var day = parser.readUnsignedInt(2);
       if (parser.next() != '.') {
         throw new DateTimeParseException(
             "Invalid Provys date string format delimiter " + parser.current(),
             parser.getString(), 2);
       }
-      var month = parser.readUnsignedInt(2);
+      final var month = parser.readUnsignedInt(2);
       if (parser.next() != '.') {
         throw new DateTimeParseException(
             "Invalid Provys date string format delimiter " + parser.current(),
             parser.getString(), 2);
       }
-      var year = parser.readUnsignedInt(4);
+      final var year = parser.readUnsignedInt(4);
       // only time " 00:00:00" is allowed to be present for date values - and if it is, it is read
       parser.onText(" 00:00:00");
       return of(year, month, day, true);
@@ -471,12 +482,12 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
-   * Actual date represented by this DtDate object
+   * Actual date represented by this DtDate object.
    */
   private final LocalDate value;
 
   /**
-   * Constructor; only used internally, use static methods to retrieve {@code DtDate} instances
+   * Constructor; only used internally, use static methods to retrieve {@code DtDate} instances.
    *
    * @param value is value DtDate object shall be assigned
    */
@@ -515,6 +526,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * If value is not privileged to access pseudovalue.
+   *
    * @return if this value is PRIV
    */
   public boolean isPriv() {
@@ -522,6 +535,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * If value is multivalue indicator.
+   *
    * @return if this value is ME (multivalue indicator)
    */
   public boolean isME() {
@@ -529,6 +544,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * If value is start of unlimited interval.
+   *
    * @return if this value is MIN (start of unlimited interval)
    */
   public boolean isMin() {
@@ -536,6 +553,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * If value is end of unlimited interval.
+   *
    * @return if this value is MAX (end of unlimited interval)
    */
   public boolean isMax() {
@@ -543,7 +562,9 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
-   * @return {@code LocalDate} represented by this object
+   * {@link LocalDate} represented by this date.
+   *
+   * @return LocalDate represented by this object
    */
   @SuppressWarnings("SuspiciousGetterSetter")
   // we want to keep fact that DtDate is implemented via LocalDate private fact
@@ -552,6 +573,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * Year part of this date.
+   *
    * @return year from this date value
    */
   public int getYear() {
@@ -565,6 +588,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * Month part of this date.
+   *
    * @return month from this date value
    */
   public int getMonthValue() {
@@ -578,6 +603,8 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * Day of month part of this date.
+   *
    * @return day of month from this date value
    */
   public int getDayOfMonth() {
@@ -682,9 +709,9 @@ public final class DtDate implements Comparable<DtDate> {
    * @return string representation of this value in PROVYS date format
    */
   public String toProvysValue() {
-    return String.format((Locale) null, "%02d", value.getDayOfMonth()) + '.' +
-        String.format((Locale) null, "%02d", value.getMonthValue()) + '.' +
-        String.format((Locale) null, "%04d", value.getYear());
+    return String.format((Locale) null, "%02d", value.getDayOfMonth()) + '.'
+        + String.format((Locale) null, "%02d", value.getMonthValue()) + '.'
+        + String.format((Locale) null, "%04d", value.getYear());
   }
 
   /**
@@ -716,6 +743,9 @@ public final class DtDate implements Comparable<DtDate> {
   }
 
   /**
+   * ISO-8601 representation of date. Special values are represented by their corresponding special
+   * strings.
+   *
    * @return ISO-8601 representation of date, represented by this object
    */
   @Override

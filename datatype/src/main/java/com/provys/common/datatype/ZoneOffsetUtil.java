@@ -17,7 +17,8 @@ public final class ZoneOffsetUtil {
    * Regular expression for zone offset part of xsd time information. Strict form (either Z for GMT,
    * [+-]HH:MI and [+-]HH)
    */
-  public static final String REGEX_STRICT = "Z|[+-](?:0[0-9]|1[0-4]):[0-5][0-9]|[+-](?:0?[0-9]|1[0-4])";
+  public static final String REGEX_STRICT = "Z|[+-](?:0[0-9]|1[0-4]):[0-5][0-9]"
+      + "|[+-](?:0?[0-9]|1[0-4])";
 
   /**
    * Pattern for strict zone offset validation.
@@ -30,9 +31,9 @@ public final class ZoneOffsetUtil {
    * [+-]HHMI, [+-]HH:MI:SS and [+-]HHMISS
    */
   public static final String REGEX_LENIENT =
-      "[zZ]|(?:[+-](?:0[0-9]|1[0-8]):[0-5][0-9](?::[0-5][0-9])?)|" +
-          "[+-](?:0?[0-9]|1[0-8])|" +
-          "[+-](?:(?:0[0-9]|1[0-8])[0-5][0-9](?:[0-5][0-9])?)";
+      "[zZ]|(?:[+-](?:0[0-9]|1[0-8]):[0-5][0-9](?::[0-5][0-9])?)|"
+          + "[+-](?:0?[0-9]|1[0-8])|"
+          + "[+-](?:(?:0[0-9]|1[0-8])[0-5][0-9](?:[0-5][0-9])?)";
 
   /**
    * Pattern for lenient zone offset validation.

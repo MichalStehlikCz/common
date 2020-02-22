@@ -118,15 +118,16 @@ class DtUidTest {
     private @MonotonicNonNull DtUid value3;
 
     /**
+     * Value of field value1.
+     *
      * @return value of field value1
      */
-    @XmlElement
     public @Nullable DtUid getValue1() {
       return value1;
     }
 
     /**
-     * Set value of field value1
+     * Set value of field value1.
      *
      * @param value1 is new value to be set
      */
@@ -136,6 +137,8 @@ class DtUidTest {
     }
 
     /**
+     * Value of field value2.
+     *
      * @return value of field value2
      */
     @XmlElement
@@ -144,7 +147,7 @@ class DtUidTest {
     }
 
     /**
-     * Set value of field value2
+     * Set value of field value2.
      *
      * @param value2 is new value to be set
      */
@@ -154,6 +157,8 @@ class DtUidTest {
     }
 
     /**
+     * Value of field value3.
+     *
      * @return value of field value3
      */
     @XmlElement

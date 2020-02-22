@@ -9,7 +9,7 @@ import com.provys.common.exception.InternalException;
 public final class DtBoolean {
 
   /**
-   * Convert {@code String} retrieved from Provys database to boolean
+   * Convert {@code String} retrieved from Provys database to boolean.
    *
    * @param value is string value retrieved from Provys boolean column or function (char Y / N)
    * @return corresponding Java boolean value
@@ -25,7 +25,7 @@ public final class DtBoolean {
   }
 
   /**
-   * Convert Java boolean value to {@code String}, representing this value in Provys database
+   * Convert Java boolean value to {@code String}, representing this value in Provys database.
    *
    * @param value is source boolean value
    * @return corresponding Provys database boolean value (char Y / N)
@@ -35,7 +35,7 @@ public final class DtBoolean {
   }
 
   /**
-   * Non-instantiable utility class
+   * Non-instantiable utility class.
    */
   private DtBoolean() {
   }
