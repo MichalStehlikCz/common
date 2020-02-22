@@ -14,6 +14,15 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @SuppressWarnings("AbstractClassExtendsConcreteClass")
 public abstract class ProvysException extends RuntimeException {
 
+  /**
+   * Default Provys status code (used in web-service response).
+   */
+  public static final int STATUS_CODE = -1;
+  /**
+   * Default returned HTTP status (server error).
+   */
+  public static final int HTTP_STATUS = 500;
+
   private final Map<String, String> params;
 
   /**
@@ -80,6 +89,26 @@ public abstract class ProvysException extends RuntimeException {
    * @return internal name of exception
    */
   public abstract String getNameNm();
+
+  /**
+   * Provys status code, associated with the exception. Fixed as default error in this ancestor, can
+   * be modified if some exception returns specific error codes.
+   *
+   * @return Provys status code
+   */
+  public int getStatusCode() {
+    return STATUS_CODE;
+  }
+
+  /**
+   * Http status code, associated with the exception. Fixed as server error in this ancestor, can be
+   * modified if some exception should return different http status code when caught in web service.
+   *
+   * @return http status code, 500 for this class
+   */
+  public int getHttpStatus() {
+    return HTTP_STATUS;
+  }
 
   /**
    * Retrieve map of parameters containing additional information related to exception.

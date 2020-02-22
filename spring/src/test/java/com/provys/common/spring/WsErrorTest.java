@@ -30,12 +30,11 @@ class WsErrorTest {
   private static final String SAMPLE2_JSON = "{\"STATUS\":-1,\"ERROR_NM\":\"TEST_ERROR\"," +
       "\"ERRORMESSAGE\":\"Test error instance\",\"ERRORSTACK\":\"Stack\\nLine2\\nLine3\"}";
   private static final String SAMPLE2_XML =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ERRORSTATUS>" +
-          "<STATUS>-1</STATUS><ERROR_NM>TEST_ERROR</ERROR_NM><ERRORMESSAGE>Test error instance</ERRORMESSAGE>"
-          +
-          "<ERRORSTACK>Stack\n" +
-          "Line2\n" +
-          "Line3</ERRORSTACK></ERRORSTATUS>";
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ERRORSTATUS>"
+          + "<STATUS>-1</STATUS><ERROR_NM>TEST_ERROR</ERROR_NM><ERRORMESSAGE>Test error instance</ERRORMESSAGE>"
+          + "<ERRORSTACK>Stack\n"
+          + "Line2\n"
+          + "Line3</ERRORSTACK></ERRORSTATUS>";
 
   @Test
   void toJsonTest() throws JsonProcessingException {
