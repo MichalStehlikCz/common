@@ -1,11 +1,11 @@
 package com.provys.common.datatype;
 
-import java.time.DateTimeException;
-import java.time.format.DateTimeParseException;
-import java.time.ZoneOffset;
-import java.util.regex.Pattern;
-
 import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
+
+import java.time.DateTimeException;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeParseException;
+import java.util.regex.Pattern;
 
 /**
  * Utility class that provides methods missing in Java ZoneOffset implementation (like validation
@@ -15,7 +15,7 @@ public final class ZoneOffsetUtil {
 
   /**
    * Regular expression for zone offset part of xsd time information. Strict form (either Z for GMT,
-   * [+-]HH:MI and [+-]HH)
+   * [+-]HH:MI and [+-]HH).
    */
   public static final String REGEX_STRICT = "Z|[+-](?:0[0-9]|1[0-4]):[0-5][0-9]"
       + "|[+-](?:0?[0-9]|1[0-4])";
@@ -28,7 +28,7 @@ public final class ZoneOffsetUtil {
   /**
    * Regular expression for offset part of time information. Lenient form allows offset range -18 to
    * +18 hours and supports same formats as ZoneOffset (in addition to strict formats z for GMT,
-   * [+-]HHMI, [+-]HH:MI:SS and [+-]HHMISS
+   * [+-]HHMI, [+-]HH:MI:SS and [+-]HHMISS.
    */
   public static final String REGEX_LENIENT =
       "[zZ]|(?:[+-](?:0[0-9]|1[0-8]):[0-5][0-9](?::[0-5][0-9])?)|"

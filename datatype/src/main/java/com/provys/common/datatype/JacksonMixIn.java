@@ -9,6 +9,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
  */
 public class JacksonMixIn extends SimpleModule {
 
+  /**
+   * Constructor for JacksonMixIn class - activates mix-in annotation interfaces.
+   */
   @SuppressWarnings("nullness")
   public JacksonMixIn() {
     super("ProvysDtMixIn");

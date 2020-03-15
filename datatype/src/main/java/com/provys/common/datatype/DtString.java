@@ -1,21 +1,21 @@
 package com.provys.common.datatype;
 
 /**
- * Implements support for Provys datatype VARCHAR (domains NAME, VARCHAR2 etc.)
+ * Implements support for Provys datatype VARCHAR (domains NAME, VARCHAR2 etc).
  */
 public final class DtString {
 
   /**
-   * Missing privileges indicator for Provys types VARCHAR2 and similar
+   * Missing privileges indicator for Provys types VARCHAR2 and similar.
    */
   public static final String PRIV = "##########";
   /**
-   * Multi-value indicator for Provys type VARCHAR2
+   * Multi-value indicator for Provys type VARCHAR2.
    */
   public static final String ME = "**********";
 
   /**
-   * Indicates if supplied value is regular (e.g. not one of special values).
+   * Indicates if supplied value is regular (eg not one of special values).
    *
    * @param value is the value to be checked
    * @return true if supplied value is regular value, false otherwise
@@ -46,7 +46,7 @@ public final class DtString {
 
   /**
    * DtString is utility class used for manipulation with String values in Provys framework and this
-   * is why its constructor is not accessible
+   * is why its constructor is not accessible.
    */
   private DtString() {
   }

@@ -1,20 +1,25 @@
 package com.provys.common.datatype;
 
-import com.provys.common.exception.InternalException;
-import org.checkerframework.checker.nullness.qual.Nullable;
+import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 
-import javax.json.bind.annotation.JsonbTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.*;
+import com.provys.common.exception.InternalException;
+import java.time.DateTimeException;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.Pattern;
-
-import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Support for Provys domain TIME with subdomain S (time in seconds)
+ * Support for Provys domain TIME with subdomain S (time in seconds).
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
 @JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
@@ -22,169 +27,167 @@ import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 public final class DtTimeS implements Comparable<DtTimeS> {
 
   /**
-   * Date value, returned when user doesn't have the rights to access the value
+   * Date value, returned when user doesn't have the rights to access the value.
    */
   public static final DtTimeS PRIV = new DtTimeS(DtInteger.PRIV, false);
 
   /**
-   * Date value, returned as indication of multi-value
+   * Date value, returned as indication of multi-value.
    */
   public static final DtTimeS ME = new DtTimeS(DtInteger.ME, false);
 
   /**
-   * Minimal date value, valid in Provys
+   * Minimal date value, valid in Provys.
    */
   public static final DtTimeS MIN = new DtTimeS(DtInteger.MIN, false);
 
   /**
-   * Maximal date value, valid in Provys
+   * Maximal date value, valid in Provys.
    */
   public static final DtTimeS MAX = new DtTimeS(DtInteger.MAX, false);
 
   /**
-   * Textual representation of PRIV value
+   * Textual representation of PRIV value.
    */
   public static final String PRIV_TEXT = DtString.PRIV;
 
   /**
-   * Textual representation of ME value
+   * Textual representation of ME value.
    */
   public static final String ME_TEXT = DtString.ME;
 
   /**
-   * Textual representation of MIN value
+   * Textual representation of MIN value.
    */
   public static final String MIN_TEXT = "<<<<<<";
 
   /**
-   * Textual representation of MAX value
+   * Textual representation of MAX value.
    */
   public static final String MAX_TEXT = ">>>>>>";
 
   /**
    * Regular expression for hours part (0-23; 24 hours is special case handled on time level, not on
-   * individual components)
+   * individual components).
    */
   public static final String HOURS_REGEX_STRICT = "(?:[0-1][0-9]|2[0-3])";
 
   /**
-   * Regular expression for minutes part (0-59)
+   * Regular expression for minutes part (0-59).
    */
   public static final String MINUTES_REGEX_STRICT = "[0-5][0-9]";
 
   /**
-   * Regular expression for seconds part (0-59)
+   * Regular expression for seconds part (0-59).
    */
   public static final String SECONDS_REGEX_STRICT = "[0-5][0-9]";
 
   /**
-   * Regular expression for nanoseconds part
+   * Regular expression for nanoseconds part.
    */
   public static final String NANO_REGEX_STRICT = "[,.]\\d{1,9}";
 
   /**
-   * 0 Regular expression for time (strict, without timezone)
+   * 0 Regular expression for time (strict, without timezone).
    */
   public static final String TIME_REGEX_STRICT =
       "(?:24:00:00|" + HOURS_REGEX_STRICT + ':' + MINUTES_REGEX_STRICT + ':'
           + SECONDS_REGEX_STRICT + ")(?:" + NANO_REGEX_STRICT + ")?";
 
   /**
-   * Regular expression for time as defined in ISO, without time zone
+   * Regular expression for time as defined in ISO, without time zone.
    */
   public static final Pattern TIME_PATTERN_STRICT = Pattern.compile('^' + TIME_REGEX_STRICT + '$');
 
   /**
-   * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone)
+   * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone).
    */
-  public static final Pattern PATTERN_STRICT = Pattern.compile("^(" + TIME_REGEX_STRICT + ")(" +
-      ZoneOffsetUtil.REGEX_STRICT + ")?");
+  public static final Pattern PATTERN_STRICT = Pattern.compile("^(" + TIME_REGEX_STRICT + ")("
+      + ZoneOffsetUtil.REGEX_STRICT + ")?");
 
   /**
    * Regular expression for hours part (0-23; 24 hours is special case handled on time level, not on
-   * individual components)
+   * individual components).
    */
   public static final String HOURS_REGEX_LENIENT = "(?:[0-1]?[0-9]|2[0-3])";
 
   /**
-   * Regular expression for minutes part (0-59)
+   * Regular expression for minutes part (0-59).
    */
   public static final String MINUTES_REGEX_LENIENT = "[0-5]?[0-9]";
 
   /**
-   * Regular expression for seconds part (0-59)
+   * Regular expression for seconds part (0-59).
    */
   public static final String SECONDS_REGEX_LENIENT = "[0-5]?[0-9]";
 
   /**
-   * Regular expression for nano-seconds part (same as strict at the moment)
+   * Regular expression for nano-seconds part (same as strict at the moment).
    */
   public static final String NANO_REGEX_LENIENT = NANO_REGEX_STRICT;
 
   /**
    * Regular expression for time (lenient; allows both time with separators with missing leading
-   * zeroes and time without separator, seconds are optional, without timezone)
+   * zeroes and time without separator, seconds are optional, without timezone).
    */
   @SuppressWarnings("squid:S1192")
   public static final String TIME_REGEX_LENIENT =
-      "(?:24:0?0(?::0?0(?:" + NANO_REGEX_LENIENT + ")?)?)|" +
-          "(?:2400(?:00(?:" + NANO_REGEX_LENIENT + ")?)?)|" +
-          "(?:" + HOURS_REGEX_LENIENT + ':' + MINUTES_REGEX_LENIENT + "(?::" + SECONDS_REGEX_LENIENT
-          +
-          "(?:" + NANO_REGEX_LENIENT + ")?)?)|" +
-          "(?:" + HOURS_REGEX_STRICT + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
-          "(?:" + NANO_REGEX_LENIENT + ")?)?)";
+      "(?:24:0?0(?::0?0(?:" + NANO_REGEX_LENIENT + ")?)?)|"
+          + "(?:2400(?:00(?:" + NANO_REGEX_LENIENT + ")?)?)|"
+          + "(?:" + HOURS_REGEX_LENIENT + ':' + MINUTES_REGEX_LENIENT + "(?::"
+          + SECONDS_REGEX_LENIENT + "(?:" + NANO_REGEX_LENIENT + ")?)?)|"
+          + "(?:" + HOURS_REGEX_STRICT + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT
+          + "(?:" + NANO_REGEX_LENIENT + ")?)?)";
 
   /**
    * Regular expression for time (without time zone), lenient form, allowing additional parsable
-   * formats
+   * formats.
    */
   public static final Pattern TIME_PATTERN_LENIENT = Pattern
       .compile('^' + TIME_REGEX_LENIENT + '$');
 
   /**
    * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient
-   * - allows some divergencies from norm
+   * - allows some divergencies from norm.
    */
-  public static final Pattern PATTERN_LENIENT = Pattern.compile("^(" + TIME_REGEX_LENIENT + ")(" +
-      ZoneOffsetUtil.REGEX_LENIENT + ")?");
+  public static final Pattern PATTERN_LENIENT = Pattern.compile("^(" + TIME_REGEX_LENIENT + ")("
+      + ZoneOffsetUtil.REGEX_LENIENT + ")?");
 
   /**
-   * Regular expression for time information (e.g. time not limited to 24 hours)
+   * Regular expression for time information (e.g. time not limited to 24 hours).
    */
   public static final String TIMEINFO_REGEX_LENIENT =
-      "[+-]?(?:[0-9]{1,4}:" + MINUTES_REGEX_LENIENT +
-          "(?::" + SECONDS_REGEX_LENIENT +
-          "(?:" + NANO_REGEX_LENIENT + ")?)?|" +
-          "[0-9]{2}" + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT +
-          "(?:" + NANO_REGEX_LENIENT + ")?)?)";
+      "[+-]?(?:[0-9]{1,4}:" + MINUTES_REGEX_LENIENT + "(?::" + SECONDS_REGEX_LENIENT
+          + "(?:" + NANO_REGEX_LENIENT + ")?)?|"
+          + "[0-9]{2}" + MINUTES_REGEX_STRICT + "(?:" + SECONDS_REGEX_STRICT
+          + "(?:" + NANO_REGEX_LENIENT + ")?)?)";
 
   /**
    * Regular expression for time; might exceed 24 hour limit, supports negative values and allows
-   * other parsable formats
+   * other parsable formats.
    */
   public static final Pattern TIMEINFO_PATTERN_LENIENT = Pattern
       .compile('^' + TIMEINFO_REGEX_LENIENT + '$');
 
   /**
    * Regular expression for time as defined in ISO (e.g. 0-24 hours with optional timezone), lenient
-   * - allows some divergencies from norm
+   * - allows some divergencies from norm.
    */
   public static final Pattern INFO_PATTERN_LENIENT = Pattern
-      .compile('(' + TIME_REGEX_LENIENT + ")(" +
-          ZoneOffsetUtil.REGEX_LENIENT + ")?");
+      .compile('(' + TIME_REGEX_LENIENT + ")("
+          + ZoneOffsetUtil.REGEX_LENIENT + ")?");
 
   /**
-   * Pattern used to parse time info
+   * Pattern used to parse time info.
    */
-  public static final Pattern TIMEINFO_PATTERN_PARSE = Pattern.compile("([+-]?)(?:([0-9]{1,4}):(" +
-      MINUTES_REGEX_LENIENT + ")(?::(" + SECONDS_REGEX_LENIENT +
-      ")(?:(" + NANO_REGEX_LENIENT + "))?)?|" +
-      "([0-9]{2})(" + MINUTES_REGEX_STRICT + ")(?:(" + SECONDS_REGEX_STRICT +
-      ")(?:(" + NANO_REGEX_LENIENT + "))?)?)");
+  public static final Pattern TIMEINFO_PATTERN_PARSE = Pattern.compile("([+-]?)(?:([0-9]{1,4}):("
+      + MINUTES_REGEX_LENIENT + ")(?::(" + SECONDS_REGEX_LENIENT
+      + ")(?:(" + NANO_REGEX_LENIENT + "))?)?|"
+      + "([0-9]{2})(" + MINUTES_REGEX_STRICT + ")(?:(" + SECONDS_REGEX_STRICT
+      + ")(?:(" + NANO_REGEX_LENIENT + "))?)?)");
 
   /**
-   * whole hours are used pretty often, so it might be good idea to cache them...
+   * Whole hours are used pretty often, so it might be good idea to cache them...
    */
   private static final DtTimeS[] HOURS = new DtTimeS[31];
 
@@ -200,21 +203,23 @@ public final class DtTimeS implements Comparable<DtTimeS> {
    *
    * @param time is time value new object should represent
    * @return Provys time value corresponding to supplied {@code LocalTime} value. Fractional part is
-   * rounded to whole seconds.
+   *     rounded to whole seconds.
    */
   public static DtTimeS ofLocalTime(LocalTime time) {
     return ofHourToNano(time.getHour(), time.getMinute(), time.getSecond(), time.getNano());
   }
 
   /**
-   * @return zero time. Shorter version of call to ofSeconds(0)
+   * Zero time. Shorter version of call to ofSeconds(0)
+   *
+   * @return zero time
    */
   public static DtTimeS zero() {
     return HOURS[0];
   }
 
   /**
-   * Return time object representing given time value (in seconds)
+   * Return time object representing given time value (in seconds).
    *
    * @param time is time value to be represented
    * @return resulting value
@@ -239,8 +244,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
       return MAX;
     }
     throw new DateTimeException(
-        time + " is not valid time - must be regular integer value in interval " +
-            DtInteger.MIN + " .. " + DtInteger.MAX);
+        time + " is not valid time - must be regular integer value in interval "
+            + DtInteger.MIN + " .. " + DtInteger.MAX);
   }
 
   private static void checkSecondToNano(int seconds, int nanoSeconds) {
@@ -412,7 +417,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Verify that nanosecond part of parsed value is zero
+   * Verify that nanosecond part of parsed value is zero.
    *
    * @param parser is parser, positioned on nanosecond delimiter
    */
@@ -428,7 +433,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Parse special text if present, return null if special text was not found
+   * Parse special text if present, return null if special text was not found.
    */
   @SuppressWarnings("DuplicatedCode") // code is not duplicate as it uses local statics
   private static @Nullable DtTimeS parseSpecialText(StringParser parser) {
@@ -463,7 +468,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Parse value from StringParser; unlike "normal" String parse, this method can read only part of
+   * Parse value from StringParser. Unlike "normal" String parse, this method can read only part of
    * parser content; parser is moved after last character read as part of time value.
    *
    * @param parser            is parser containing text to be read
@@ -538,7 +543,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Strict validation of Iso time value
+   * Strict validation of Iso time value.
    *
    * @param text is supplied text to be validated
    * @return if supplied text is valid time information (including potential zone offset)
@@ -548,7 +553,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Lenient validation of Iso time value
+   * Lenient validation of Iso time value.
    *
    * @param text is supplied text to be validated
    * @return if supplied text is valid time information (including potential zone offset)
@@ -573,7 +578,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Lenient validation of Iso time value, without 24 hour limit
+   * Lenient validation of Iso time value, without 24 hour limit.
    *
    * @param text          is supplied text to be validated
    * @param allowNegative specifies if negative values can be successfully validated
@@ -585,7 +590,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Parse nano-second string (including delimiter)
+   * Parse nano-second string (including delimiter).
    *
    * @param nanoGroup is captured nanosecond group, including delimiter
    * @return nanosecond value
@@ -595,7 +600,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Parse text from ISO format, without zone offset information; allows time outside normal Iso
+   * Parse text from ISO format, without zone offset information. Allows time outside normal Iso
    * limits (0-24 hours), potentially negative
    *
    * @param text          is supplied text
@@ -672,7 +677,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Method used when converting data to zone with explicitly specified offset
+   * Method used when converting data to zone with explicitly specified offset.
    *
    * @param time        is specified time, before offset is incorporated
    * @param zoneOffset  is offset that has been specified with time value
@@ -713,8 +718,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     var matcher = PATTERN_LENIENT.matcher(text);
     if (!matcher.matches()) {
       throw new DateTimeParseException(
-          "Supplied expression " + text + " does not match any recognised time " +
-              "with offset format", text, 0);
+          "Supplied expression " + text + " does not match any recognised time "
+              + "with offset format", text, 0);
     }
     var time = parseIsoTime(castNonNull(matcher.group(1))); // valid when matcher matches
     var group2 = matcher.group(2);
@@ -745,7 +750,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
    * @return if supplied text is valid time, including potential zone offset
    */
   public static DtTimeS parseIso(String text, ZoneId localZoneId) {
-    return parseIso(text, DtDate.now());
+    return parseIso(text, DtDate.now(), localZoneId);
   }
 
   /**
@@ -760,10 +765,12 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Instance of {@code DtTimeS} corresponding to current time (in default time-zone).
+   *
    * @return instance of {@code DtTimeS} corresponding to current time (in default time-zone).
    */
   public static DtTimeS now() {
-    return ofLocalTime(LocalTime.now());
+    return ofLocalTime(LocalTime.now(ZoneId.systemDefault()));
   }
 
   private static int parseProvysValueSeconds(StringParser parser) {
@@ -781,6 +788,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     }
     return seconds;
   }
+
   /**
    * Parse provided text as Provys string representation of time value, in format HH:MI:SS (2-3
    * places for hours). It also accepts value without seconds or with frames part 00. It can also
@@ -880,7 +888,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
    * ... MAX (exclusive)
    *
    * @return true if date is inside interval MIN - MAX, false if given date is special value (PRIV,
-   * ME, MIN, MAX)
+   *     ME, MIN, MAX)
    */
   public boolean isRegular() {
     return (compareTo(MIN) > 0) && (compareTo(MAX) < 0);
@@ -897,6 +905,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Indicate if value is PRIV.
+   *
    * @return if this value is PRIV
    */
   public boolean isPriv() {
@@ -904,6 +914,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Indicate if value is ME.
+   *
    * @return if this value is ME (multivalue indicator)
    */
   public boolean isME() {
@@ -911,6 +923,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Indicate if value is Min.
+   *
    * @return if this value is MIN (start of unlimited interval)
    */
   public boolean isMin() {
@@ -918,6 +932,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Indicate if value is MAX.
+   *
    * @return if this value is MAX (end of unlimited interval)
    */
   public boolean isMax() {
@@ -925,7 +941,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Translate irregular DtTimeS value to corresponding DtInteger value
+   * Translate irregular DtTimeS value to corresponding DtInteger value.
    */
   private Integer getIrregularInt() {
     if (isPriv()) {
@@ -944,7 +960,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Translate irregular DtTimeS value to corresponding DtInteger value
+   * Translate irregular DtTimeS value to corresponding DtInteger value.
    */
   private Double getIrregularDouble() {
     if (isPriv()) {
@@ -963,7 +979,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Add or subtract given amount of days from time
+   * Add or subtract given amount of days from time.
    *
    * @param daysToAdd is number of days that should be added to given time, can have fractional
    *                  part
@@ -1039,7 +1055,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
 
   /**
    * Get number of hours in this time item, minutes are trimmed, no 24 hout limit and negative
-   * values are treated as negative values
+   * values are treated as negative values.
    *
    * @return number of hours this time represents
    */
@@ -1109,7 +1125,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * Convert given time to amount of minutes
+   * Convert given time to amount of minutes.
    *
    * @return minute length this time represents
    */
@@ -1152,6 +1168,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Time in seconds.
+   *
    * @return time in seconds
    */
   public double toSeconds() {
@@ -1162,49 +1180,17 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
-   * @return LocalTime value represented by this DtTimeS; throws exception if such conversion is not
-   * possible (because LocalTime is limited to 0-24h)
+   * LocalTime value represented by this DtTimeS. Throws exception if such conversion is not
+   * possible (because LocalTime is limited to 0-24h).
+   *
+   * @return LocalTime value represented by this DtTimeS
    */
   public LocalTime getLocalTime() {
     return LocalTime.of(getHours(), getMinutes(), getSeconds());
   }
 
   /**
-   * @return time value in iso format without timezone; it is callers responsibility to verify if
-   * value corresponds to range, supported by iso times (e.g. 0-24h)
-   */
-  public String toIso() {
-    if (!isRegular()) {
-      throw new InternalException("Cannot export special time value to ISO format");
-    }
-    return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(time) / 3600,
-        (Math.abs(time) / 60) % 60, Math.abs(time) % 60);
-  }
-
-  /**
-   * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
-   * @return time value in iso format without timezone. Time is cut to 0-24 hour interval
-   */
-  public String toIso24(boolean endTime) {
-    if (!isRegular()) {
-      throw new InternalException("Cannot export special time value to ISO format");
-    }
-    if (endTime && (time % 86400 == 0)) {
-      return "24:00:00";
-    }
-    return String.format("%02d:%02d:%02d", getHours24(),
-        getMinutes24(), getSeconds24());
-  }
-
-  /**
-   * @return time value in iso format without timezone. Time is cut to 0-24 hour interval
-   */
-  public String toIso24() {
-    return toIso24(false);
-  }
-
-  /**
-   * Method used when converting data to zone with explicitly specified offset
+   * Method used when converting data to zone with explicitly specified offset.
    *
    * @param zoneOffset  is offset that has been specified with time value
    * @param date        is date on which time should be converted
@@ -1223,7 +1209,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
         .atZoneSameInstant(zoneOffset);
     var result = (int) Duration
         .between(ZonedDateTime
-                .of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), 0, 0, 0, 0, zoneOffset),
+                .of(date.getYear(), date.getMonthValue(), date.getDayOfMonth(), 0, 0, 0, 0,
+                    zoneOffset),
             targetDateTime)
         .getSeconds();
     if (result == time) {
@@ -1234,12 +1221,28 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Time value in iso format without timezone; it is callers responsibility to verify if value
+   * corresponds to range, supported by iso times (e.g. 0-24h)
+   *
+   * @return time value in iso format without timezone
+   */
+  public String toIso() {
+    if (!isRegular()) {
+      throw new InternalException("Cannot export special time value to ISO format");
+    }
+    return String.format("%s%02d:%02d:%02d", (time < 0) ? "-" : "", Math.abs(time) / 3600,
+        (Math.abs(time) / 60) % 60, Math.abs(time) % 60);
+  }
+
+  /**
+   * Time value in iso format with timezone; it is callers responsibility to verify if value
+   * corresponds to range, supported by iso times (e.g. 0-24h). Note that time might get out of this
+   * interval during conversion
+   *
    * @param zoneOffset  is zone offset that should be used in resulting text representation
    * @param date        is date on which conversion to timezone is performed
    * @param localZoneId is local timezone used to interpret supplied time
-   * @return time value in iso format with timezone; it is callers responsibility to verify if value
-   * corresponds to range, supported by iso times (e.g. 0-24h). Note that time might get out of this
-   * interval during conversion
+   * @return time value in iso format with timezone
    */
   public String toIso(ZoneId zoneOffset, DtDate date, ZoneId localZoneId) {
     var convertedTime = shiftToOffset(zoneOffset, date, localZoneId);
@@ -1247,12 +1250,40 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Time value in iso format without timezone. Time is cut to 0-24 hour interval
+   *
+   * @param endTime flag indicates that midnight should be reported as 24:00:00 instead of 00:00:00
+   * @return time value in iso format without timezone
+   */
+  public String toIso24(boolean endTime) {
+    if (!isRegular()) {
+      throw new InternalException("Cannot export special time value to ISO format");
+    }
+    if (endTime && (time % 86400 == 0)) {
+      return "24:00:00";
+    }
+    return String.format("%02d:%02d:%02d", getHours24(),
+        getMinutes24(), getSeconds24());
+  }
+
+  /**
+   * Time value in iso format without timezone. Time is cut to 0-24 hour interval
+   *
+   * @return time value in iso format without timezone
+   */
+  public String toIso24() {
+    return toIso24(false);
+  }
+
+  /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval
+   *
    * @param zoneOffset  is zone offset that should be used in resulting text representation
    * @param endTime     flag indicates that midnight should be reported as 24:00:00 instead of
    *                    00:00:00
    * @param date        is date on which conversion to timezone is performed
    * @param localZoneId is local timezone used to interpret supplied time
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, boolean endTime, DtDate date, ZoneId localZoneId) {
     var convertedTime = shiftToOffset(zoneOffset, date, localZoneId);
@@ -1260,75 +1291,89 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval
+   *
    * @param zoneOffset  is zone offset that should be used in resulting text representation
    * @param date        is date on which conversion to timezone is performed
    * @param localZoneId is local timezone used to interpret supplied time
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, DtDate date, ZoneId localZoneId) {
     return toIso24(zoneOffset, false, date, localZoneId);
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval
+   *
    * @param zoneOffset  is zone offset that should be used in resulting text representation
    * @param endTime     flag indicates that midnight should be reported as 24:00:00 instead of
    *                    00:00:00
    * @param localZoneId is local timezone used to interpret supplied time
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, boolean endTime, ZoneId localZoneId) {
     return toIso24(zoneOffset, endTime, DtDate.now(), localZoneId);
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval
+   *
    * @param zoneOffset  is zone offset that should be used in resulting text representation
    * @param localZoneId is local timezone used to interpret supplied time
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, ZoneId localZoneId) {
     return toIso24(zoneOffset, false, DtDate.now(), localZoneId);
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval.
+   *
    * @param zoneOffset is zone offset that should be used in resulting text representation
    * @param endTime    flag indicates that midnight should be reported as 24:00:00 instead of
    *                   00:00:00
    * @param date       is date on which conversion to timezone is performed
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, boolean endTime, DtDate date) {
     return toIso24(zoneOffset, endTime, date, ZoneId.systemDefault());
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval
+   *
    * @param date       is date on which conversion to timezone is performed
    * @param zoneOffset is zone offset that should be used in resulting text representation
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return Time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, DtDate date) {
     return toIso24(zoneOffset, date, ZoneId.systemDefault());
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval.
+   *
    * @param zoneOffset is zone offset that should be used in resulting text representation
    * @param endTime    flag indicates that midnight should be reported as 24:00:00 instead of
    *                   00:00:00
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset, boolean endTime) {
     return toIso24(zoneOffset, endTime, DtDate.now(), ZoneId.systemDefault());
   }
 
   /**
+   * Time value in iso format with timezone. Time is moved to 0-24 hours interval.
+   *
    * @param zoneOffset is zone offset that should be used in resulting text representation
-   * @return time value in iso format with timezone. Time is moved to 0-24 hours interval
+   * @return time value in iso format with timezone
    */
   public String toIso24(ZoneId zoneOffset) {
     return toIso24(zoneOffset, DtDate.now(), ZoneId.systemDefault());
   }
 
   /**
-   * Converts {@code DtTimeS} value to Provys string representation (format [-]HH:MI:SS)
+   * Converts {@code DtTimeS} value to Provys string representation (format [-]HH:MI:SS).
    *
    * @return provys string representation (HH:MI:SS) of this value
    */

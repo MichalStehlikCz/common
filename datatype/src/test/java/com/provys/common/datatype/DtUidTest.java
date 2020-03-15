@@ -111,7 +111,7 @@ class DtUidTest {
   }
 
   @XmlRootElement(name = "DtUidElement")
-  public static class DtUidElement {
+  public static final class DtUidElement {
 
     private @MonotonicNonNull DtUid value1;
     private @MonotonicNonNull DtUid value2;

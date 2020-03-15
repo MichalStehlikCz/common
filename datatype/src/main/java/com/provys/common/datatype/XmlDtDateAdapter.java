@@ -2,6 +2,9 @@ package com.provys.common.datatype;
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+/**
+ * Jax-B adapter for {@link DtDate} class.
+ */
 @SuppressWarnings("CyclicClassDependency") // Cyclic dependency of adapters is expected
 public class XmlDtDateAdapter extends XmlAdapter<String, DtDate> {
 

@@ -1,33 +1,33 @@
 package com.provys.common.datatype;
 
 /**
- * Implements support for Provys domain NUMBER
+ * Implements support for Provys domain NUMBER.
  */
 public final class DtDouble {
 
   /**
-   * Missing privileges indicator for Provys type NUMBER
+   * Missing privileges indicator for Provys type NUMBER.
    */
   public static final Double PRIV = -2135412459d;
   /**
-   * Multi-value indicator for Provys type NUMBER
+   * Multi-value indicator for Provys type NUMBER.
    */
   public static final Double ME = -2135412458d;
   /**
-   * Minimal valid Provys NUMBER value
+   * Minimal valid Provys NUMBER value.
    */
   public static final Double MIN = -2135412457d;
   /**
-   * Maximal valid Provys NUMBER value
+   * Maximal valid Provys NUMBER value.
    */
   public static final Double MAX = (double) Integer.MAX_VALUE;
 
   /**
-   * Indicates if supplied value is valid (e.g. regular or special value)
+   * Indicates if supplied value is valid (e.g. regular or special value).
    *
    * @param value is the value to be checked
    * @return true if supplied value is regular value from within MIN..MAX interval or special value,
-   * false otherwise
+   *     false otherwise
    */
   public static boolean isValid(double value) {
     return ((value >= MIN) && (value <= MAX)) || (value == PRIV) || (value == ME);
@@ -58,7 +58,7 @@ public final class DtDouble {
   }
 
   /**
-   * Indicates if supplied value is special value indicating missing privileges
+   * Indicates if supplied value is special value indicating missing privileges.
    *
    * @param value is the value to be checked
    * @return true if it is PRIV value, false otherwise
@@ -68,7 +68,7 @@ public final class DtDouble {
   }
 
   /**
-   * Indicates if supplied value is special value indicating multi-value
+   * Indicates if supplied value is special value indicating multi-value.
    *
    * @param value is the value to be checked
    * @return true if it is ME value, false otherwise
@@ -78,7 +78,7 @@ public final class DtDouble {
   }
 
   /**
-   * Indicates if supplied value is minimal value
+   * Indicates if supplied value is minimal value.
    *
    * @param value is the value to be checked
    * @return true if it is MIN value, false otherwise
@@ -88,7 +88,7 @@ public final class DtDouble {
   }
 
   /**
-   * Indicates if supplied value is maximal value
+   * Indicates if supplied value is maximal value.
    *
    * @param value is the value to be checked
    * @return true if it is MAX value, false otherwise
@@ -99,7 +99,7 @@ public final class DtDouble {
 
   /**
    * DtDouble is utility class used for manipulation with double values in Provys framework and this
-   * is why its constructor is not accessible
+   * is why its constructor is not accessible.
    */
   private DtDouble() {
   }

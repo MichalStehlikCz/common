@@ -3,11 +3,10 @@ package com.provys.common.datatype;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-
 import java.io.IOException;
 
 /**
- * Class is Jackson serializer for DtDate class
+ * Class is Jackson serializer for {@link DtDate} class.
  */
 public class DtDateSerializer extends JsonSerializer<DtDate> {
 

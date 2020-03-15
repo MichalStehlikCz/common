@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
- * Class contains Jackson annotation for DtUid; this way, we can have DtUid annotated for proper use
+ * Class contains Jackson annotation for DtUid. this way, we can have DtUid annotated for proper use
  * of JSON-B and JAXB and ignore JAXB adapter when using Jackson
  */
 @SuppressWarnings("MarkerInterface") // Used to apply Jackson annotations

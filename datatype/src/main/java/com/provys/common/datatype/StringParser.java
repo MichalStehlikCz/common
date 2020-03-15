@@ -1,7 +1,6 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-
 import java.security.InvalidParameterException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -22,19 +21,19 @@ public class StringParser {
    */
   public enum SignHandling {
     /**
-     * Sign must be specified and is included in specified number of characters
+     * Sign must be specified and is included in specified number of characters.
      */
     MANDATORY(true),
     /**
-     * Sign is optional and is included in specified number of characters
+     * Sign is optional and is included in specified number of characters.
      */
     INCLUDED(true),
     /**
-     * Sign is optional and specified number of characters is for digits, excluding the sign
+     * Sign is optional and specified number of characters is for digits, excluding the sign.
      */
     EXTEND(false),
     /**
-     * Sign cannot be specified (throws exception when sign is found)
+     * Sign cannot be specified (throws exception when sign is found).
      */
     NONE(false);
 
@@ -53,7 +52,7 @@ public class StringParser {
   private int pos;
 
   /**
-   * Creates new {@code StringParser} for specified String
+   * Creates new {@code StringParser} for specified String.
    *
    * @param string is value to be parsed
    */
@@ -63,6 +62,8 @@ public class StringParser {
   }
 
   /**
+   * String this parser parses.
+   *
    * @return string parser is based on
    */
   public String getString() {
@@ -70,8 +71,10 @@ public class StringParser {
   }
 
   /**
-   * @return current position of parser; it points to next character to be read and it is 0 when
+   * Current position of parser. it points to next character to be read and it is 0 when
    * parser is created
+   *
+   * @return current position of parser
    */
   public int getPos() {
     return pos;
@@ -164,8 +167,8 @@ public class StringParser {
       }
     }
     if (pos < minPos) {
-      throw new InternalException("Invalid character " + peek() + " reading number," +
-          " minimal length " + minChars + ", current position " + (pos - minPos + minChars));
+      throw new InternalException("Invalid character " + peek() + " reading number,"
+          + " minimal length " + minChars + ", current position " + (pos - minPos + minChars));
     }
     return (int) result;
   }
@@ -250,7 +253,7 @@ public class StringParser {
   }
 
   /**
-   * Read supplied number of characters and return resulting String
+   * Read supplied number of characters and return resulting String.
    *
    * @param chars is number of characters to be read
    * @return substring starting at current position, supplied number of characters long
@@ -287,7 +290,7 @@ public class StringParser {
 
   /**
    * Check if parser is positioned at the start of supplied string; do not change position of
-   * parser
+   * parser.
    *
    * @param text is text to be checked
    * @return true if value has been found and read, false otherwise
@@ -321,7 +324,7 @@ public class StringParser {
 
   /**
    * Check if parser is positioned at the start of supplied string (case ignored); do not change
-   * position of parser
+   * position of parser.
    *
    * @param text is text to be checked
    * @return true if value has been found (ignoring case) and read, false otherwise
@@ -336,9 +339,9 @@ public class StringParser {
 
   @Override
   public String toString() {
-    return "StringParser{" +
-        "string='" + string + '\'' +
-        ", pos=" + pos +
-        '}';
+    return "StringParser{"
+        + "string='" + string + '\''
+        + ", pos=" + pos
+        + '}';
   }
 }

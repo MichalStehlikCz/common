@@ -1,50 +1,56 @@
 package com.provys.common.datatype;
 
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import java.time.*;
+import java.time.DateTimeException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Objects;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Implementation of DATETIME domain - date and time with second precision.
+ */
 public final class DtDateTime implements Comparable<DtDateTime> {
 
   /**
-   * Date value, returned when user doesn't have the rights to access the value
+   * Date value, returned when user doesn't have the rights to access the value.
    */
   public static final DtDateTime PRIV = new DtDateTime(DtDate.PRIV, DtTimeS.zero());
 
   /**
-   * Date value, returned as indication of multi-value
+   * Date value, returned as indication of multi-value.
    */
   public static final DtDateTime ME = new DtDateTime(DtDate.ME, DtTimeS.zero());
 
   /**
-   * Minimal date value, valid in Provys
+   * Minimal date value, valid in Provys.
    */
   public static final DtDateTime MIN = new DtDateTime(DtDate.MIN, DtTimeS.zero());
 
   /**
-   * Maximal date value, valid in Provys
+   * Maximal date value, valid in Provys.
    */
   public static final DtDateTime MAX = new DtDateTime(DtDate.MAX, DtTimeS.zero());
 
   /**
-   * Text representing PRIV value
+   * Text representing PRIV value.
    */
   public static final String PRIV_TEXT = DtString.PRIV;
 
   /**
-   * Text representing ME value
+   * Text representing ME value.
    */
   public static final String ME_TEXT = DtString.ME;
 
   /**
-   * Text representing MIN value
+   * Text representing MIN value.
    */
   public static final String MIN_TEXT = "<<<<<<<<";
 
   /**
-   * Text representing MAX value
+   * Text representing MAX value.
    */
   public static final String MAX_TEXT = ">>>>>>>>";
 
@@ -141,16 +147,17 @@ public final class DtDateTime implements Comparable<DtDateTime> {
       }
       return MAX;
     }
-    // both used functions return this when days part of time is zero... so no need for optimisation here
+    // both used functions return this when days part of time is zero... so no need for optimisation
+    // here
     return new DtDateTime(date.plusDays(time.getDays()), time.getTime24());
   }
 
   /**
-   * Date part of datetime value
+   * Date part of datetime value.
    */
   private final DtDate date;
   /**
-   * Time part of datetime value; valid values between 0-24 hours
+   * Time part of datetime value; valid values between 0-24 hours.
    */
   private final DtTimeS time;
 
@@ -175,7 +182,7 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
-   * Retrieve instance of {@code DtDateTime} corresponding to given LocalDateTime value
+   * Retrieve instance of {@code DtDateTime} corresponding to given LocalDateTime value.
    *
    * @param dateTime is LocalDateTime value to be converted to DtDateTime
    * @return datetime value corresponding to supplied LocalDateTime
@@ -186,12 +193,13 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
-   * @return instance of {@code DtDateTime} corresponding to current date and time (in default
-   * time-zone).
+   * Instance of {@code DtDateTime} corresponding to current date and time (in default time-zone).
+   *
+   * @return instance of {@code DtDateTime} corresponding to current date and time
    */
   public static DtDateTime now() {
     // via LocalDateTime to ensure date and time part correspond to same moment
-    return ofLocalDateTime(LocalDateTime.now());
+    return ofLocalDateTime(LocalDateTime.now(ZoneId.systemDefault()));
   }
 
   /**
@@ -267,6 +275,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Value of field date.
+   *
    * @return value of field date
    */
   public DtDate getDate() {
@@ -274,6 +284,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Value of field time.
+   *
    * @return value of field time
    */
   public DtTimeS getTime() {
@@ -287,7 +299,7 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
-   * Get time, but based on specified base date (e.g. potentially outside 0-24 hours interval)
+   * Get time, but based on specified base date (e.g. potentially outside 0-24 hours interval).
    *
    * @param baseDate is base date against which time is calculated
    * @return time relative to specified base date
@@ -319,7 +331,7 @@ public final class DtDateTime implements Comparable<DtDateTime> {
    * MIN ... MAX (exclusive)
    *
    * @return true if date is inside interval MIN - MAX, false if given date is special value (PRIV,
-   * ME, MIN, MAX)
+   *     ME, MIN, MAX)
    */
   public boolean isRegular() {
     return (compareTo(MIN) > 0) && (compareTo(MAX) < 0);
@@ -336,6 +348,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Indicates if this value is PRIV.
+   *
    * @return if this value is PRIV
    */
   public boolean isPriv() {
@@ -343,6 +357,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Indicates if this value is ME.
+   *
    * @return if this value is ME (multivalue indicator)
    */
   public boolean isME() {
@@ -350,6 +366,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Indicates if this value is MIN.
+   *
    * @return if this value is MIN (start of unlimited interval)
    */
   public boolean isMin() {
@@ -357,6 +375,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Indicates if this value is MAX.
+   *
    * @return if this value is MAX (end of unlimited interval)
    */
   public boolean isMax() {
@@ -364,6 +384,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * {@code LocalDateTime} represented by this object.
+   *
    * @return {@code LocalDateTime} represented by this object
    */
   public LocalDateTime getLocalDateTime() {
@@ -371,6 +393,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Year from this date value.
+   *
    * @return year from this date value
    */
   public int getYear() {
@@ -384,6 +408,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Month from this date value.
+   *
    * @return month from this date value
    */
   public int getMonthValue() {
@@ -397,6 +423,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Day of month from this date value.
+   *
    * @return day of month from this date value
    */
   public int getDayOfMonth() {
@@ -483,7 +511,7 @@ public final class DtDateTime implements Comparable<DtDateTime> {
    *
    * @param minusDate date to be subtracted
    * @return different of supplied dates in days. Returns PRIV if any of operands if missing
-   * privileges value, ME if any of the operands is ME and not PRIV
+   *     privileges value, ME if any of the operands is ME and not PRIV
    */
   public double minus(DtDateTime minusDate) {
     if (isPriv() || minusDate.isPriv()) {
@@ -532,6 +560,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
   }
 
   /**
+   * Provys string representation (format DD.MM.YYYY HH:MI:SS) of {@code DtDateTime} value.
+   *
    * @return Provys string representation (format DD.MM.YYYY HH:MI:SS) of {@code DtDateTime} value
    */
   public String toProvysValue() {
@@ -547,8 +577,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
       return false;
     }
     DtDateTime that = (DtDateTime) o;
-    return Objects.equals(date, that.date) &&
-        Objects.equals(time, that.time);
+    return Objects.equals(date, that.date)
+        && Objects.equals(time, that.time);
   }
 
   @Override

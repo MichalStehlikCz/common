@@ -1,16 +1,15 @@
 package com.provys.common.datatype;
 
 import com.provys.common.exception.InternalException;
-import org.checkerframework.checker.nullness.qual.Nullable;
-
-import javax.json.bind.annotation.JsonbTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
+import javax.json.bind.annotation.JsonbTypeAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Support for Provys domains UID and REF
+ * Support for Provys domains UID and REF.
  */
 @SuppressWarnings("CyclicClassDependency") // Cyclic dependency on adapters is expected
 @JsonbTypeAdapter(JsonbDtUidAdapter.class)
@@ -18,11 +17,11 @@ import java.util.Objects;
 public final class DtUid {
 
   /**
-   * Missing privileges indicator for Provys types UID and REF
+   * Missing privileges indicator for Provys types UID and REF.
    */
   public static final DtUid PRIV = new DtUid(BigInteger.valueOf(-2L));
   /**
-   * Multi-value indicator for Provys types UID and REF
+   * Multi-value indicator for Provys types UID and REF.
    */
   public static final DtUid ME = new DtUid(BigInteger.valueOf(-1L));
 
@@ -77,6 +76,8 @@ public final class DtUid {
   }
 
   /**
+   * BigInteger value of this UID.
+   *
    * @return BigInteger value of this UID
    */
   public BigInteger getValue() {
@@ -103,6 +104,8 @@ public final class DtUid {
   }
 
   /**
+   * Indicates this value is PRIV.
+   *
    * @return if this value is PRIV
    */
   public boolean isPriv() {
@@ -110,6 +113,8 @@ public final class DtUid {
   }
 
   /**
+   * Indicates this value is ME.
+   *
    * @return if this value is ME (multivalue indicator)
    */
   public boolean isME() {

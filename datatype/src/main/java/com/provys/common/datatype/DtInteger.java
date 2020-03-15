@@ -1,34 +1,34 @@
 package com.provys.common.datatype;
 
 /**
- * Implements support for integer values in Java provys framework; note that id does not correspond
+ * Implements support for integer values in Java provys framework. Note that id does not correspond
  * to INTEGER Provys domain - this honor belongs to DtCount class
  */
 public final class DtInteger {
 
   /**
-   * Missing privileges indicator for Provys type INTEGER
+   * Missing privileges indicator for Provys type INTEGER.
    */
   public static final Integer PRIV = -2135412459;
   /**
-   * Multi-value indicator for Provys type INTEGER
+   * Multi-value indicator for Provys type INTEGER.
    */
   public static final Integer ME = -2135412458;
   /**
-   * Minimal valid Provys INTEGER value
+   * Minimal valid Provys INTEGER value.
    */
   public static final Integer MIN = -2135412457;
   /**
-   * Maximal valid Provys INTEGER value
+   * Maximal valid Provys INTEGER value.
    */
   public static final Integer MAX = Integer.MAX_VALUE;
 
   /**
-   * Indicates if supplied value is valid (e.g. regular or special value)
+   * Indicates if supplied value is valid (e.g. regular or special value).
    *
    * @param value is the value to be checked
    * @return true if supplied value is regular value from within MIN..MAX interval or special value,
-   * false otherwise
+   *     false otherwise
    */
   public static boolean isValid(int value) {
     return ((value >= MIN) && (value <= MAX)) || (value == PRIV) || (value == ME);
@@ -59,7 +59,7 @@ public final class DtInteger {
   }
 
   /**
-   * Indicates if supplied value is special value indicating missing privileges
+   * Indicates if supplied value is special value indicating missing privileges.
    *
    * @param value is the value to be checked
    * @return true if it is PRIV value, false otherwise
@@ -69,7 +69,7 @@ public final class DtInteger {
   }
 
   /**
-   * Indicates if supplied value is special value indicating multi-value
+   * Indicates if supplied value is special value indicating multi-value.
    *
    * @param value is the value to be checked
    * @return true if it is ME value, false otherwise
@@ -79,7 +79,7 @@ public final class DtInteger {
   }
 
   /**
-   * Indicates if supplied value is minimal value
+   * Indicates if supplied value is minimal value.
    *
    * @param value is the value to be checked
    * @return true if it is MIN value, false otherwise
@@ -89,7 +89,7 @@ public final class DtInteger {
   }
 
   /**
-   * Indicates if supplied value is maximal value
+   * Indicates if supplied value is maximal value.
    *
    * @param value is the value to be checked
    * @return true if it is MAX value, false otherwise
@@ -100,7 +100,7 @@ public final class DtInteger {
 
   /**
    * DtInteger is utility class used for manipulation with Integer values in Provys framework and
-   * this is why its constructor is not accessible
+   * this is why its constructor is not accessible.
    */
   private DtInteger() {
   }

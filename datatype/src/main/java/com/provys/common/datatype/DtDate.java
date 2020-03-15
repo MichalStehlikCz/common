@@ -206,7 +206,7 @@ public final class DtDate implements Comparable<DtDate> {
    * @return date value corresponding to current date
    */
   public static DtDate now() {
-    return ofLocalDate(LocalDate.now());
+    return ofLocalDate(LocalDate.now(ZoneId.systemDefault()));
   }
 
   /**
@@ -509,7 +509,7 @@ public final class DtDate implements Comparable<DtDate> {
    * ... MAX (exclusive)
    *
    * @return true if date is inside interval MIN - MAX, false if given date is special value (PRIV,
-   * ME, MIN, MAX)
+   *     ME, MIN, MAX)
    */
   public boolean isRegular() {
     return (compareTo(MIN) > 0) && (compareTo(MAX) < 0);
@@ -656,7 +656,7 @@ public final class DtDate implements Comparable<DtDate> {
    *
    * @param date date to be subtracted
    * @return different of supplied dates in days. Returns PRIV if any of operands if missing
-   * privileges value, ME if any of the operands is ME and not PRIV
+   *     privileges value, ME if any of the operands is ME and not PRIV
    */
   public int minus(DtDate date) {
     if (isPriv() || date.isPriv()) {
