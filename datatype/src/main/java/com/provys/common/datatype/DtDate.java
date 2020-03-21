@@ -230,7 +230,6 @@ public final class DtDate implements Comparable<DtDate> {
     return ofLocalDate(LocalDate.ofInstant(instant, ZoneId.systemDefault()));
   }
 
-  @SuppressWarnings("DuplicatedCode")
   private static @Nullable DtDate parseSpecialText(StringParser parser) {
     if (parser.onText(PRIV_TEXT)) {
       return PRIV;
@@ -265,7 +264,6 @@ public final class DtDate implements Comparable<DtDate> {
       throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
           parser.getPos());
     }
-    //noinspection DuplicatedCode - different static fields used
     if (allowSpecialText) {
       var result = parseSpecialText(parser);
       if (result != null) {

@@ -96,6 +96,7 @@ public abstract class ProvysException extends RuntimeException {
    *
    * @return Provys status code
    */
+  @SuppressWarnings("SameReturnValue")
   public int getStatusCode() {
     return STATUS_CODE;
   }
@@ -106,6 +107,7 @@ public abstract class ProvysException extends RuntimeException {
    *
    * @return http status code, 500 for this class
    */
+  @SuppressWarnings("SameReturnValue")
   public int getHttpStatus() {
     return HTTP_STATUS;
   }

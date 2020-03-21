@@ -1,6 +1,5 @@
 package com.provys.common.datatype;
 
-import org.assertj.core.api.Fail;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
@@ -24,11 +23,10 @@ class JsonbDtDateAdapterTest {
 
   @ParameterizedTest
   @MethodSource
-  void toJsonTest(DtDate value, String result) {
+  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
+  void toJsonTest(DtDate value, String result) throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
       assertThat(jsonb.toJson(value)).isEqualTo(result);
-    } catch (Exception e) {
-      Fail.fail("Failed to close Jsonb with error " + e);
     }
   }
 
@@ -44,11 +42,10 @@ class JsonbDtDateAdapterTest {
 
   @ParameterizedTest
   @MethodSource
-  void fromJsonTest(String value, DtDate result) {
+  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
+  void fromJsonTest(String value, DtDate result) throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
       assertThat(jsonb.fromJson(value, DtDate.class)).isEqualTo(result);
-    } catch (Exception e) {
-      Fail.fail("Failed to close Jsonb with error " + e);
     }
   }
 }

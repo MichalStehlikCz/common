@@ -86,7 +86,9 @@ class WsErrorTest {
         .isEqualTo(SAMPLE2_VALUE);
   }
 
-  @SuppressWarnings("squid:S00112") // we do not care that generic Exception is thrown in test
+  // we do not care that generic Exception is thrown in test
+  // we cannot change Jsonb not to throw InterruptedException
+  @SuppressWarnings({"squid:S00112", "try"})
   @Test
   void toJsonbTest() throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
@@ -95,7 +97,9 @@ class WsErrorTest {
     }
   }
 
-  @SuppressWarnings("squid:S00112") // we do not care that generic Exception is thrown in test
+  // we do not care that generic Exception is thrown in test
+  // we cannot change Jsonb not to throw InterruptedException
+  @SuppressWarnings({"squid:S00112", "try"})
   @Test
   void fromJsonbTest() throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {

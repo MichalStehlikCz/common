@@ -2,7 +2,6 @@ package com.provys.common.datatype;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.provys.common.jackson.JacksonMappers;
-import org.assertj.core.api.Fail;
 import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
@@ -248,20 +247,18 @@ class DtUidTest {
   }
 
   @Test
-  void serializeJsonbTest() {
+  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
+  void serializeJsonbTest() throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
       assertThat(jsonb.toJson(SAMPLE_VALUE)).isEqualTo(SAMPLE_JSONB);
-    } catch (Exception e) {
-      Fail.fail("Failed to close Jsonb with " + e);
     }
   }
 
   @Test
-  void deserializeJsonbTest() {
+  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
+  void deserializeJsonbTest() throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
       assertThat(jsonb.fromJson(SAMPLE_JSON, DtUidElement.class)).isEqualTo(SAMPLE_VALUE);
-    } catch (Exception e) {
-      Fail.fail("Failed to close Jsonb with " + e);
     }
   }
 

@@ -1,6 +1,5 @@
 package com.provys.common.datatype;
 
-import org.assertj.core.api.Fail;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -26,15 +25,14 @@ class JsonbDtTimeSAdapterTest {
 
   @ParameterizedTest
   @MethodSource
-  void toJsonTest(DtTimeS value, @Nullable String result) {
+  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
+  void toJsonTest(DtTimeS value, @Nullable String result) throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
       if (result == null) {
         assertThatThrownBy(() -> jsonb.toJson(value));
       } else {
         assertThat(jsonb.toJson(value)).isEqualTo(result);
       }
-    } catch (Exception e) {
-      Fail.fail("Failed to close Jsonb");
     }
   }
 
@@ -47,11 +45,10 @@ class JsonbDtTimeSAdapterTest {
 
   @ParameterizedTest
   @MethodSource
-  void fromJsonTest(String value, DtTimeS result) {
+  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
+  void fromJsonTest(String value, DtTimeS result) throws Exception {
     try (Jsonb jsonb = JsonbBuilder.create()) {
       assertThat(jsonb.fromJson(value, DtTimeS.class)).isEqualTo(result);
-    } catch (Exception e) {
-      Fail.fail("Failed to close Jsonb");
     }
   }
 }

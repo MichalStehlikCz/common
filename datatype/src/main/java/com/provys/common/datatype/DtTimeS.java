@@ -13,6 +13,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
 import javax.json.bind.annotation.JsonbTypeAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -589,6 +590,18 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     return matcher.matches() && (allowNegative || (text.charAt(0) != '-'));
   }
 
+  private static int parseSeconds(MatchResult matcher) {
+    var group4 = matcher.group(4);
+    if (group4 != null) {
+      return Integer.parseInt(group4);
+    }
+    var group8 = matcher.group(8);
+    if (group8 != null) {
+      return Integer.parseInt(group8);
+    }
+    return 0;
+  }
+
   /**
    * Parse nano-second string (including delimiter).
    *
@@ -597,6 +610,18 @@ public final class DtTimeS implements Comparable<DtTimeS> {
    */
   private static int parseNanoGroup(String nanoGroup) {
     return Integer.parseInt(String.format("%-9s", nanoGroup.substring(1)).replace(" ", "0"));
+  }
+
+  private static int parseNano(MatchResult matcher) {
+    var group5 = matcher.group(5);
+    if (group5 != null) {
+      return parseNanoGroup(group5);
+    }
+    var group9 = matcher.group(9);
+    if (group9 != null) {
+      return parseNanoGroup(group9);
+    }
+    return 0;
   }
 
   /**
@@ -625,30 +650,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     int hours = Integer.parseInt((group2 != null) ? group2 : castNonNull(matcher.group(6)));
     var group3 = matcher.group(3);
     int minutes = Integer.parseInt((group3 != null) ? group3 : castNonNull(matcher.group(7)));
-    int seconds;
-    var group4 = matcher.group(4);
-    if (group4 != null) {
-      seconds = Integer.parseInt(group4);
-    } else {
-      var group8 = matcher.group(8);
-      if (group8 != null) {
-        seconds = Integer.parseInt(group8);
-      } else {
-        seconds = 0;
-      }
-    }
-    int nanoSeconds;
-    var group5 = matcher.group(5);
-    if (group5 != null) {
-      nanoSeconds = parseNanoGroup(group5);
-    } else {
-      var group9 = matcher.group(9);
-      if (group9 != null) {
-        nanoSeconds = parseNanoGroup(group9);
-      } else {
-        nanoSeconds = 0;
-      }
-    }
+    int seconds = parseSeconds(matcher);
+    int nanoSeconds = parseNano(matcher);
     return ofHourToNano(negative, hours, minutes, seconds, nanoSeconds);
   }
 
