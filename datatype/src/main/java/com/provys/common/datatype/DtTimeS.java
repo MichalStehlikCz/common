@@ -422,7 +422,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
    *
    * @param parser is parser, positioned on nanosecond delimiter
    */
-  private static void parseNano(StringParser parser) {
+  private static void readNano(StringParser parser) {
     parser.next();
     var nanoSeconds = parser.readUnsignedInt(1, 9);
     if (nanoSeconds != 0) {
@@ -505,7 +505,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
       parser.next();
       var seconds = parser.readUnsignedInt(1, 2);
       if (parser.hasNext() && (parser.peek() == ':')) {
-        parseNano(parser);
+        readNano(parser);
       }
       var result = ofHourToSecond(negative, hours, minutes, seconds);
       if (!allowSpecialValue && !result.isValidValue()) {
