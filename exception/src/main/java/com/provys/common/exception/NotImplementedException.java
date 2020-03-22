@@ -10,16 +10,11 @@ public final class NotImplementedException extends ProvysException {
   private static final String NAME_NM = "JAVA_NOT_IMPLEMENTED";
 
   public NotImplementedException(Class<?> clazz) {
-    super("Method not implemented in class " + clazz);
+    super("Method not implemented in class " + clazz.getCanonicalName());
   }
 
   @Override
   public String getNameNm() {
     return NAME_NM;
-  }
-
-  @Override
-  public String toString() {
-    return "NotImplementedException{" + super.toString() + '}';
   }
 }

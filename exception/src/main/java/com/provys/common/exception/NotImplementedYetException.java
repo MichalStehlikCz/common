@@ -11,16 +11,11 @@ public final class NotImplementedYetException extends ProvysException {
   private static final String NAME_NM = "JAVA_NOT_IMPLEMENTED_YET";
 
   public NotImplementedYetException(Class<?> clazz) {
-    super("Method waiting for implementation in class " + clazz);
+    super("Method waiting for implementation in class " + clazz.getCanonicalName());
   }
 
   @Override
   public String getNameNm() {
     return NAME_NM;
-  }
-
-  @Override
-  public String toString() {
-    return "NotImplementedYetException{" + super.toString() + '}';
   }
 }
