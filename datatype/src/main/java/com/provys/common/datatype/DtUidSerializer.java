@@ -8,6 +8,7 @@ import java.io.IOException;
 /**
  * Jackson serializer for {@link DtUid} class.
  */
+@SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
 public class DtUidSerializer extends JsonSerializer<DtUid> {
 
   @Override

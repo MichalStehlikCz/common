@@ -212,7 +212,6 @@ class DtUidTest {
       .setValue3(DtUid.valueOf("12345678901234567890123456789"));
   private static final String SAMPLE_JSON = "{\"value1\":-1,\"value3\":\"12345678901234567890123456789\"}";
   private static final String SAMPLE_JACKSON = "{\"value1\":-1,\"value3\":12345678901234567890123456789}";
-  private static final String SAMPLE_JSONB = SAMPLE_JACKSON;
   private static final String SAMPLE_XML =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?><DtUidElement><value1>-1</value1>" +
           "<value2/><value3>12345678901234567890123456789</value3></DtUidElement>";
@@ -233,6 +232,12 @@ class DtUidTest {
   }
 
   @Test
+  void deserializeFromJson2Test() throws IOException {
+    assertThat(JacksonMappers.getJsonMapper().readValue(SAMPLE_JACKSON, DtUidElement.class))
+        .isEqualTo(SAMPLE_VALUE);
+  }
+
+  @Test
   void serializeToXmlTest() throws JsonProcessingException {
     assertThat(JacksonMappers.getXmlMapper().writeValueAsString(SAMPLE_VALUE))
         .isEqualTo(SAMPLE_XML);
@@ -244,48 +249,5 @@ class DtUidTest {
         .isEqualTo(SAMPLE_VALUE);
     assertThat(JacksonMappers.getXmlMapper().readValue(SAMPLE_JAXB, DtUidElement.class))
         .isEqualTo(SAMPLE_VALUE);
-  }
-
-  @Test
-  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
-  void serializeJsonbTest() throws Exception {
-    try (Jsonb jsonb = JsonbBuilder.create()) {
-      assertThat(jsonb.toJson(SAMPLE_VALUE)).isEqualTo(SAMPLE_JSONB);
-    }
-  }
-
-  @Test
-  @SuppressWarnings("try") // we cannot fix Jsonb not to throw InterruptedException
-  void deserializeJsonbTest() throws Exception {
-    try (Jsonb jsonb = JsonbBuilder.create()) {
-      assertThat(jsonb.fromJson(SAMPLE_JSON, DtUidElement.class)).isEqualTo(SAMPLE_VALUE);
-    }
-  }
-
-  @Test
-  void serializeJaxbTest() throws JAXBException {
-    var context = JAXBContext.newInstance(DtUidElement.class);
-    Marshaller marshaller = context.createMarshaller();
-    marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, false);
-    var resultWriter = new StringWriter();
-    marshaller.marshal(SAMPLE_VALUE, resultWriter);
-    assertThat(resultWriter.toString())
-        .isEqualTo(SAMPLE_JAXB);
-  }
-
-  @Test
-  void deserializeJaxbXmlTest() throws JAXBException {
-    var context = JAXBContext.newInstance(DtUidElement.class);
-    Unmarshaller u = context.createUnmarshaller();
-    var reader = new StringReader(SAMPLE_XML);
-    assertThat((DtUidElement) u.unmarshal(reader)).isEqualTo(SAMPLE_VALUE);
-  }
-
-  @Test
-  void deserializeJaxbTest() throws JAXBException {
-    var context = JAXBContext.newInstance(DtUidElement.class);
-    Unmarshaller u = context.createUnmarshaller();
-    var reader = new StringReader(SAMPLE_JAXB);
-    assertThat((DtUidElement) u.unmarshal(reader)).isEqualTo(SAMPLE_VALUE);
   }
 }

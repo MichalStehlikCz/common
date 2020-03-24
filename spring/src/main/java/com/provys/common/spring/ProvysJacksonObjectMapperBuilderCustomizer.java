@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,7 +28,7 @@ class ProvysJacksonObjectMapperBuilderCustomizer implements Jackson2ObjectMapper
     jacksonObjectMapperBuilder.annotationIntrospector(
         AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
             new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())));
-    jacksonObjectMapperBuilder.modules(new Jdk8Module(), new JavaTimeModule());
+    jacksonObjectMapperBuilder.findModulesViaServiceLoader(true);
     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 }

@@ -1,19 +1,19 @@
 package com.provys.common.datatype;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Objects;
-import javax.json.bind.annotation.JsonbTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Support for Provys domains UID and REF.
  */
 @SuppressWarnings("CyclicClassDependency") // Cyclic dependency on adapters is expected
-@JsonbTypeAdapter(JsonbDtUidAdapter.class)
-@XmlJavaTypeAdapter(XmlDtUidAdapter.class)
+@JsonSerialize(using = DtUidSerializer.class)
+@JsonDeserialize(using = DtUidDeserializer.class)
 public final class DtUid {
 
   /**

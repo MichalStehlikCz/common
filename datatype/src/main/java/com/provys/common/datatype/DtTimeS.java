@@ -2,6 +2,8 @@ package com.provys.common.datatype;
 
 import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
 import java.time.DateTimeException;
 import java.time.Duration;
@@ -15,16 +17,14 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
-import javax.json.bind.annotation.JsonbTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds).
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
-@JsonbTypeAdapter(JsonbDtTimeSAdapter.class)
-@XmlJavaTypeAdapter(XmlDtTimeSAdapter.class)
+@JsonSerialize(using = DtTimeSSerializer.class)
+@JsonDeserialize(using = DtTimeSDeserializer.class)
 public final class DtTimeS implements Comparable<DtTimeS> {
 
   /**

@@ -1,5 +1,7 @@
 package com.provys.common.datatype;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -11,8 +13,6 @@ import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.regex.Pattern;
-import javax.json.bind.annotation.JsonbTypeAdapter;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -20,9 +20,8 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * held in DtDate instances in Provys Java framework; at the moment logic is based on JDK's {@code
  * LocalDate} functionality, but this behaviour can change later.
  */
-@SuppressWarnings("CyclicClassDependency") // Cyclic dependency on adapters is expected
-@JsonbTypeAdapter(JsonbDtDateAdapter.class)
-@XmlJavaTypeAdapter(XmlDtDateAdapter.class)
+@JsonSerialize(using = DtDateSerializer.class)
+@JsonDeserialize(using = DtDateDeserializer.class)
 public final class DtDate implements Comparable<DtDate> {
 
   /**

@@ -8,8 +8,6 @@ import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
-import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /**
@@ -31,7 +29,7 @@ public final class JacksonMappers {
     JSON_MAPPER.setAnnotationIntrospector(
         AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
             new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())))
-        .registerModules(new Jdk8Module(), new JavaTimeModule())
+        .findAndRegisterModules()
         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
 
@@ -50,7 +48,7 @@ public final class JacksonMappers {
     XML_MAPPER.setAnnotationIntrospector(
         AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
             new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())))
-        .registerModules(new Jdk8Module(), new JavaTimeModule());
+        .findAndRegisterModules();
   }
 
   public static XmlMapper getXmlMapper() {
