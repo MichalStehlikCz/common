@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
@@ -27,8 +28,8 @@ public final class JacksonMappers {
   static {
     JSON_MAPPER = new ObjectMapper();
     JSON_MAPPER.setAnnotationIntrospector(
-        AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
-            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())))
+        AnnotationIntrospector.pair(new JacksonXmlAnnotationIntrospector(),
+            new JacksonAnnotationIntrospector()))
         .findAndRegisterModules()
         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
@@ -46,8 +47,8 @@ public final class JacksonMappers {
         .getXMLOutputFactory()
         .setProperty(WstxOutputProperties.P_USE_DOUBLE_QUOTES_IN_XML_DECL, true);
     XML_MAPPER.setAnnotationIntrospector(
-        AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
-            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())))
+        AnnotationIntrospector.pair(new JacksonXmlAnnotationIntrospector(),
+            new JacksonAnnotationIntrospector()))
         .findAndRegisterModules();
   }
 

@@ -1,7 +1,10 @@
 package com.provys.common.spring;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -13,17 +16,23 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Class represents result of web-service call in standard PROVYS format (e.g. with data and error
  * sections)
  */
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlRootElement(name = "ERRORSTATUS")
+@JsonAutoDetect(
+    fieldVisibility = Visibility.NONE,
+    setterVisibility = Visibility.NONE,
+    getterVisibility = Visibility.NONE,
+    isGetterVisibility = Visibility.NONE,
+    creatorVisibility = Visibility.NONE
+)
+@JsonRootName("ERRORSTATUS")
 public class WsError {
 
-  @XmlElement(name = "STATUS")
+  @JsonProperty("STATUS")
   private final int status;
-  @XmlElement(name = "ERROR_NM")
+  @JsonProperty("ERROR_NM")
   private final @Nullable String errorNm;
-  @XmlElement(name = "ERRORMESSAGE")
+  @JsonProperty("ERRORMESSAGE")
   private final @Nullable String message;
-  @XmlElement(name = "ERRORSTACK")
+  @JsonProperty("ERRORSTACK")
   private final @Nullable String stack;
 
   /**

@@ -3,8 +3,7 @@ package com.provys.common.spring;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
@@ -26,8 +25,8 @@ class ProvysJacksonObjectMapperBuilderCustomizer implements Jackson2ObjectMapper
   public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
     LOG.debug("Use PROVYS Object Mapper customizer");
     jacksonObjectMapperBuilder.annotationIntrospector(
-        AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
-            new JaxbAnnotationIntrospector(TypeFactory.defaultInstance())));
+        AnnotationIntrospector.pair(new JacksonXmlAnnotationIntrospector(),
+            new JacksonAnnotationIntrospector()));
     jacksonObjectMapperBuilder.findModulesViaServiceLoader(true);
     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
