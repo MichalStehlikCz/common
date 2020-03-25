@@ -2,14 +2,18 @@ package com.provys.common.datatype;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
 import java.io.IOException;
 
 /**
  * Jackson deserializer for {@link DtUid} class.
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
-public class DtUidDeserializer extends JsonDeserializer<DtUid> {
+public class DtUidDeserializer extends StdScalarDeserializer<DtUid> {
+
+  protected DtUidDeserializer() {
+    super(DtUid.class);
+  }
 
   @Override
   public DtUid deserialize(JsonParser parser, DeserializationContext deserializationContext)
