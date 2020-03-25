@@ -28,8 +28,8 @@ public final class JacksonMappers {
   static {
     JSON_MAPPER = new ObjectMapper();
     JSON_MAPPER.setAnnotationIntrospector(
-        AnnotationIntrospector.pair(new JacksonXmlAnnotationIntrospector(),
-            new JacksonAnnotationIntrospector()))
+        AnnotationIntrospector.pair(new JacksonAnnotationIntrospector(),
+            new JacksonXmlAnnotationIntrospector()))
         .findAndRegisterModules()
         .setSerializationInclusion(JsonInclude.Include.NON_EMPTY);
   }

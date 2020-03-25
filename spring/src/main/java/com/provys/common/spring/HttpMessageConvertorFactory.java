@@ -1,6 +1,9 @@
 package com.provys.common.spring;
 
 import com.ctc.wstx.api.WstxOutputProperties;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.dataformat.xml.JacksonXmlAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +27,11 @@ class HttpMessageConvertorFactory {
   public MappingJackson2XmlHttpMessageConverter provysJackson2XmlHttpMessageConverter(
       Jackson2ObjectMapperBuilder builder) {
     LOG.debug("Customize Jackson XML mapper");
-    XmlMapper mapper = builder.createXmlMapper(true).build();
+    XmlMapper mapper = builder.annotationIntrospector(
+        AnnotationIntrospector
+            .pair(new JacksonXmlAnnotationIntrospector(), new JacksonAnnotationIntrospector()))
+        .createXmlMapper(true)
+        .build();
     mapper.enable(ToXmlGenerator.Feature.WRITE_XML_DECLARATION);
     mapper.getFactory()
         .getXMLOutputFactory()

@@ -25,8 +25,8 @@ class ProvysJacksonObjectMapperBuilderCustomizer implements Jackson2ObjectMapper
   public void customize(Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder) {
     LOG.debug("Use PROVYS Object Mapper customizer");
     jacksonObjectMapperBuilder.annotationIntrospector(
-        AnnotationIntrospector.pair(new JacksonXmlAnnotationIntrospector(),
-            new JacksonAnnotationIntrospector()));
+        AnnotationIntrospector
+            .pair(new JacksonAnnotationIntrospector(), new JacksonXmlAnnotationIntrospector()));
     jacksonObjectMapperBuilder.findModulesViaServiceLoader(true);
     jacksonObjectMapperBuilder.serializationInclusion(JsonInclude.Include.NON_EMPTY);
   }
