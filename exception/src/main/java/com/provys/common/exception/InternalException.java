@@ -12,6 +12,8 @@ public final class InternalException extends ProvysException {
 
   private static final String NAME_NM = "JAVA_INTERNAL_EXCEPTION";
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * Constructs a new PROVYS internal exception with the specified detail message, parameters and
    * cause. Note that the detail message associated with {@code cause} is not automatically

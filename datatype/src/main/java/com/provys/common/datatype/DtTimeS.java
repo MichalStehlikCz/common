@@ -5,6 +5,7 @@ import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -25,7 +26,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
 @JsonSerialize(using = DtTimeSSerializer.class)
 @JsonDeserialize(using = DtTimeSDeserializer.class)
-public final class DtTimeS implements Comparable<DtTimeS> {
+public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
 
   /**
    * Date value, returned when user doesn't have the rights to access the value.
@@ -181,6 +182,7 @@ public final class DtTimeS implements Comparable<DtTimeS> {
   /**
    * Pattern used to parse time info.
    */
+  @SuppressWarnings("java:S1192") // duplicate string does not make sense on its own
   public static final Pattern TIMEINFO_PATTERN_PARSE = Pattern.compile("([+-]?)(?:([0-9]{1,4}):("
       + MINUTES_REGEX_LENIENT + ")(?::(" + SECONDS_REGEX_LENIENT
       + ")(?:(" + NANO_REGEX_LENIENT + "))?)?|"
@@ -848,6 +850,8 @@ public final class DtTimeS implements Comparable<DtTimeS> {
     }
     return result;
   }
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * Time held is represented as time in seconds. DtInteger MIN and MAX values should be sufficient

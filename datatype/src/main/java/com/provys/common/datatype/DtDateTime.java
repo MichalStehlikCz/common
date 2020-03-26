@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Duration;
 import java.time.Instant;
@@ -12,7 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Implementation of DATETIME domain - date and time with second precision.
  */
-public final class DtDateTime implements Comparable<DtDateTime> {
+public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
 
   /**
    * Date value, returned when user doesn't have the rights to access the value.
@@ -151,6 +152,8 @@ public final class DtDateTime implements Comparable<DtDateTime> {
     // here
     return new DtDateTime(date.plusDays(time.getDays()), time.getTime24());
   }
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * Date part of datetime value.

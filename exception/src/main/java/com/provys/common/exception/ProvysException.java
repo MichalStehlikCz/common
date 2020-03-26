@@ -23,6 +23,8 @@ public abstract class ProvysException extends RuntimeException {
    */
   public static final int HTTP_STATUS = 500;
 
+  private static final long serialVersionUID = 1L;
+
   private final Map<String, String> params;
 
   /**

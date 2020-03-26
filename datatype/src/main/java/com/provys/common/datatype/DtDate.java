@@ -3,6 +3,7 @@ package com.provys.common.datatype;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
+import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -20,9 +21,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * held in DtDate instances in Provys Java framework; at the moment logic is based on JDK's {@code
  * LocalDate} functionality, but this behaviour can change later.
  */
+@SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
 @JsonSerialize(using = DtDateSerializer.class)
 @JsonDeserialize(using = DtDateDeserializer.class)
-public final class DtDate implements Comparable<DtDate> {
+public final class DtDate implements Comparable<DtDate>, Serializable {
 
   /**
    * Minimal value that can be represented by DtDate. All special values must fall into this range
@@ -229,6 +231,7 @@ public final class DtDate implements Comparable<DtDate> {
     return ofLocalDate(LocalDate.ofInstant(instant, ZoneId.systemDefault()));
   }
 
+  @SuppressWarnings("DuplicatedCode") // code is not duplicate as it uses local statics
   private static @Nullable DtDate parseSpecialText(StringParser parser) {
     if (parser.onText(PRIV_TEXT)) {
       return PRIV;
@@ -477,6 +480,8 @@ public final class DtDate implements Comparable<DtDate> {
     }
     return result;
   }
+
+  private static final long serialVersionUID = 1L;
 
   /**
    * Actual date represented by this DtDate object.
