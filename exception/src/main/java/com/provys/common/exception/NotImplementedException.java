@@ -8,8 +8,7 @@ package com.provys.common.exception;
 public final class NotImplementedException extends ProvysException {
 
   private static final String NAME_NM = "JAVA_NOT_IMPLEMENTED";
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -5195008734030579239L;
 
   public NotImplementedException(Class<?> clazz) {
     super("Method not implemented in class " + clazz.getCanonicalName());

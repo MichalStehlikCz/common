@@ -11,8 +11,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public final class RegularException extends ProvysException {
 
-  private static final long serialVersionUID = 1L;
-
+  private static final long serialVersionUID = -715640935829167916L;
   private final String nameNm;
 
   /**

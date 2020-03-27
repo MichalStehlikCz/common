@@ -8,17 +8,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.IOException;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -98,8 +90,8 @@ class DtUidTest {
     return Stream.of(
         new Object[]{DtUid.valueOf("25"), "ID25"}
         , new Object[]{DtUid.valueOf("-125"), "ID-125"}
-        , new Object[]{DtUid.PRIV, "ID##########"}
-        , new Object[]{DtUid.ME, "ID**********"}
+        , new Object[]{DtUid.PRIV, "##########"}
+        , new Object[]{DtUid.ME, "**********"}
     );
   }
 

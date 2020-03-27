@@ -22,8 +22,7 @@ public abstract class ProvysException extends RuntimeException {
    * Default returned HTTP status (server error).
    */
   public static final int HTTP_STATUS = 500;
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 7155232755615842135L;
 
   private final Map<String, String> params;
 

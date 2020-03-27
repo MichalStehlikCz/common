@@ -11,6 +11,8 @@ import java.io.IOException;
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
 public class DtDateSerializer extends StdScalarSerializer<DtDate> {
 
+  private static final long serialVersionUID = 4486955492994705194L;
+
   protected DtDateSerializer() {
     super(DtDate.class);
   }

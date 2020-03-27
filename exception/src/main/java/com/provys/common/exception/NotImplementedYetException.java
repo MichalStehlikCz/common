@@ -9,8 +9,7 @@ package com.provys.common.exception;
 public final class NotImplementedYetException extends ProvysException {
 
   private static final String NAME_NM = "JAVA_NOT_IMPLEMENTED_YET";
-
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -4003535431510509311L;
 
   public NotImplementedYetException(Class<?> clazz) {
     super("Method waiting for implementation in class " + clazz.getCanonicalName());

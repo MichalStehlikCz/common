@@ -11,6 +11,8 @@ import java.io.IOException;
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
 public class DtUidSerializer extends StdScalarSerializer<DtUid> {
 
+  private static final long serialVersionUID = 7330448786647473578L;
+
   protected DtUidSerializer() {
     super(DtUid.class);
   }

@@ -1,8 +1,8 @@
 package com.provys.common.datatype;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Instant;
@@ -21,9 +21,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * held in DtDate instances in Provys Java framework; at the moment logic is based on JDK's {@code
  * LocalDate} functionality, but this behaviour can change later.
  */
-@SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
-@JsonSerialize(using = DtDateSerializer.class)
-@JsonDeserialize(using = DtDateDeserializer.class)
+@SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
 public final class DtDate implements Comparable<DtDate>, Serializable {
 
   /**
@@ -481,8 +479,6 @@ public final class DtDate implements Comparable<DtDate>, Serializable {
     return result;
   }
 
-  private static final long serialVersionUID = 1L;
-
   /**
    * Actual date represented by this DtDate object.
    */
@@ -714,6 +710,42 @@ public final class DtDate implements Comparable<DtDate>, Serializable {
     return String.format((Locale) null, "%02d", value.getDayOfMonth()) + '.'
         + String.format((Locale) null, "%02d", value.getMonthValue()) + '.'
         + String.format((Locale) null, "%04d", value.getYear());
+  }
+
+  /**
+   * Supports serialization via SerializationProxy.
+   *
+   * @return proxy, corresponding to this DtDate
+   */
+  private Object writeReplace() {
+    return new SerializationProxy(this);
+  }
+
+  /**
+   * Should be serialized via proxy, thus no direct deserialization should occur.
+   *
+   * @param stream is stream from which object is to be read
+   * @throws InvalidObjectException always
+   */
+  private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+    throw new InvalidObjectException("Use Serialization Proxy instead.");
+  }
+
+  private static final class SerializationProxy implements Serializable {
+
+    private static final long serialVersionUID = 8891795916421607107L;
+    private @Nullable LocalDate value;
+
+    SerializationProxy() {
+    }
+
+    SerializationProxy(DtDate dtDate) {
+      this.value = dtDate.value;
+    }
+
+    private Object readResolve() {
+      return ofLocalDate(Objects.requireNonNull(value));
+    }
   }
 
   /**

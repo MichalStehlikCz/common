@@ -1,5 +1,7 @@
 package com.provys.common.datatype;
 
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Duration;
@@ -13,6 +15,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Implementation of DATETIME domain - date and time with second precision.
  */
+@SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
 public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
 
   /**
@@ -153,37 +156,6 @@ public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
     return new DtDateTime(date.plusDays(time.getDays()), time.getTime24());
   }
 
-  private static final long serialVersionUID = 1L;
-
-  /**
-   * Date part of datetime value.
-   */
-  private final DtDate date;
-  /**
-   * Time part of datetime value; valid values between 0-24 hours.
-   */
-  private final DtTimeS time;
-
-  /**
-   * Private constructor, creates DtDateTime value from supplied date and time.
-   *
-   * @param date - date value
-   * @param time - time value; must be 0 for special values and 0-24 for regular dates
-   */
-  private DtDateTime(DtDate date, DtTimeS time) {
-    if (date.isRegular()) {
-      if (time.getDays() != 0) {
-        throw new DateTimeException("Time part of date-time value must be between 0-24h");
-      }
-    } else {
-      if (time.getSeconds() != 0) {
-        throw new DateTimeException("Time part of irregular date-time must be zero");
-      }
-    }
-    this.date = Objects.requireNonNull(date);
-    this.time = Objects.requireNonNull(time);
-  }
-
   /**
    * Retrieve instance of {@code DtDateTime} corresponding to given LocalDateTime value.
    *
@@ -231,50 +203,101 @@ public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
    * parser content; parser is moved after last character read as part of date values.
    *
    * @param parser is parser containing text to be read
+   * @param allowSpecialText  defines if parser should recognise special texts (indicating special
+   *                          values)
+   * @param allowSpecialValue defines if special values should be possible to parse (in regular date
+   *                          format); ignored if allowSpecialText is set and position is on special
+   *                          value's textual representation
    * @return datetime value read from parser
    */
   @SuppressWarnings("DuplicatedCode") // code is not duplicate as it uses local statics
-  public static DtDateTime parse(StringParser parser) {
+  public static DtDateTime parse(StringParser parser, boolean allowSpecialText,
+      boolean allowSpecialValue) {
     if (!parser.hasNext()) {
       throw new DateTimeParseException("Empty parser supplied to read DtDate", parser.getString(),
           parser.getPos());
     }
-    if (parser.onText(PRIV_TEXT)) {
-      return PRIV;
+    if (allowSpecialText) {
+      if (parser.onText(PRIV_TEXT)) {
+        return PRIV;
+      }
+      if (parser.onText(ME_TEXT)) {
+        return ME;
+      }
+      if (parser.onText(MIN_TEXT)) {
+        return MIN;
+      }
+      if (parser.onText(MAX_TEXT)) {
+        return MAX;
+      }
     }
-    if (parser.onText(ME_TEXT)) {
-      return ME;
-    }
-    if (parser.onText(MIN_TEXT)) {
-      return MIN;
-    }
-    if (parser.onText(MAX_TEXT)) {
-      return MAX;
-    }
-    var date = DtDate.parse(parser, false, false);
+    var date = DtDate.parse(parser, false, allowSpecialValue);
     if (parser.next() != 'T') {
       throw new DateTimeParseException("T expected as delimiter of date and time part",
           parser.getString(),
           parser.getPos());
     }
     var time = DtTimeS.parse(parser, false, false, false);
+    if (!date.isRegular()) {
+      if (date.isPriv()) {
+        return PRIV;
+      }
+      if (date.isME()) {
+        return ME;
+      }
+      if (date.isMin()) {
+        return MIN;
+      }
+      if (date.isMax()) {
+        return MAX;
+      }
+    }
     return ofDateTime(date, time);
   }
 
   /**
    * Parse provided text in strict ISO local date format; also supports parsing special values.
    *
-   * @param text is text in ISO-8601 format for local date (e.g. YYYY-MM-DD)
+   * @param text is text in ISO-8601 format for local date time (e.g. YYYY-MM-DDTHH:MI:SS)
    * @return date value corresponding to provided text
    */
   public static DtDateTime parse(String text) {
     var parser = new StringParser(text);
-    var result = parse(parser);
+    var result = parse(parser, true, true);
     if (parser.hasNext()) {
       throw new DateTimeParseException("Value parsed before reading whole text", text,
           parser.getPos());
     }
     return result;
+  }
+
+  /**
+   * Date part of datetime value.
+   */
+  private final DtDate date;
+  /**
+   * Time part of datetime value; valid values between 0-24 hours.
+   */
+  private final DtTimeS time;
+
+  /**
+   * Private constructor, creates DtDateTime value from supplied date and time.
+   *
+   * @param date - date value
+   * @param time - time value; must be 0 for special values and 0-24 for regular dates
+   */
+  private DtDateTime(DtDate date, DtTimeS time) {
+    if (date.isRegular()) {
+      if (time.getDays() != 0) {
+        throw new DateTimeException("Time part of date-time value must be between 0-24h");
+      }
+    } else {
+      if (time.getSeconds() != 0) {
+        throw new DateTimeException("Time part of irregular date-time must be zero");
+      }
+    }
+    this.date = Objects.requireNonNull(date);
+    this.time = Objects.requireNonNull(time);
   }
 
   /**
@@ -569,6 +592,44 @@ public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
    */
   public String toProvysValue() {
     return date.toProvysValue() + ' ' + time.toProvysValue();
+  }
+
+  /**
+   * Supports serialization via SerializationProxy.
+   *
+   * @return proxy, corresponding to this DtDateTime
+   */
+  private Object writeReplace() {
+    return new SerializationProxy(this);
+  }
+
+  /**
+   * Should be serialized via proxy, thus no direct deserialization should occur.
+   *
+   * @param stream is stream from which object is to be read
+   * @throws InvalidObjectException always
+   */
+  private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+    throw new InvalidObjectException("Use Serialization Proxy instead.");
+  }
+
+  private static final class SerializationProxy implements Serializable {
+
+    private static final long serialVersionUID = -7333604473706319565L;
+    private @Nullable DtDate date;
+    private @Nullable DtTimeS time;
+
+    SerializationProxy() {
+    }
+
+    SerializationProxy(DtDateTime value) {
+      this.date = value.date;
+      this.time = value.time;
+    }
+
+    private Object readResolve() {
+      return ofDateTime(Objects.requireNonNull(date), Objects.requireNonNull(time));
+    }
   }
 
   @Override

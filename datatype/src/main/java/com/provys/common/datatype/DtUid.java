@@ -1,8 +1,8 @@
 package com.provys.common.datatype;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -12,9 +12,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Support for Provys domains UID and REF.
  */
-@SuppressWarnings("CyclicClassDependency") // Cyclic dependency on adapters is expected
-@JsonSerialize(using = DtUidSerializer.class)
-@JsonDeserialize(using = DtUidDeserializer.class)
+@SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
 public final class DtUid implements Serializable {
 
   /**
@@ -70,8 +68,6 @@ public final class DtUid implements Serializable {
     return valueOf(new BigInteger(value));
   }
 
-  private static final long serialVersionUID = 1L;
-
   private final BigInteger value;
 
   private DtUid(BigInteger value) {
@@ -124,6 +120,42 @@ public final class DtUid implements Serializable {
     return equals(ME);
   }
 
+  /**
+   * Supports serialization via SerializationProxy.
+   *
+   * @return proxy, corresponding to this DtUid
+   */
+  private Object writeReplace() {
+    return new SerializationProxy(this);
+  }
+
+  /**
+   * Should be serialized via proxy, thus no direct deserialization should occur.
+   *
+   * @param stream is stream from which object is to be read
+   * @throws InvalidObjectException always
+   */
+  private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+    throw new InvalidObjectException("Use Serialization Proxy instead.");
+  }
+
+  private static final class SerializationProxy implements Serializable {
+
+    private static final long serialVersionUID = -9017913400633080387L;
+    private @Nullable BigInteger value;
+
+    SerializationProxy() {
+    }
+
+    SerializationProxy(DtUid value) {
+      this.value = value.value;
+    }
+
+    private Object readResolve() {
+      return valueOf(Objects.requireNonNull(value));
+    }
+  }
+
   @Override
   public boolean equals(@Nullable Object o) {
     if (this == o) {
@@ -133,21 +165,21 @@ public final class DtUid implements Serializable {
       return false;
     }
     DtUid dtUid = (DtUid) o;
-    return Objects.equals(value, dtUid.value);
+    return value.equals(dtUid.value);
   }
 
   @Override
   public int hashCode() {
-    return value != null ? value.hashCode() : 0;
+    return value.hashCode();
   }
 
   @Override
   public String toString() {
     if (isME()) {
-      return "ID" + DtString.ME;
+      return DtString.ME;
     }
     if (isPriv()) {
-      return "ID" + DtString.PRIV;
+      return DtString.PRIV;
     }
     return "ID" + value;
   }

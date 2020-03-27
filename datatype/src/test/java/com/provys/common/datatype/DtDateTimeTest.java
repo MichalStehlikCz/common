@@ -1,13 +1,19 @@
 package com.provys.common.datatype;
 
+import static org.assertj.core.api.Assertions.*;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonRootName;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.provys.common.jackson.JacksonMappers;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.stream.Stream;
+import org.checkerframework.checker.nullness.qual.MonotonicNonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-
-import java.time.LocalDateTime;
-import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.*;
 
 class DtDateTimeTest {
 
@@ -360,5 +366,112 @@ class DtDateTimeTest {
   @MethodSource
   void toProvysValueTest(DtDateTime value, String result) {
     assertThat(value.toProvysValue()).isEqualTo(result);
+  }
+
+  @JsonRootName("DtDateTimeElement")
+  private static final class DtDateTimeElement {
+
+    @JsonProperty
+    private @MonotonicNonNull DtDateTime value;
+
+    /**
+     * Value of field value.
+     *
+     * @return value of field value
+     */
+    @Nullable DtDateTime getValue() {
+      return value;
+    }
+
+    /**
+     * Set value of field value.
+     *
+     * @param value is new value to be set
+     */
+    DtDateTimeElement setValue(DtDateTime value) {
+      this.value = value;
+      return this;
+    }
+
+    @Override
+    public boolean equals(@Nullable Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (o == null || getClass() != o.getClass()) {
+        return false;
+      }
+      DtDateTimeElement that = (DtDateTimeElement) o;
+      return Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+      return value != null ? value.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+      return "DtDateTimeElement{"
+          + "value=" + value
+          + '}';
+    }
+  }
+
+  static Stream<Object[]> jacksonTest() {
+    return Stream.of(
+        new Object[]{new DtDateTimeElement().setValue(DtDateTime.of(2008, 7, 24, 12, 5, 38)),
+            "{\"value\":\"2008-07-24T12:05:38\"}",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<DtDateTimeElement><value>2008-07-24T12:05:38</value></DtDateTimeElement>"}
+        , new Object[]{new DtDateTimeElement().setValue(DtDateTime.PRIV),
+            "{\"value\":\"1000-01-02T00:00:00\"}",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<DtDateTimeElement><value>1000-01-02T00:00:00</value></DtDateTimeElement>"}
+        , new Object[]{new DtDateTimeElement().setValue(DtDateTime.ME),
+            "{\"value\":\"1000-01-01T00:00:00\"}",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<DtDateTimeElement><value>1000-01-01T00:00:00</value></DtDateTimeElement>"}
+        , new Object[]{new DtDateTimeElement().setValue(DtDateTime.MIN),
+            "{\"value\":\"1000-01-03T00:00:00\"}",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<DtDateTimeElement><value>1000-01-03T00:00:00</value></DtDateTimeElement>"}
+        , new Object[]{new DtDateTimeElement().setValue(DtDateTime.MAX),
+            "{\"value\":\"5000-01-01T00:00:00\"}",
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+                + "<DtDateTimeElement><value>5000-01-01T00:00:00</value></DtDateTimeElement>"}
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource("jacksonTest")
+  void serializeToJsonTest(DtDateTimeElement value, String json, String xml)
+      throws JsonProcessingException {
+    assertThat(JacksonMappers.getJsonMapper().writeValueAsString(value))
+        .isEqualTo(json);
+  }
+
+  @ParameterizedTest
+  @MethodSource("jacksonTest")
+  void deserializeFromJsonTest(DtDateTimeElement value, String json, String xml)
+      throws IOException {
+    assertThat(JacksonMappers.getJsonMapper().readValue(json, DtDateTimeElement.class))
+        .isEqualTo(value);
+  }
+
+  @ParameterizedTest
+  @MethodSource("jacksonTest")
+  void serializeToXmlTest(DtDateTimeElement value, String json, String xml)
+      throws JsonProcessingException {
+    assertThat(JacksonMappers.getXmlMapper().writeValueAsString(value))
+        .isEqualTo(xml);
+  }
+
+  @ParameterizedTest
+  @MethodSource("jacksonTest")
+  void deserializeFromXmlTest(DtDateTimeElement value, String json, String xml)
+      throws IOException {
+    assertThat(JacksonMappers.getXmlMapper().readValue(xml, DtDateTimeElement.class))
+        .isEqualTo(value);
   }
 }

@@ -2,9 +2,9 @@ package com.provys.common.datatype;
 
 import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.provys.common.exception.InternalException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.time.DateTimeException;
 import java.time.Duration;
@@ -23,9 +23,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Support for Provys domain TIME with subdomain S (time in seconds).
  */
-@SuppressWarnings("CyclicClassDependency") // cyclic dependency with adapters is to be expected
-@JsonSerialize(using = DtTimeSSerializer.class)
-@JsonDeserialize(using = DtTimeSDeserializer.class)
+@SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
 public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
 
   /**
@@ -851,8 +849,6 @@ public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
     return result;
   }
 
-  private static final long serialVersionUID = 1L;
-
   /**
    * Time held is represented as time in seconds. DtInteger MIN and MAX values should be sufficient
    * for time data, held in Provys (as these are usually limited to to just slightly more than
@@ -1386,6 +1382,42 @@ public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
    */
   public String toProvysValue() {
     return toIso();
+  }
+
+  /**
+   * Supports serialization via SerializationProxy.
+   *
+   * @return proxy, corresponding to this DtTimeS
+   */
+  private Object writeReplace() {
+    return new SerializationProxy(this);
+  }
+
+  /**
+   * Should be serialized via proxy, thus no direct deserialization should occur.
+   *
+   * @param stream is stream from which object is to be read
+   * @throws InvalidObjectException always
+   */
+  private void readObject(ObjectInputStream stream) throws InvalidObjectException {
+    throw new InvalidObjectException("Use Serialization Proxy instead.");
+  }
+
+  private static final class SerializationProxy implements Serializable {
+
+    private static final long serialVersionUID = 99385158607860370L;
+    private @Nullable Integer time;
+
+    SerializationProxy() {
+    }
+
+    SerializationProxy(DtTimeS value) {
+      this.time = value.time;
+    }
+
+    private Object readResolve() {
+      return ofSeconds(Objects.requireNonNull(time));
+    }
   }
 
   @Override
