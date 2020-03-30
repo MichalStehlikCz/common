@@ -33,11 +33,21 @@ public final class ProvysObjectSerializer extends StdSerializer<Object> {
     this(TypeMapImpl.getDefault());
   }
 
+  /**
+   * Serialize object as field value (e.g. do not include object around field name and value).
+   *
+   * @param value is object to be serialized
+   * @param generator is Jackson Json generator where value should be written
+   */
+  public void serializeField(Object value, JsonGenerator generator) throws IOException {
+    generator.writeObjectField(typeMap.getName(value.getClass()), value);
+  }
+
   @Override
-  public void serialize(Object o, JsonGenerator generator,
+  public void serialize(Object value, JsonGenerator generator,
       SerializerProvider serializerProvider) throws IOException {
     generator.writeStartObject();
-    generator.writeObjectField(typeMap.getName(o.getClass()), o);
+    serializeField(value, generator);
     generator.writeEndObject();
   }
 
