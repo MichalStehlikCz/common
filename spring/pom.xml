@@ -4,7 +4,7 @@
     <parent>
         <artifactId>common</artifactId>
         <groupId>com.provys.common</groupId>
-        <version>3.7.1-SNAPSHOT</version>
+        <version>3.8.0</version>
     </parent>
     <artifactId>common-spring</artifactId>
     <dependencies>
