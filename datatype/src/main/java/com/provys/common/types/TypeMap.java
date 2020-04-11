@@ -1,10 +1,12 @@
 package com.provys.common.types;
 
+import com.google.errorprone.annotations.Immutable;
 import java.io.Serializable;
 
 /**
  * Maps strings used to identify class in Json / Xml serialisation to Java classes and vica versa.
  */
+@Immutable
 public interface TypeMap extends Serializable {
 
   /**

@@ -1,11 +1,13 @@
 package com.provys.common.types;
 
+import com.google.errorprone.annotations.Immutable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Allows to specify required mapping of given class to name used in serialization. Used for module
  * registration.
  */
+@Immutable
 public final class TypeName {
 
   private final Class<?> type;

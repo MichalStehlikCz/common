@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import com.google.errorprone.annotations.Immutable;
 import com.provys.common.exception.InternalException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -13,6 +14,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Support for Provys domains UID and REF.
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
+@Immutable
 public final class DtUid implements Serializable {
 
   /**
@@ -151,8 +153,11 @@ public final class DtUid implements Serializable {
       this.value = value.value;
     }
 
-    private Object readResolve() {
-      return valueOf(Objects.requireNonNull(value));
+    private Object readResolve() throws InvalidObjectException {
+      if (value == null) {
+        throw new InvalidObjectException("Value not read during DtUid deserialization");
+      }
+      return valueOf(value);
     }
   }
 

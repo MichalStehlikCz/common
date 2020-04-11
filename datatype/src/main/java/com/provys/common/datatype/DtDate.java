@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import com.google.errorprone.annotations.Immutable;
 import com.provys.common.exception.InternalException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -22,6 +23,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * LocalDate} functionality, but this behaviour can change later.
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
+@Immutable
 public final class DtDate implements Comparable<DtDate>, Serializable {
 
   /**
@@ -743,8 +745,11 @@ public final class DtDate implements Comparable<DtDate>, Serializable {
       this.value = dtDate.value;
     }
 
-    private Object readResolve() {
-      return ofLocalDate(Objects.requireNonNull(value));
+    private Object readResolve() throws InvalidObjectException {
+      if (value == null) {
+        throw new InvalidObjectException("Value not read during DtDate deserialization");
+      }
+      return ofLocalDate(value);
     }
   }
 

@@ -3,6 +3,7 @@ package com.provys.common.types;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
+import com.google.errorprone.annotations.Immutable;
 import com.provys.common.exception.InternalException;
 import java.io.IOException;
 import java.io.InvalidObjectException;

@@ -3,12 +3,16 @@ package com.provys.common.types;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer;
+import com.google.errorprone.annotations.Immutable;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Deserializer that translates Provys string (not Java specific) to class.
+ */
 public final class ProvysClassDeserializer extends StdScalarDeserializer<Class<?>> {
 
   private final TypeMap typeMap;

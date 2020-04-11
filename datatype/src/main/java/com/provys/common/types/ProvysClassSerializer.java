@@ -3,6 +3,7 @@ package com.provys.common.types;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdScalarSerializer;
+import com.google.errorprone.annotations.Immutable;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -10,8 +11,9 @@ import java.io.Serializable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
- * Json serializer, using type name as available in Sql type map.
+ * Json serializer, using type name as available in type map.
  */
+@Immutable
 public final class ProvysClassSerializer extends StdScalarSerializer<Class<?>> {
 
   private final TypeMap typeMap;

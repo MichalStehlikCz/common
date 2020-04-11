@@ -1,5 +1,6 @@
 package com.provys.common.types;
 
+import com.google.errorprone.annotations.Immutable;
 import com.provys.common.datatype.DtDate;
 import com.provys.common.datatype.DtDateTime;
 import com.provys.common.datatype.DtUid;
@@ -28,11 +29,12 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * you load two libraries providing different mappings for given string, you will get warning in log
  * and only one mapping will be used, such situation should be avoided.
  */
+@Immutable
 public final class TypeMapImpl implements TypeMap {
 
   private static final Logger LOG = LogManager.getLogger(TypeMapImpl.class);
 
-  private static final TypeMapImpl DEFAULT_TYPE_MAP;
+  private static final TypeMapImpl DEFAULT;
 
   static {
     var builtInStream = Stream.of(
@@ -49,7 +51,7 @@ public final class TypeMapImpl implements TypeMap {
     var loaderStream = ServiceLoader.load(TypeModule.class).stream().map(Provider::get)
         .map(TypeModule::getTypes).flatMap(Collection::stream);
     var types = Stream.concat(builtInStream, loaderStream).collect(Collectors.toUnmodifiableList());
-    DEFAULT_TYPE_MAP = new TypeMapImpl(types);
+    DEFAULT = new TypeMapImpl(types);
   }
 
   /**
@@ -58,10 +60,12 @@ public final class TypeMapImpl implements TypeMap {
    * @return default type map
    */
   public static TypeMapImpl getDefault() {
-    return DEFAULT_TYPE_MAP;
+    return DEFAULT;
   }
 
+  @SuppressWarnings("Immutable") // product of toUnmodifiableMap
   private final Map<String, Class<?>> typesByName;
+  @SuppressWarnings("Immutable") // product of toUnmodifiableMap
   private final Map<Class<?>, String> namesByType;
 
   /**
@@ -92,6 +96,11 @@ public final class TypeMapImpl implements TypeMap {
     }
   }
 
+  /**
+   * Create type map based on supplied collection of type names.
+   *
+   * @param types are types and their names registered in this type map
+   */
   public TypeMapImpl(Collection<TypeName> types) {
     this.namesByType = types.stream()
         .collect(
@@ -152,8 +161,11 @@ public final class TypeMapImpl implements TypeMap {
           .collect(Collectors.toList());
     }
 
-    private Object readResolve() {
-      return new TypeMapImpl(Objects.requireNonNull(types));
+    private Object readResolve() throws InvalidObjectException {
+      if (types == null) {
+        throw new InvalidObjectException("Types not read during TypeMapImpl deserialization");
+      }
+      return new TypeMapImpl(types);
     }
   }
 

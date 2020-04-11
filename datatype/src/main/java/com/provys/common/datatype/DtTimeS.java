@@ -2,6 +2,7 @@ package com.provys.common.datatype;
 
 import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
 
+import com.google.errorprone.annotations.Immutable;
 import com.provys.common.exception.InternalException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -24,6 +25,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Support for Provys domain TIME with subdomain S (time in seconds).
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
+@Immutable
 public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
 
   /**
@@ -1415,7 +1417,10 @@ public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
       this.time = value.time;
     }
 
-    private Object readResolve() {
+    private Object readResolve() throws InvalidObjectException {
+      if (time == null) {
+        throw new InvalidObjectException("Time not read during DtTimeS deserialization");
+      }
       return ofSeconds(Objects.requireNonNull(time));
     }
   }

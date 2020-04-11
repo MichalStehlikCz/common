@@ -1,5 +1,7 @@
 package com.provys.common.exception;
 
+import static org.checkerframework.checker.nullness.NullnessUtil.castNonNull;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -130,7 +132,7 @@ public abstract class ProvysException extends RuntimeException {
    */
   @Override
   public String getMessage() {
-    return Objects.requireNonNull(super.getMessage()); // We do not allow creation without message
+    return castNonNull(super.getMessage()); // We do not allow creation without message
   }
 
   @Override

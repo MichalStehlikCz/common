@@ -3,6 +3,7 @@ package com.provys.common.types;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import com.google.errorprone.annotations.Immutable;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -12,6 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Json serializer, using type name as available in Sql type map.
  */
+@Immutable
 public final class ProvysObjectSerializer extends StdSerializer<Object> {
 
   private final TypeMap typeMap;
@@ -38,6 +40,7 @@ public final class ProvysObjectSerializer extends StdSerializer<Object> {
    *
    * @param value is object to be serialized
    * @param generator is Jackson Json generator where value should be written
+   * @throws IOException when IO exception is encountered accessing Json generator
    */
   public void serializeField(Object value, JsonGenerator generator) throws IOException {
     generator.writeObjectField(typeMap.getName(value.getClass()), value);

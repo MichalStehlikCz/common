@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonRootName;
 import java.util.Objects;
+import javax.annotation.concurrent.Immutable;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -20,6 +21,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
     creatorVisibility = Visibility.NONE
 )
 @JsonRootName("ERRORSTATUS")
+@Immutable
 public class WsError {
 
   @JsonProperty("STATUS")

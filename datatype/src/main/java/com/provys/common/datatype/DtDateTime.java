@@ -1,5 +1,6 @@
 package com.provys.common.datatype;
 
+import com.google.errorprone.annotations.Immutable;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -16,6 +17,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Implementation of DATETIME domain - date and time with second precision.
  */
 @SuppressWarnings("CyclicClassDependency") // cyclic dependency on serialization proxy
+@Immutable
 public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
 
   /**
@@ -627,8 +629,14 @@ public final class DtDateTime implements Comparable<DtDateTime>, Serializable {
       this.time = value.time;
     }
 
-    private Object readResolve() {
-      return ofDateTime(Objects.requireNonNull(date), Objects.requireNonNull(time));
+    private Object readResolve() throws InvalidObjectException {
+      if (date == null) {
+        throw new InvalidObjectException("Date not read during DtDateTime deserialization");
+      }
+      if (time == null) {
+        throw new InvalidObjectException("Time not read during DtDateTime deserialization");
+      }
+      return ofDateTime(date, time);
     }
   }
 
