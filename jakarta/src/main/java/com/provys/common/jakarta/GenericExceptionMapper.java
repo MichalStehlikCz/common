@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Logger;
 
 /**
  * Exception mapper for Jax-Rs that logs problem and translates generic exception to standard Provys
- * web-service error message format
+ * web-service error message format.
  */
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Exception> {
