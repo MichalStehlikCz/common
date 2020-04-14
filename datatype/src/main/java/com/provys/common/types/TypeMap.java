@@ -27,6 +27,13 @@ public interface TypeMap extends Serializable {
   Class<?> getExtendedType(String name);
 
   /**
+   * Validate that type corresponds to one of supported (serialized, immutable) value types.
+   *
+   * @param type is type to be validated
+   */
+  void validateType(Class<?> type);
+
+  /**
    * Retrieve name representing supplied class. Without irregular mapping, used for Object.class.
    *
    * @param type is class we want to retrieve name of

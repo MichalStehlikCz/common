@@ -128,6 +128,13 @@ public final class TypeMapImpl implements TypeMap {
   }
 
   @Override
+  public void validateType(Class<?> type) {
+    if (namesByType.get(type) == null) {
+      throw new InternalException("Type " + type + " is not supported value type");
+    }
+  }
+
+  @Override
   public String getName(Class<?> type) {
     var result = namesByType.get(type);
     if (result == null) {
