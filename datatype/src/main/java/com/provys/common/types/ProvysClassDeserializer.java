@@ -36,7 +36,7 @@ public final class ProvysClassDeserializer extends StdScalarDeserializer<Class<?
   @Override
   public Class<?> deserialize(JsonParser parser, DeserializationContext deserializationContext)
       throws IOException {
-    return typeMap.getType(parser.getValueAsString());
+    return typeMap.getExtendedType(parser.getValueAsString());
   }
 
   /**

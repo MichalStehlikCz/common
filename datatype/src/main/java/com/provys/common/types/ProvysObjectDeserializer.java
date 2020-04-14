@@ -48,7 +48,7 @@ public final class ProvysObjectDeserializer extends StdDeserializer<Serializable
       throw context.wrongTokenException(parser, Serializable.class, JsonToken.FIELD_NAME,
           "type name");
     }
-    var type = typeMap.getType(typeName).asSubclass(Serializable.class);
+    var type = typeMap.getType(typeName);
     parser.nextToken();
     var result = context.readValue(parser, type);
     if (result == null) {

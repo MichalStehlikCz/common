@@ -35,7 +35,7 @@ public final class TypeMapImpl implements TypeMap {
 
   private static final Logger LOG = LogManager.getLogger(TypeMapImpl.class);
 
-  private static final String ANY = "ANY";
+  private static final String ANY_NAME = "ANY";
   private static final TypeMapImpl DEFAULT;
 
   static {
@@ -114,10 +114,7 @@ public final class TypeMapImpl implements TypeMap {
   }
 
   @Override
-  public Class<?> getType(String name) {
-    if (name.equals(ANY)) {
-      return Object.class;
-    }
+  public Class<? extends Serializable> getType(String name) {
     var result = typesByName.get(name);
     if (result == null) {
       throw new InternalException("No type mapping found for " + name);
@@ -126,15 +123,42 @@ public final class TypeMapImpl implements TypeMap {
   }
 
   @Override
+  public Class<?> getExtendedType(String name) {
+    return name.equals(getAnyName()) ? getAnyType() : getType(name);
+  }
+
+  @Override
   public String getName(Class<?> type) {
-    if (type == Object.class) {
-      return ANY;
-    }
     var result = namesByType.get(type);
     if (result == null) {
       throw new InternalException("No type name found for class " + type);
     }
     return result;
+  }
+
+  @Override
+  public String getExtendedName(Class<?> type) {
+    return (type == Object.class) ? ANY_NAME : getName(type);
+  }
+
+  /**
+   * Retrieve type, corresponding to any value.
+   *
+   * @return Object.class as type, corresponding to any value
+   */
+  @Override
+  public Class<Object> getAnyType() {
+    return Object.class;
+  }
+
+  /**
+   * Retrieve name, representing any value.
+   *
+   * @return name, representing any value (Object.class)
+   */
+  @Override
+  public String getAnyName() {
+    return ANY_NAME;
   }
 
   /**
