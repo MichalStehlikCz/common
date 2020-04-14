@@ -14,7 +14,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Json serializer, using type name as available in Sql type map.
  */
 @Immutable
-public final class ProvysObjectSerializer extends StdSerializer<Object> {
+public final class ProvysObjectSerializer extends StdSerializer<Serializable> {
 
   private final TypeMap typeMap;
 
@@ -24,7 +24,7 @@ public final class ProvysObjectSerializer extends StdSerializer<Object> {
    * @param typeMap is type map used for translation of object type to name
    */
   public ProvysObjectSerializer(TypeMap typeMap) {
-    super(Object.class);
+    super(Serializable.class);
     this.typeMap = typeMap;
   }
 
@@ -43,11 +43,12 @@ public final class ProvysObjectSerializer extends StdSerializer<Object> {
    * @throws IOException when IO exception is encountered accessing Json generator
    */
   public void serializeField(Object value, JsonGenerator generator) throws IOException {
-    generator.writeObjectField(typeMap.getName(value.getClass()), value);
+    generator.writeObjectField(typeMap.getName(value.getClass().asSubclass(Serializable.class)),
+        value);
   }
 
   @Override
-  public void serialize(Object value, JsonGenerator generator,
+  public void serialize(Serializable value, JsonGenerator generator,
       SerializerProvider serializerProvider) throws IOException {
     generator.writeStartObject();
     serializeField(value, generator);
@@ -111,7 +112,7 @@ public final class ProvysObjectSerializer extends StdSerializer<Object> {
 
   @Override
   public String toString() {
-    return "DefaultJsonObjectSerializer{"
+    return "ProvysObjectSerializer{"
         + "typeMap=" + typeMap + '}';
   }
 }

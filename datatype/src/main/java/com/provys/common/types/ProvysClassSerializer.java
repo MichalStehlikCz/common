@@ -39,7 +39,7 @@ public final class ProvysClassSerializer extends StdScalarSerializer<Class<?>> {
   @Override
   public void serialize(Class<?> type, JsonGenerator generator,
       SerializerProvider serializerProvider) throws IOException {
-    generator.writeString(typeMap.getName(type));
+    generator.writeString(typeMap.getName(type.asSubclass(Serializable.class)));
   }
 
   /**
@@ -99,7 +99,7 @@ public final class ProvysClassSerializer extends StdScalarSerializer<Class<?>> {
 
   @Override
   public String toString() {
-    return "DefaultJsonClassSerializer{"
+    return "ProvysClassSerializer{"
         + "typeMap=" + typeMap + '}';
   }
 }

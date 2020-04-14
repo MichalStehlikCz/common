@@ -1,10 +1,9 @@
 package com.provys.common.types;
 
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.google.errorprone.annotations.Immutable;
-import com.provys.common.exception.InternalException;
 import java.io.IOException;
 import java.io.InvalidObjectException;
 import java.io.ObjectInputStream;
@@ -13,9 +12,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Deserializer for deserialization of Json objects of unknown type, using class name translated to
- * type via type map.
+ * type via type map. Formally created as Serializable deserializer, as type map only supports
+ * Serializable object types.
  */
-public final class ProvysObjectDeserializer extends StdDeserializer<Object> {
+public final class ProvysObjectDeserializer extends StdDeserializer<Serializable> {
 
   private final TypeMap typeMap;
 
@@ -25,7 +25,7 @@ public final class ProvysObjectDeserializer extends StdDeserializer<Object> {
    * @param typeMap is type map that will be used to look up class based on name
    */
   public ProvysObjectDeserializer(TypeMap typeMap) {
-    super(Object.class);
+    super(Serializable.class);
     this.typeMap = typeMap;
   }
 
@@ -37,27 +37,26 @@ public final class ProvysObjectDeserializer extends StdDeserializer<Object> {
   }
 
   @Override
-  public Object deserialize(JsonParser parser, DeserializationContext context)
+  public Serializable deserialize(JsonParser parser, DeserializationContext context)
       throws IOException {
     if (!parser.isExpectedStartObjectToken()) {
-      return context.handleUnexpectedToken(Object.class, parser.currentToken(), parser,
-          "Failed to deserialize com.provys.db.sql value - start object expected");
+      throw context.wrongTokenException(parser, Serializable.class, JsonToken.START_OBJECT,
+          "start");
     }
     var typeName = parser.nextFieldName();
     if (typeName == null) {
-      return context.handleUnexpectedToken(Object.class, parser.currentToken(), parser,
-          "Failed to deserialize com.provys.db.sql value - field not found inside value object");
+      throw context.wrongTokenException(parser, Serializable.class, JsonToken.FIELD_NAME,
+          "type name");
     }
-    var type = typeMap.getType(typeName);
+    var type = typeMap.getType(typeName).asSubclass(Serializable.class);
     parser.nextToken();
     var result = context.readValue(parser, type);
     if (result == null) {
-      throw new InternalException(
-          "Failed to deserialize com.provys.db.sql value - null return value");
+      context.reportInputMismatch(Serializable.class, "null value encountered");
     }
     if (!parser.nextToken().isStructEnd()) {
-      return context.handleUnexpectedToken(Object.class, parser.currentToken(), parser,
-          "Failed to deserialize com.provys.db.sql value - end object expected");
+      throw context.wrongTokenException(parser, Serializable.class, JsonToken.END_OBJECT,
+          "end");
     }
     return result;
   }
@@ -119,7 +118,7 @@ public final class ProvysObjectDeserializer extends StdDeserializer<Object> {
 
   @Override
   public String toString() {
-    return "DefaultJsonObjectDeserializer{"
+    return "ProvysObjectDeserializer{"
         + "typeMap=" + typeMap + '}';
   }
 }

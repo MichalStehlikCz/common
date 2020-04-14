@@ -12,5 +12,5 @@ public interface TypeModule {
    *
    * @return list of type / name pairs registered by this module.
    */
-  Collection<TypeName> getTypes();
+  Collection<TypeName<?>> getTypes();
 }

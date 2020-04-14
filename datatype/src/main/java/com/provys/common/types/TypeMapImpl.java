@@ -28,26 +28,28 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * allows to extend types, available in this package with additional types as needed. Note that if
  * you load two libraries providing different mappings for given string, you will get warning in log
  * and only one mapping will be used, such situation should be avoided.
+ * Mapping of {@code Object.class} to value ANY is hardcoded.
  */
 @Immutable
 public final class TypeMapImpl implements TypeMap {
 
   private static final Logger LOG = LogManager.getLogger(TypeMapImpl.class);
 
+  private static final String ANY = "ANY";
   private static final TypeMapImpl DEFAULT;
 
   static {
-    var builtInStream = Stream.of(
-        new TypeName(Boolean.class, "BOOLEAN"),
-        new TypeName(Integer.class, "INTEGER"),
-        new TypeName(Double.class, "NUMBER"),
-        new TypeName(String.class, "STRING"),
-        new TypeName(DtUid.class, "UID"),
-        new TypeName(DtDate.class, "DATE"),
-        new TypeName(DtDateTime.class, "DATETIME"),
-        new TypeName(Byte.class, "BYTE"),
-        new TypeName(BigInteger.class, "BIGINTEGER"),
-        new TypeName(BigDecimal.class, "BIGDECIMAL"));
+    Stream<TypeName<? extends Serializable>> builtInStream = Stream.of(
+        new TypeName<>(Boolean.class, "BOOLEAN"),
+        new TypeName<>(Integer.class, "INTEGER"),
+        new TypeName<>(Double.class, "NUMBER"),
+        new TypeName<>(String.class, "STRING"),
+        new TypeName<>(DtUid.class, "UID"),
+        new TypeName<>(DtDate.class, "DATE"),
+        new TypeName<>(DtDateTime.class, "DATETIME"),
+        new TypeName<>(Byte.class, "BYTE"),
+        new TypeName<>(BigInteger.class, "BIGINTEGER"),
+        new TypeName<>(BigDecimal.class, "BIGDECIMAL"));
     var loaderStream = ServiceLoader.load(TypeModule.class).stream().map(Provider::get)
         .map(TypeModule::getTypes).flatMap(Collection::stream);
     var types = Stream.concat(builtInStream, loaderStream).collect(Collectors.toUnmodifiableList());
@@ -63,10 +65,10 @@ public final class TypeMapImpl implements TypeMap {
     return DEFAULT;
   }
 
-  @SuppressWarnings("Immutable") // product of toUnmodifiableMap
-  private final Map<String, Class<?>> typesByName;
-  @SuppressWarnings("Immutable") // product of toUnmodifiableMap
-  private final Map<Class<?>, String> namesByType;
+  @SuppressWarnings("Immutable") // product of toUnmodifiableMap, String and Class are immutable
+  private final Map<String, Class<? extends Serializable>> typesByName;
+  @SuppressWarnings("Immutable") // product of toUnmodifiableMap, String and Class are immutable
+  private final Map<Class<? extends Serializable>, String> namesByType;
 
   /**
    * Reports duplicate mappings of given class as warnings to log.
@@ -85,10 +87,11 @@ public final class TypeMapImpl implements TypeMap {
   /**
    * Reports duplicate mappings of given name as warnings to log.
    */
-  private static final class ClassMerger implements BinaryOperator<Class<?>> {
+  private static final class ClassMerger implements BinaryOperator<Class<? extends Serializable>> {
 
     @Override
-    public Class<?> apply(Class<?> first, Class<?> second) {
+    public Class<? extends Serializable> apply(Class<? extends Serializable> first,
+        Class<? extends Serializable> second) {
       if (first != second) {
         LOG.warn("Duplicate mapping - classes {} and {} coorespond to same name", first, second);
       }
@@ -101,7 +104,7 @@ public final class TypeMapImpl implements TypeMap {
    *
    * @param types are types and their names registered in this type map
    */
-  public TypeMapImpl(Collection<TypeName> types) {
+  public TypeMapImpl(Collection<TypeName<? extends Serializable>> types) {
     this.namesByType = types.stream()
         .collect(
             Collectors.toUnmodifiableMap(TypeName::getType, TypeName::getName, new NameMerger()));
@@ -112,6 +115,9 @@ public final class TypeMapImpl implements TypeMap {
 
   @Override
   public Class<?> getType(String name) {
+    if (name.equals(ANY)) {
+      return Object.class;
+    }
     var result = typesByName.get(name);
     if (result == null) {
       throw new InternalException("No type mapping found for " + name);
@@ -121,6 +127,9 @@ public final class TypeMapImpl implements TypeMap {
 
   @Override
   public String getName(Class<?> type) {
+    if (type == Object.class) {
+      return ANY;
+    }
     var result = namesByType.get(type);
     if (result == null) {
       throw new InternalException("No type name found for class " + type);
@@ -150,14 +159,17 @@ public final class TypeMapImpl implements TypeMap {
   private static final class SerializationProxy implements Serializable {
 
     private static final long serialVersionUID = 4943844360741067489L;
-    private @Nullable List<TypeName> types;
+    private @Nullable List<TypeName<?>> types;
 
     SerializationProxy() {
     }
 
+    // we create TypeMapImpl from TypeName entries, ensuring immutability; we do not want to keep
+    // list of type names around just to suppress warnings on serialization...
+    @SuppressWarnings("Immutable")
     SerializationProxy(TypeMapImpl value) {
       this.types = value.namesByType.entrySet().stream()
-          .map(entry -> new TypeName(entry.getKey(), entry.getValue()))
+          .map(entry -> new TypeName<>(entry.getKey(), entry.getValue()))
           .collect(Collectors.toList());
     }
 
