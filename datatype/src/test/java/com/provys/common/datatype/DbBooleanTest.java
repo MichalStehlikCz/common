@@ -3,7 +3,6 @@ package com.provys.common.datatype;
 import static org.assertj.core.api.Assertions.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.provys.common.jackson.JacksonMappers;
 import java.io.IOException;

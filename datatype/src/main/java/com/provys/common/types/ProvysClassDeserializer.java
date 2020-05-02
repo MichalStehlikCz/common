@@ -12,6 +12,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Deserializer that translates Provys string (not Java specific) to class.
  */
+@SuppressWarnings("CyclicClassDependency") // dependency between class and its serialization proxy
 public final class ProvysClassDeserializer extends StdScalarDeserializer<Class<?>> {
 
   private final TypeMap typeMap;

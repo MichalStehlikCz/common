@@ -281,7 +281,7 @@ public class StringParser {
       // text cannot be present - not enough characters remain
       return false;
     }
-    if (string.substring(pos, pos + text.length()).equals(text)) {
+    if (string.startsWith(text, pos)) {
       pos += text.length();
       return true;
     }
@@ -300,7 +300,7 @@ public class StringParser {
       // text cannot be present - not enough characters remain
       return false;
     }
-    return string.substring(pos, pos + text.length()).equals(text);
+    return string.startsWith(text, pos);
   }
 
   /**

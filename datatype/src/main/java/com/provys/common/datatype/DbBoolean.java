@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * TRUE... Given that BOOLEAN is only available in PL/SQL, not in SQL, it is rarely used and thus it
  * seems ok to use DbBoolean wrapper in such situations.
  */
+@SuppressWarnings("CyclicClassDependency") // dependency between class and its converter is ok
 @JsonSerialize(converter = DbBooleanToBooleanConverter.class)
 @JsonDeserialize(converter = DbBooleanFromBooleanConverter.class)
 public enum DbBoolean {

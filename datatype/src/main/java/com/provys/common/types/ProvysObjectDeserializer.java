@@ -15,6 +15,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * type via type map. Formally created as Serializable deserializer, as type map only supports
  * Serializable object types.
  */
+@SuppressWarnings("CyclicClassDependency") // dependency between class and its serialization proxy
 public final class ProvysObjectDeserializer extends StdDeserializer<Serializable> {
 
   private final TypeMap typeMap;

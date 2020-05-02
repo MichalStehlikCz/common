@@ -13,6 +13,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 /**
  * Json serializer, using type name as available in Sql type map.
  */
+@SuppressWarnings("CyclicClassDependency") // dependency between class and its serialization proxy
 @Immutable
 public final class ProvysObjectSerializer extends StdSerializer<Serializable> {
 
