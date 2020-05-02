@@ -1,6 +1,7 @@
 package com.provys.common.types;
 
 import com.google.errorprone.annotations.Immutable;
+import com.provys.common.datatype.DbBoolean;
 import com.provys.common.datatype.DtDate;
 import com.provys.common.datatype.DtDateTime;
 import com.provys.common.datatype.DtUid;
@@ -10,10 +11,14 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.ServiceLoader;
 import java.util.ServiceLoader.Provider;
 import java.util.function.BinaryOperator;
@@ -21,15 +26,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.checkerframework.checker.nullness.qual.PolyNull;
 
 /**
  * Default map uses service loader to retrieve registered maps from all available libraries. This
  * allows to extend types, available in this package with additional types as needed. Note that if
  * you load two libraries providing different mappings for given string, you will get warning in log
- * and only one mapping will be used, such situation should be avoided.
- * Mapping of {@code Object.class} to value ANY is hardcoded.
+ * and only one mapping will be used, such situation should be avoided. Mapping of {@code
+ * Object.class} to value ANY is hardcoded.
  */
+@SuppressWarnings("CyclicClassDependency") // Dependency between class and its serialization proxy
 @Immutable
 public final class TypeMapImpl implements TypeMap {
 
@@ -39,7 +47,7 @@ public final class TypeMapImpl implements TypeMap {
   private static final TypeMapImpl DEFAULT;
 
   static {
-    Stream<TypeName<? extends Serializable>> builtInStream = Stream.of(
+    Stream<TypeName<? extends Serializable>> builtInNameStream = Stream.of(
         new TypeName<>(Boolean.class, "BOOLEAN"),
         new TypeName<>(Integer.class, "INTEGER"),
         new TypeName<>(Double.class, "NUMBER"),
@@ -50,10 +58,71 @@ public final class TypeMapImpl implements TypeMap {
         new TypeName<>(Byte.class, "BYTE"),
         new TypeName<>(BigInteger.class, "BIGINTEGER"),
         new TypeName<>(BigDecimal.class, "BIGDECIMAL"));
-    var loaderStream = ServiceLoader.load(TypeModule.class).stream().map(Provider::get)
+    Stream<TypeName<? extends Serializable>> loaderNameStream = ServiceLoader.load(TypeModule.class)
+        .stream().map(Provider::get)
         .map(TypeModule::getTypes).flatMap(Collection::stream);
-    var types = Stream.concat(builtInStream, loaderStream).collect(Collectors.toUnmodifiableList());
-    DEFAULT = new TypeMapImpl(types);
+    List<TypeName<? extends Serializable>> names = Stream
+        .concat(builtInNameStream, loaderNameStream)
+        .collect(Collectors.toUnmodifiableList());
+    Stream<TypeConverter<?, ?>> builtInConverterStream = Stream.of(
+        new DefaultTypeConverter<>(Byte.class, Integer.class, true, Number::intValue),
+        new DefaultTypeConverter<>(Short.class, Integer.class, true, Number::intValue),
+        new DefaultTypeConverter<>(Long.class, Integer.class, false, Math::toIntExact),
+        new DefaultTypeConverter<>(Float.class, Integer.class, false,
+            TypeConversionUtil::floatToIntExact),
+        new DefaultTypeConverter<>(Double.class, Integer.class, false,
+            TypeConversionUtil::doubleToIntExact),
+        new DefaultTypeConverter<>(BigInteger.class, Integer.class, false,
+            BigInteger::intValueExact),
+        new DefaultTypeConverter<>(BigDecimal.class, Integer.class, false,
+            BigDecimal::intValueExact),
+        new DefaultTypeConverter<>(Byte.class, Double.class, true, Number::doubleValue),
+        new DefaultTypeConverter<>(Short.class, Double.class, true, Number::doubleValue),
+        new DefaultTypeConverter<>(Integer.class, Double.class, true, Number::doubleValue),
+        new DefaultTypeConverter<>(Long.class, Double.class, false, Number::doubleValue),
+        new DefaultTypeConverter<>(Float.class, Double.class, true, Number::doubleValue),
+        new DefaultTypeConverter<>(BigInteger.class, Double.class, false, BigInteger::doubleValue),
+        new DefaultTypeConverter<>(BigDecimal.class, Double.class, false, BigDecimal::doubleValue),
+        new DefaultTypeConverter<>(Byte.class, BigInteger.class, true,
+            (SerializableFunction<Byte, BigInteger>) BigInteger::valueOf),
+        new DefaultTypeConverter<>(Short.class, BigInteger.class, true,
+            (SerializableFunction<Short, BigInteger>) BigInteger::valueOf),
+        new DefaultTypeConverter<>(Integer.class, BigInteger.class, true,
+            (SerializableFunction<Integer, BigInteger>) BigInteger::valueOf),
+        new DefaultTypeConverter<>(Long.class, BigInteger.class, true, BigInteger::valueOf),
+        new DefaultTypeConverter<>(Float.class, BigInteger.class, false,
+            TypeConversionUtil::floatToBigIntegerExact),
+        new DefaultTypeConverter<>(Double.class, BigInteger.class, false,
+            TypeConversionUtil::doubleToBigIntegerExact),
+        new DefaultTypeConverter<>(BigDecimal.class, BigInteger.class, false,
+            BigDecimal::toBigIntegerExact),
+        new DefaultTypeConverter<>(Byte.class, BigDecimal.class, true,
+            (SerializableFunction<Byte, BigDecimal>) BigDecimal::valueOf),
+        new DefaultTypeConverter<>(Short.class, BigDecimal.class, true,
+            (SerializableFunction<Short, BigDecimal>) BigDecimal::valueOf),
+        new DefaultTypeConverter<>(Integer.class, BigDecimal.class, true,
+            (SerializableFunction<Integer, BigDecimal>) BigDecimal::valueOf),
+        new DefaultTypeConverter<>(Long.class, BigDecimal.class, true, BigDecimal::valueOf),
+        new DefaultTypeConverter<>(Float.class, BigDecimal.class, true, BigDecimal::valueOf),
+        new DefaultTypeConverter<>(Double.class, BigDecimal.class, true, BigDecimal::valueOf),
+        new DefaultTypeConverter<>(BigInteger.class, BigDecimal.class, true, BigDecimal::new),
+        new DefaultTypeConverter<>(DbBoolean.class, Boolean.class, true, DbBoolean::value),
+        new DefaultTypeConverter<>(DtDateTime.class, DtDate.class, true, DtDateTime::getDate),
+        new DefaultTypeConverter<>(LocalDate.class, DtDate.class, true, DtDate::ofLocalDate),
+        new DefaultTypeConverter<>(LocalDateTime.class, DtDate.class, true,
+            value -> DtDate.ofLocalDate(value.toLocalDate())),
+        new DefaultTypeConverter<>(DtDate.class, DtDateTime.class, false, DtDateTime::ofDate),
+        new DefaultTypeConverter<>(LocalDate.class, DtDateTime.class, false,
+            value -> DtDateTime.ofDate(DtDate.ofLocalDate(value))),
+        new DefaultTypeConverter<>(LocalDateTime.class, DtDateTime.class, true,
+            DtDateTime::ofLocalDateTime)
+    );
+    var loaderConverterStream = ServiceLoader.load(TypeModule.class).stream().map(Provider::get)
+        .map(TypeModule::getConverters).flatMap(Collection::stream);
+    var converters = Stream
+        .concat(builtInConverterStream, loaderConverterStream)
+        .collect(Collectors.toUnmodifiableList());
+    DEFAULT = new TypeMapImpl(names, converters);
   }
 
   /**
@@ -69,6 +138,8 @@ public final class TypeMapImpl implements TypeMap {
   private final Map<String, Class<? extends Serializable>> typesByName;
   @SuppressWarnings("Immutable") // product of toUnmodifiableMap, String and Class are immutable
   private final Map<Class<? extends Serializable>, String> namesByType;
+  @SuppressWarnings("Immutable") // also unmodifiable map of unmodifiable entries
+  private final Map<Class<?>, Map<Class<?>, TypeConverter<?, ?>>> converters;
 
   /**
    * Reports duplicate mappings of given class as warnings to log.
@@ -99,18 +170,42 @@ public final class TypeMapImpl implements TypeMap {
     }
   }
 
+  private static Map<Class<?>, Map<Class<?>, TypeConverter<?, ?>>> collectConvertors(
+      Iterable<? extends TypeConverter<?, ?>> converters) {
+    var intermediate = new HashMap<Class<?>, HashMap<Class<?>, TypeConverter<?, ?>>>(20);
+    // collect converters
+    for (var converter : converters) {
+      var mapForSource = intermediate.computeIfAbsent(converter.getSourceType(),
+          key -> new HashMap<>(2));
+      var old = mapForSource.get(converter.getTargetType());
+      if ((old == null) || (old.getPriority() < converter.getPriority())) {
+        mapForSource.put(converter.getTargetType(), converter);
+      } else if (old.getPriority() == converter.getPriority()) {
+        LOG.warn("Converter priority conflict: {} vs. {}", old, converter);
+      }
+    }
+    // and convert everything to unmodifiable types
+    return intermediate.entrySet().stream()
+        .map(entry -> Map.entry(entry.getKey(), Map.copyOf(entry.getValue())))
+        .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
+  }
+
   /**
    * Create type map based on supplied collection of type names.
    *
    * @param types are types and their names registered in this type map
+   * @param converters are type converters to be registered in this type map
    */
-  public TypeMapImpl(Collection<TypeName<? extends Serializable>> types) {
+  public TypeMapImpl(Collection<TypeName<? extends Serializable>> types,
+      Iterable<? extends TypeConverter<?, ?>> converters) {
     this.namesByType = types.stream()
+        .filter(TypeName::isDefaultForType) // only default name registered
         .collect(
             Collectors.toUnmodifiableMap(TypeName::getType, TypeName::getName, new NameMerger()));
     this.typesByName = types.stream()
         .collect(
             Collectors.toUnmodifiableMap(TypeName::getName, TypeName::getType, new ClassMerger()));
+    this.converters = collectConvertors(converters);
   }
 
   @Override
@@ -132,6 +227,48 @@ public final class TypeMapImpl implements TypeMap {
     if (namesByType.get(type) == null) {
       throw new InternalException("Type " + type + " is not supported value type");
     }
+  }
+
+  private <S, T> Optional<TypeConverter<S, T>> getConverter(Class<S> sourceType,
+      Class<T> targetType) {
+    var mapBySource = converters.get(sourceType);
+    if (mapBySource == null) {
+      return Optional.empty();
+    }
+    @SuppressWarnings("unchecked") // we know type parameters are ok from the eay we constructed map
+        var result = (TypeConverter<S, T>) mapBySource.get(targetType);
+    return Optional.ofNullable(result);
+  }
+
+  @Override
+  public boolean isAssignableFrom(Class<?> targetType, Class<?> sourceType) {
+    if (targetType.isAssignableFrom(sourceType)) {
+      return true;
+    }
+    return getConverter(sourceType, targetType)
+        .map(TypeConverter::isAssignableFrom)
+        .orElse(false);
+  }
+
+  private <S, T> @NonNull T convertInt(Class<T> targetType, @NonNull S value) {
+    // we do not care about parametrized types... thus this suppression
+    @SuppressWarnings("unchecked")
+    Class<S> sourceType = (Class<S>) value.getClass();
+    if (targetType.isAssignableFrom(sourceType)) {
+      return targetType.cast(value);
+    }
+    return getConverter(sourceType, targetType)
+        .map(converter -> converter.convert(value))
+        .orElseThrow(() -> new InternalException(
+            "Conversion from " + sourceType + " to " + targetType + " not supported"));
+  }
+
+  @Override
+  public <T> @PolyNull T convert(Class<T> targetType, @PolyNull Object value) {
+    if (value == null) {
+      return null;
+    }
+    return convertInt(targetType, value);
   }
 
   @Override
@@ -191,6 +328,7 @@ public final class TypeMapImpl implements TypeMap {
 
     private static final long serialVersionUID = 4943844360741067489L;
     private @Nullable List<TypeName<?>> types;
+    private @Nullable List<TypeConverter<?, ?>> converters;
 
     SerializationProxy() {
     }
@@ -199,8 +337,15 @@ public final class TypeMapImpl implements TypeMap {
     // list of type names around just to suppress warnings on serialization...
     @SuppressWarnings("Immutable")
     SerializationProxy(TypeMapImpl value) {
-      this.types = value.namesByType.entrySet().stream()
-          .map(entry -> new TypeName<>(entry.getKey(), entry.getValue()))
+      this.types = value.typesByName.entrySet().stream()
+          .map(entry -> new TypeName<>(entry.getValue(), entry.getKey(),
+              Objects.equals(value.namesByType.get(entry.getValue()), entry.getKey())))
+          .collect(Collectors.toList());
+      this.converters = value.converters
+          .values()
+          .stream()
+          .map(Map::values)
+          .flatMap(Collection::stream)
           .collect(Collectors.toList());
     }
 
@@ -208,7 +353,10 @@ public final class TypeMapImpl implements TypeMap {
       if (types == null) {
         throw new InvalidObjectException("Types not read during TypeMapImpl deserialization");
       }
-      return new TypeMapImpl(types);
+      if (converters == null) {
+        throw new InvalidObjectException("Converters not read during TypeMapImpl deserialization");
+      }
+      return new TypeMapImpl(types, converters);
     }
   }
 
@@ -221,14 +369,16 @@ public final class TypeMapImpl implements TypeMap {
       return false;
     }
     TypeMapImpl that = (TypeMapImpl) o;
-    return Objects.equals(typesByName, that.typesByName)
-        && Objects.equals(namesByType, that.namesByType);
+    return typesByName.equals(that.typesByName)
+        && namesByType.equals(that.namesByType)
+        && converters.equals(that.converters);
   }
 
   @Override
   public int hashCode() {
-    int result = typesByName != null ? typesByName.hashCode() : 0;
-    result = 31 * result + (namesByType != null ? namesByType.hashCode() : 0);
+    int result = typesByName.hashCode();
+    result = 31 * result + namesByType.hashCode();
+    result = 31 * result + converters.hashCode();
     return result;
   }
 
@@ -237,6 +387,7 @@ public final class TypeMapImpl implements TypeMap {
     return "DefaultTypeMap{"
         + "typesByName=" + typesByName
         + ", namesByType=" + namesByType
+        + ", converters=" + converters
         + '}';
   }
 }

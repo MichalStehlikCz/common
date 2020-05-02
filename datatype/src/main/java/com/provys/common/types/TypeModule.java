@@ -1,5 +1,6 @@
 package com.provys.common.types;
 
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -12,5 +13,12 @@ public interface TypeModule {
    *
    * @return list of type / name pairs registered by this module.
    */
-  Collection<TypeName<?>> getTypes();
+  Collection<TypeName<? extends Serializable>> getTypes();
+
+  /**
+   * Get list of converters registered by this module.
+   *
+   * @return list of converters registered by this module
+   */
+  Collection<TypeConverter<?, ?>> getConverters();
 }

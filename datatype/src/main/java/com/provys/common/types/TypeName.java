@@ -11,16 +11,37 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * Allows to specify required mapping of given class to name used in serialization. Used for module
  * registration.
  */
+@SuppressWarnings("CyclicClassDependency") // dependency between class and its serialization proxy
 @Immutable
 public final class TypeName<@ImmutableTypeParameter T extends Serializable>
     implements Serializable {
 
   private final Class<T> type;
   private final String name;
+  private final boolean defaultForType;
 
-  public TypeName(Class<T> type, String name) {
+  /**
+   * Create new type name.
+   *
+   * @param type           is type (class) name is used for
+   * @param name           is name of the type
+   * @param defaultForType denotes if given name is default name for this type. There might be
+   *                       multiple non-default names for given type, but only one default one
+   */
+  public TypeName(Class<T> type, String name, boolean defaultForType) {
     this.type = type;
     this.name = name;
+    this.defaultForType = defaultForType;
+  }
+
+  /**
+   * Create new default type name.
+   *
+   * @param type is type (class) name is used for
+   * @param name is name of the type
+   */
+  public TypeName(Class<T> type, String name) {
+    this(type, name, true);
   }
 
   /**
@@ -39,6 +60,15 @@ public final class TypeName<@ImmutableTypeParameter T extends Serializable>
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Value of field defaultForType.
+   *
+   * @return value of field defaultForType
+   */
+  public boolean isDefaultForType() {
+    return defaultForType;
   }
 
   /**
@@ -65,6 +95,7 @@ public final class TypeName<@ImmutableTypeParameter T extends Serializable>
     private static final long serialVersionUID = 8997597081930986114L;
     private @Nullable Class<? extends Serializable> type;
     private @Nullable String name;
+    private @Nullable Boolean defaultForType;
 
     SerializationProxy() {
     }
@@ -72,6 +103,7 @@ public final class TypeName<@ImmutableTypeParameter T extends Serializable>
     <T extends Serializable> SerializationProxy(TypeName<T> value) {
       this.type = value.type;
       this.name = value.name;
+      this.defaultForType = value.defaultForType;
     }
 
     @SuppressWarnings("Immutable")
@@ -84,7 +116,10 @@ public final class TypeName<@ImmutableTypeParameter T extends Serializable>
       if (name == null) {
         throw new InvalidObjectException("Name not read during TypeName deserialization");
       }
-      return new TypeName<>(type, name);
+      if (defaultForType == null) {
+        throw new InvalidObjectException("DefaultForType not read during TypeName deserialization");
+      }
+      return new TypeName<>(type, name, defaultForType);
     }
   }
 
@@ -98,13 +133,15 @@ public final class TypeName<@ImmutableTypeParameter T extends Serializable>
     }
     TypeName<?> typeName = (TypeName<?>) o;
     return (type == typeName.type)
-        && name.equals(typeName.name);
+        && name.equals(typeName.name)
+        && defaultForType == typeName.defaultForType;
   }
 
   @Override
   public int hashCode() {
     int result = type.hashCode();
     result = 31 * result + name.hashCode();
+    result = 31 * result + (defaultForType ? 1 : 0);
     return result;
   }
 
@@ -113,6 +150,7 @@ public final class TypeName<@ImmutableTypeParameter T extends Serializable>
     return "TypeName{"
         + "type=" + type
         + ", name='" + name + '\''
+        + ", defaultForType=" + defaultForType
         + '}';
   }
 }
