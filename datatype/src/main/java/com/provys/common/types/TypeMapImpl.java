@@ -251,12 +251,9 @@ public final class TypeMapImpl implements TypeMap {
   }
 
   private <S, T> @NonNull T convertInt(Class<T> targetType, @NonNull S value) {
-    // we do not care about parametrized types... thus this suppression
+    // we do not care about parametrized types... thus this suppression is ok
     @SuppressWarnings("unchecked")
     Class<S> sourceType = (Class<S>) value.getClass();
-    if (targetType.isAssignableFrom(sourceType)) {
-      return targetType.cast(value);
-    }
     return getConverter(sourceType, targetType)
         .map(converter -> converter.convert(value))
         .orElseThrow(() -> new InternalException(
@@ -265,9 +262,15 @@ public final class TypeMapImpl implements TypeMap {
 
   @Override
   public <T> @PolyNull T convert(Class<T> targetType, @PolyNull Object value) {
+    /* null is null... */
     if (value == null) {
       return null;
     }
+    /* if value is instance of targetType, we can use it as it is */
+    if (targetType.isInstance(value)) {
+      return targetType.cast(value);
+    }
+    /* otherwise we need conversion using registered convertors */
     return convertInt(targetType, value);
   }
 
