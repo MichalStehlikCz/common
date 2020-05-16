@@ -4,7 +4,7 @@
   <parent>
     <artifactId>common</artifactId>
     <groupId>com.provys.common</groupId>
-    <version>3.13.0</version>
+    <version>3.13.1-SNAPSHOT</version>
   </parent>
   <artifactId>common-jackson</artifactId>
   <packaging>jar</packaging>
