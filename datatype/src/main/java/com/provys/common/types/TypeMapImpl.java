@@ -2,6 +2,7 @@ package com.provys.common.types;
 
 import com.google.errorprone.annotations.Immutable;
 import com.provys.common.datatype.DbBoolean;
+import com.provys.common.datatype.DtBinaryData;
 import com.provys.common.datatype.DtDate;
 import com.provys.common.datatype.DtDateTime;
 import com.provys.common.datatype.DtUid;
@@ -57,7 +58,8 @@ public final class TypeMapImpl implements TypeMap {
         new TypeName<>(DtDateTime.class, "DATETIME"),
         new TypeName<>(Byte.class, "BYTE"),
         new TypeName<>(BigInteger.class, "BIGINTEGER"),
-        new TypeName<>(BigDecimal.class, "BIGDECIMAL"));
+        new TypeName<>(BigDecimal.class, "BIGDECIMAL"),
+        new TypeName<>(DtBinaryData.class, "BLOB"));
     Stream<TypeName<? extends Serializable>> loaderNameStream = ServiceLoader.load(TypeModule.class)
         .stream().map(Provider::get)
         .map(TypeModule::getTypes).flatMap(Collection::stream);
