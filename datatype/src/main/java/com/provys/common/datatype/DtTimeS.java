@@ -195,7 +195,6 @@ public final class DtTimeS implements Comparable<DtTimeS>, Serializable {
   private static final DtTimeS[] HOURS = new DtTimeS[31];
 
   static {
-    //noinspection ForLoopReplaceableByWhile - weird warning
     for (int i = 0; i < 31; i++) {
       HOURS[i] = new DtTimeS(i * 3600);
     }
