@@ -16,6 +16,7 @@
     <module>jackson</module>
     <module>jakarta</module>
     <module>spring</module>
+    <module>crypt</module>
   </modules>
   <packaging>pom</packaging>
   <properties>
