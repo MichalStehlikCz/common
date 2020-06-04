@@ -93,7 +93,10 @@ public final class DtEncryptedString implements Serializable {
     if (!iisValue.startsWith("IIS$")) {
       throw new InternalException("Cannot decrypt supplied string - not IIS$ value");
     }
-    byte[] rawValue = Base64.getDecoder().decode(iisValue.substring(12));
+    byte[] rawValue = Base64.getDecoder().decode(
+        iisValue.substring(12)
+            .replace("\r\n", "")
+            .replace("\n", ""));
     Cipher cipher = getCipher();
     try {
       cipher.init(Cipher.DECRYPT_MODE, IIS_KEY, IV_SPEC);

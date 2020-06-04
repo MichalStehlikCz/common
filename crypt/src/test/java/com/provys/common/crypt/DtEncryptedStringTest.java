@@ -52,6 +52,12 @@ class DtEncryptedStringTest {
         new Object[]{"IIS$fc+avr25q15WIB7bONOcNItFlohr3GsFDJR3ERv1RDJBnCG1smA=", "Some Random Test"}
         , new Object[]{"IIS$BMom+CsNbRklWuoYWaVPTalWpj+Tug==", "#/*+-&"}
         , new Object[]{"IIS$HvBTO5/1PXYfmxWAvLkKagzg7WjQzTG8PZXWMWkIKw6ACgAQdkg=", "1989-21:25"}
+        , new Object[]{"IIS$HDhCzqeEm6bu0ga4WJujSS/vq3GqVyZFkQnQ4Bh7L4FSUb5SQZQYHnZ6+Ii78pv9sNU"
+            + "602PP\nijlA0fsDrZw0szCVJx0GIg==",
+            "RXOojslBSPgHczHpdduHtQiCggsGCWdwearfewtfrewftrweaq"}
+        , new Object[]{"IIS$HDhCzqeEm6bu0ga4WJujSS/vq3GqVyZFkQnQ4Bh7L4FSUb5SQZQYHnZ6+Ii78pv9sNU"
+            + "602PP\r\nijlA0fsDrZw0szCVJx0GIg==",
+            "RXOojslBSPgHczHpdduHtQiCggsGCWdwearfewtfrewftrweaq"}
     );
   }
 
