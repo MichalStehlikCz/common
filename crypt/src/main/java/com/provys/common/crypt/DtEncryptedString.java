@@ -2,7 +2,6 @@ package com.provys.common.crypt;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.util.StdConverter;
 import com.google.errorprone.annotations.Immutable;
 import com.provys.common.exception.InternalException;
 import java.io.Serializable;
@@ -12,7 +11,6 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.AlgorithmParameterSpec;
-import java.util.Arrays;
 import java.util.Base64;
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -151,12 +149,12 @@ public final class DtEncryptedString implements Serializable {
       return false;
     }
     DtEncryptedString that = (DtEncryptedString) o;
-    return iisValue.equals(that.iisValue);
+    return getValue().equals(that.getValue());
   }
 
   @Override
   public int hashCode() {
-    return iisValue.hashCode();
+    return getValue().hashCode();
   }
 
   @Override

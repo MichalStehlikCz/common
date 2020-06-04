@@ -62,6 +62,24 @@ class DtEncryptedStringTest {
     assertThat(result).isEqualTo(value);
   }
 
+  static Stream<Object[]> equalsTest() {
+    return Stream.of(
+        new Object[]{"UIkjKfla,w"}
+        , new Object[]{"jnafOIJObhUHjKHDHEwewdskjd548Ki"}
+        , new Object[]{"/LkosajasjiJUOjaiw§poKLkjeopfjke"}
+        , new Object[]{"$ewrklnt.z#&4gsfdvxyc vyP/,efw"}
+    );
+  }
+
+  @ParameterizedTest
+  @MethodSource
+  void equalsTest(String value) {
+    // even if encryption includes salt, equals should still work correctly
+    var value1 = DtEncryptedString.valueOf(value);
+    var value2 = DtEncryptedString.valueOf(value);
+    assertThat(value1.equals(value2)).isTrue();
+  }
+
   private static final class DtEncryptedStringElement {
 
     @JsonProperty
